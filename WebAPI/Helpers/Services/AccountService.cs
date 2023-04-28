@@ -1,6 +1,6 @@
 ﻿namespace WebAPI.Helpers.Services
 {
-    public class TempItem
+    public class AccountService
     {
     }
 }
