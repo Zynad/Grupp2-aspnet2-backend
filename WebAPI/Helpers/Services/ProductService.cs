@@ -9,14 +9,14 @@ namespace WebAPI.Helpers.Services
 	public class ProductService
 	{
 		private readonly ProductRepo _productRepo;
-		//private readonly CategoryRepo _categoryRepo;
-		//private readonly TagRepo _tagRepo;
+		private readonly CategoryRepo _categoryRepo;
+		private readonly TagRepo _tagRepo;
 
-		public ProductService(ProductRepo productRepo/*, CategoryRepo categoryRepo, TagRepo tagRepo*/)
+		public ProductService(ProductRepo productRepo, CategoryRepo categoryRepo, TagRepo tagRepo)
 		{
 			_productRepo = productRepo;
-			//_categoryRepo = categoryRepo;
-			//_tagRepo = tagRepo;
+			_categoryRepo = categoryRepo;
+			_tagRepo = tagRepo;
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetAllAsync()
@@ -34,20 +34,20 @@ namespace WebAPI.Helpers.Services
 			return dtos;
 		}
 
-		//public async Task<IEnumerable<ProductDTO>> GetByTagAsync(string tag)
-		//{
-		//	var products = await _productRepo.GetListAsync(x => x.Tag.Name == tag);
+		public async Task<IEnumerable<ProductDTO>> GetByTagAsync(string tag)
+		{
+			var products = await _productRepo.GetListAsync(x => x.Tag.Name == tag);
 
-		//	var dto = new List<ProductDTO>();
+			var dto = new List<ProductDTO>();
 
-		//	foreach (var entity in products)
-		//	{
-		//		ProductDTO product = entity;
-		//		dto.Add(product);
-		//	}
+			foreach (var entity in products)
+			{
+				ProductDTO product = entity;
+				dto.Add(product);
+			}
 
-		//	return dto;
-		//}
+			return dto;
+		}
 
 		public async Task<ProductDTO> GetByIdAsync(int id)
 		{
@@ -69,8 +69,8 @@ namespace WebAPI.Helpers.Services
 		{
 			ProductEntity entity = schema;
 
-			//entity.Category = await _categoryRepo.GetAsync(x => x.Name == dto.Category);
-			//entity.Tag = await _tagRepo.GetAsync(x => x.Name == dto.Tag);
+			entity.Category = await _categoryRepo.GetAsync(x => x.CategoryName == schema.Category.CategoryName);
+			entity.Tag = await _tagRepo.GetAsync(x => x.Name == schema.Tag.Name);
 
 			try
 			{

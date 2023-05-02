@@ -8,17 +8,15 @@ namespace WebAPI.Models.Entities
 		[Key]
 		public int Id { get; set; }
 
-		//[ForeignKey("CategoryId")]
-		//public int CategoryId { get; set; }
+		[ForeignKey("CategoryId")]
+		public int CategoryId { get; set; }
 
-		//public CategoryEntity Category { get; set; }
+		public CategoryEntity Category { get; set; }
 
-		//[ForeignKey("TagId")]
-		//public int TagId { get; set; }
+		[ForeignKey("TagId")]
+		public int TagId { get; set; }
 
-		//public List<TagEntity> Tags { get; set; }
-
-
+		public TagEntity Tag { get; set; }
 
 		[MaxLength(100)]
 		public string Name { get; set; } = null!;

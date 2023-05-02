@@ -15,21 +15,19 @@ namespace WebAPI.Helpers.Repositories
 			_context = context;
 		}
 
-		//tag and category out until implemented
-
 		public override async Task<IEnumerable<ProductEntity>> GetAllAsync()
 		{
-			return await _context.Products/*.Include("Category").Include("Tag")*/.ToListAsync();
+			return await _context.Products.Include("Category").Include("Tag").ToListAsync();
 		}
 
 		public override async Task<IEnumerable<ProductEntity>> GetListAsync(Expression<Func<ProductEntity, bool>> predicate)
 		{
-			return await _context.Products/*.Include("Category").Include("Tag")*/.Where(predicate).ToListAsync();
+			return await _context.Products.Include("Category").Include("Tag").Where(predicate).ToListAsync();
 		}
 
 		public override async Task<ProductEntity> GetAsync(Expression<Func<ProductEntity, bool>> predicate)
 		{
-			var result = await _context.Products/*.Include("Category").Include("Tag")*/.FirstOrDefaultAsync(predicate);
+			var result = await _context.Products.Include("Category").Include("Tag").FirstOrDefaultAsync(predicate);
 
 			if (result != null)
 				return result;

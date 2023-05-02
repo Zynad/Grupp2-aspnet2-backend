@@ -31,12 +31,12 @@ namespace WebAPI.Controllers
 			return Ok(await _productService.GetByIdAsync(id));
 		}
 
-		//[Route("Tag")]
-		//[HttpGet]
-		//public async Task<IActionResult> GetByTag(string tag)
-		//{
-		//	return Ok(await _productService.GetByTagAsync());
-		//}
+		[Route("Tag")]
+		[HttpGet]
+		public async Task<IActionResult> GetByTag(string tag)
+		{
+			return Ok(await _productService.GetByTagAsync(tag));
+		}
 
 		[Route("Search")]
 		[HttpGet]
