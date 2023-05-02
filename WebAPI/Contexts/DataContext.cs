@@ -11,4 +11,6 @@ public class DataContext : IdentityDbContext
     }
 
     public DbSet<ProductEntity> Products { get; set; }
+    public DbSet<TagEntity> Tags { get; set; }
+    public DbSet<CategoryEntity> Categories { get; set; }
 }
