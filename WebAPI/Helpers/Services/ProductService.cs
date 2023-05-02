@@ -36,7 +36,7 @@ namespace WebAPI.Helpers.Services
 
 		public async Task<IEnumerable<ProductDTO>> GetByTagAsync(string tag)
 		{
-			var products = await _productRepo.GetListAsync(x => x.Tag.Name == tag);
+			var products = await _productRepo.GetListAsync(x => x.Tags.Contains(tag));
 
 			var dto = new List<ProductDTO>();
 
@@ -69,8 +69,8 @@ namespace WebAPI.Helpers.Services
 		{
 			ProductEntity entity = schema;
 
-			entity.Category = await _categoryRepo.GetAsync(x => x.CategoryName == schema.Category.CategoryName);
-			entity.Tag = await _tagRepo.GetAsync(x => x.Name == schema.Tag.Name);
+			// entity.Category = await _categoryRepo.GetAsync(x => x.Name == schema.Category);
+			// entity.Tags = await _tagRepo.GetAsync(x => x.Name == schema.Tags);
 
 			try
 			{

@@ -8,15 +8,9 @@ namespace WebAPI.Models.Entities
 		[Key]
 		public int Id { get; set; }
 
-		[ForeignKey("CategoryId")]
-		public int CategoryId { get; set; }
+		public string Category { get; set; }
 
-		public CategoryEntity Category { get; set; }
-
-		[ForeignKey("TagId")]
-		public int TagId { get; set; }
-
-		public TagEntity Tag { get; set; }
+		public List<string> Tags { get; set; }
 
 		[MaxLength(100)]
 		public string Name { get; set; } = null!;
@@ -36,5 +30,7 @@ namespace WebAPI.Models.Entities
 		public bool Discount { get; set; }
 
 		public double? DiscountMultiplier { get; set; }
+		
+		public string PartitionKey { get; set; }
 	}
 }

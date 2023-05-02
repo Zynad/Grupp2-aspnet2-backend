@@ -10,7 +10,18 @@ public class DataContext : IdentityDbContext
     {
     }
 
-    public DbSet<ProductEntity> Products { get; set; }
-    public DbSet<TagEntity> Tags { get; set; }
-    public DbSet<CategoryEntity> Categories { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ProductEntity>()
+            .ToContainer("Products")
+            .HasPartitionKey(x => x.PartitionKey);
+        
+        modelBuilder.Entity<CategoryEntity>()
+            .ToContainer("Categories")
+            .HasPartitionKey(x => x.Id);
+        
+        modelBuilder.Entity<TagEntity>()
+            .ToContainer("Tags")
+            .HasPartitionKey(x => x.Id);
+    }
 }

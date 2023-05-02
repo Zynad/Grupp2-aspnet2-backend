@@ -9,6 +9,4 @@ public class TagEntity
 
     [MaxLength(30)] 
     public string Name { get; set; } = null!;
-
-    public IEnumerable<ProductEntity> Products { get; set; } = new List<ProductEntity>();
 }
