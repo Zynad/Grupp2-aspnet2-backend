@@ -24,4 +24,6 @@ public class DataContext : IdentityDbContext
             .ToContainer("Tags")
             .HasPartitionKey(x => x.Id);
     }
+
+    DbSet<UserProfileEntity> UserProfileEntities { get; set; }
 }

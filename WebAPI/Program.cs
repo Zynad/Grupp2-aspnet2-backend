@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebAPI.Contexts;
 using WebAPI.Helpers.Services;
+using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,11 +14,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<ProductRepo>();
 
+#region Databases
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DataDB")));
+#endregion
 
+#region Helpers
+builder.Services.AddScoped<JwtToken>();
+builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<ProductService>();
+#endregion
+
+#region Repositories
+builder.Services.AddScoped<UserProfileRepo>();
+builder.Services.AddScoped<ProductRepo>();
+#endregion
+
+#region Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
 {
     x.Password.RequiredLength = 8;
@@ -25,7 +38,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.User.RequireUniqueEmail = true;
 
 }).AddEntityFrameworkStores<DataContext>();
+#endregion
 
+#region Authentication
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -57,9 +72,10 @@ builder.Services.AddAuthentication(x =>
             Encoding.UTF8.GetBytes(builder.Configuration.GetSection("TokenValidation").GetValue<string>("SecretKey")!))
     };
 });
+#endregion
 
 var app = builder.Build();
-
+app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
