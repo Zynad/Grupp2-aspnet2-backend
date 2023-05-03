@@ -21,7 +21,7 @@ public class RegisterAccountSchema
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")]
     public string Password { get; set; } = null!;
     public string? PhoneNumber { get; set; }
-    public string RoleName { get; set; } = "User";
+    public string RoleName { get; set; } = "user";
 
     public static implicit operator IdentityUser(RegisterAccountSchema schema)
     {
