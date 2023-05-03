@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebAPI.Contexts;
+using WebAPI.Helpers.Services;
+using WebAPI.Helpers.Jwt;
+using WebAPI.Helpers.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +15,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DataDB")));
 
+#region Databases
+builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DataDB")));
+#endregion
+
+#region Helpers
+builder.Services.AddScoped<JwtToken>();
+builder.Services.AddScoped<AccountService>();
+#endregion
+
+#region Repositories
+builder.Services.AddScoped<UserProfileRepo>();
+#endregion
+
+#region Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
 {
     x.Password.RequiredLength = 8;
@@ -21,7 +37,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.User.RequireUniqueEmail = true;
 
 }).AddEntityFrameworkStores<DataContext>();
+#endregion
 
+#region Authentication
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,9 +71,10 @@ builder.Services.AddAuthentication(x =>
             Encoding.UTF8.GetBytes(builder.Configuration.GetSection("TokenValidation").GetValue<string>("SecretKey")!))
     };
 });
+#endregion
 
 var app = builder.Build();
-
+app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
