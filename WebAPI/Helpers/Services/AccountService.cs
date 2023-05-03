@@ -95,7 +95,7 @@ public class AccountService
     }
     public async Task<UserProfileDTO> ReturnProfileAsync(string Id)
     {
-        var identityUser = await _userManager.FindByEmailAsync(Id);
+        var identityUser = await _userManager.FindByIdAsync(Id);
         var profile = await _userProfileRepo.GetAsync(x => x.UserId == Id);
         if (identityUser == null || profile == null)
         {
@@ -124,11 +124,28 @@ public class AccountService
 
     public async Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema)
     {
-        IdentityUser identityUser = schema;
-        UserProfileEntity userProfile = schema;
-
         try
         {
+            //Hårdkodning utav id för test
+            IdentityUser identityUser = await _userManager.FindByIdAsync("5878c1c4-63e3-4e99-987f-09555614ed04");
+            UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser.Id);
+            if (userProfile == null || identityUser == null)        
+                return null!;
+
+            userProfile.FirstName = schema.FirstName;
+            userProfile.LastName = schema.LastName;
+            identityUser.Email = schema.Email;
+            identityUser.UserName = schema.Email;
+            if(schema.PhoneNumber != null)
+            {
+                identityUser.PhoneNumber = schema.PhoneNumber;
+            }
+            if (schema.ImageUrl != null)
+            {
+                userProfile.ImageUrl = schema.ImageUrl;
+            }
+
+        
             var identityResult = await _userManager.UpdateAsync(identityUser);
             var profileResult = await _userProfileRepo.UpdateAsync(userProfile);
 
