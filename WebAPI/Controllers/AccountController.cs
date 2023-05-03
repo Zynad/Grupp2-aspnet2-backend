@@ -65,9 +65,9 @@ namespace WebAPI.Controllers
                 {
                     return Ok("Update is done");
                 }
-                
+                return BadRequest("Model valid, something else is wrong");
             }
-            return BadRequest();
+            return BadRequest("Model not valid");
         }
     }
 }
