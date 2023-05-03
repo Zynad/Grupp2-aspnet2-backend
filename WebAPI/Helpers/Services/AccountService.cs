@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
@@ -88,5 +90,58 @@ public class AccountService
     public async Task LogOutAsync()
     {
         await _signInManager.SignOutAsync();
+
+        
+    }
+    public async Task<UserProfileDTO> ReturnProfileAsync(string Id)
+    {
+        var identityUser = await _userManager.FindByEmailAsync(Id);
+        var profile = await _userProfileRepo.GetAsync(x => x.UserId == Id);
+        if (identityUser == null || profile == null)
+        {
+            return null!;
+        }
+
+        var dto = new UserProfileDTO
+        {
+            FirstName = profile.FirstName,
+            LastName = profile.LastName,
+            Email = identityUser.Email,
+            PhoneNumber = identityUser.PhoneNumber,
+            ImageUrl = profile.ImageUrl
+        };
+
+        if (identityUser.PhoneNumber == null)
+        {
+            dto.PhoneNumber = null;
+        }
+
+        if (profile.ImageUrl == null)
+        {
+            dto.ImageUrl = null;
+        }
+
+        return dto;
+    }
+
+    public async Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema)
+    {
+        IdentityUser identityUser = schema;
+        UserProfileEntity userProfile = schema;
+
+        try
+        {
+            var identityResult = await _userManager.UpdateAsync(identityUser);
+            var profileResult = await _userProfileRepo.UpdateAsync(userProfile);
+
+            if (identityResult.Succeeded && profileResult != null)
+            {
+                return await ReturnProfileAsync(profileResult.UserId);
+            }
+        }
+        catch { }
+        
+
+        return null!;
     }
 }

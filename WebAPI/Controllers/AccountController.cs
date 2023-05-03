@@ -52,5 +52,17 @@ namespace WebAPI.Controllers
             await _accountService.LogOutAsync();
             return Ok();
         }
+
+        [Authorize]
+        [Route("UpdateProfile")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateProfileAsync(UpdateUserSchema schema)
+        {
+            if (ModelState.IsValid)
+            { 
+                return Ok(await _accountService.UpdateProfileAsync(schema));
+            }
+            return BadRequest();
+        }
     }
 }
