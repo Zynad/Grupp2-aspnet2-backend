@@ -17,7 +17,9 @@ builder.Services.AddSwaggerGen();
 
 #region Databases
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DataDB")));
+builder.Services.AddDbContext<CosmosContext>(x => x.UseCosmos(builder.Configuration.GetConnectionString("CosmosDB")!, "grupp2-cosmos"));
 #endregion
+
 
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
@@ -28,6 +30,8 @@ builder.Services.AddScoped<ProductService>();
 #region Repositories
 builder.Services.AddScoped<UserProfileRepo>();
 builder.Services.AddScoped<ProductRepo>();
+builder.Services.AddScoped<CategoryRepo>();
+builder.Services.AddScoped<TagRepo>();
 #endregion
 
 #region Identity

@@ -1,11 +1,12 @@
 using WebAPI.Contexts;
+using WebAPI.Helpers.Repositories.BaseModels;
 using WebAPI.Models.Entities;
 
 namespace WebAPI.Helpers.Repositories;
 
-public class CategoryRepo : Repo<CategoryEntity>
+public class CategoryRepo : CosmosRepo<CategoryEntity>
 {
-    public CategoryRepo(DataContext dataContext) : base(dataContext)
+    public CategoryRepo(CosmosContext context) : base(context)
     {
     }
 }

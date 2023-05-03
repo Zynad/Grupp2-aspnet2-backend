@@ -10,20 +10,5 @@ public class DataContext : IdentityDbContext
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<ProductEntity>()
-            .ToContainer("Products")
-            .HasPartitionKey(x => x.PartitionKey);
-        
-        modelBuilder.Entity<CategoryEntity>()
-            .ToContainer("Categories")
-            .HasPartitionKey(x => x.Id);
-        
-        modelBuilder.Entity<TagEntity>()
-            .ToContainer("Tags")
-            .HasPartitionKey(x => x.Id);
-    }
-
     DbSet<UserProfileEntity> UserProfileEntities { get; set; }
 }

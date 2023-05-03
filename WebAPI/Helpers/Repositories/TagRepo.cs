@@ -1,11 +1,12 @@
 using WebAPI.Contexts;
+using WebAPI.Helpers.Repositories.BaseModels;
 using WebAPI.Models.Entities;
 
 namespace WebAPI.Helpers.Repositories;
 
-public class TagRepo : Repo<TagEntity>
+public class TagRepo : CosmosRepo<TagEntity>
 {
-    public TagRepo(DataContext dataContext) : base(dataContext)
+    public TagRepo(CosmosContext context) : base(context)
     {
     }
 }

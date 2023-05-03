@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using WebAPI.Contexts;
 
-namespace WebAPI.Helpers.Repositories;
+namespace WebAPI.Helpers.Repositories.BaseModels;
 
 public abstract class Repo<TEntity> where TEntity : class
 {

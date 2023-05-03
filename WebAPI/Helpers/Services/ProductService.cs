@@ -69,9 +69,6 @@ namespace WebAPI.Helpers.Services
 		{
 			ProductEntity entity = schema;
 
-			// entity.Category = await _categoryRepo.GetAsync(x => x.Name == schema.Category);
-			// entity.Tags = await _tagRepo.GetAsync(x => x.Name == schema.Tags);
-
 			try
 			{
 				await _productRepo.AddAsync(entity);
