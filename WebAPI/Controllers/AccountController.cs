@@ -59,8 +59,13 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> UpdateProfileAsync(UpdateUserSchema schema)
         {
             if (ModelState.IsValid)
-            { 
-                return Ok(await _accountService.UpdateProfileAsync(schema));
+            {
+                var result = await _accountService.UpdateProfileAsync(schema);
+                if(result != null)
+                {
+                    return Ok("Update is done");
+                }
+                
             }
             return BadRequest();
         }
