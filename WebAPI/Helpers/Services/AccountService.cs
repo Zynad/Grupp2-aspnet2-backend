@@ -107,18 +107,16 @@ public class AccountService
             FirstName = profile.FirstName,
             LastName = profile.LastName,
             Email = identityUser.Email,
-            PhoneNumber = identityUser.PhoneNumber,
-            ImageUrl = profile.ImageUrl
         };
 
-        if (identityUser.PhoneNumber == null)
+        if (identityUser.PhoneNumber != null)
         {
-            dto.PhoneNumber = null;
+            dto.PhoneNumber = identityUser.PhoneNumber;
         }
 
-        if (profile.ImageUrl == null)
+        if (profile.ImageUrl != null)
         {
-            dto.ImageUrl = null;
+            dto.ImageUrl = profile.ImageUrl;
         }
 
         return dto;
@@ -136,7 +134,8 @@ public class AccountService
 
             if (identityResult.Succeeded && profileResult != null)
             {
-                return await ReturnProfileAsync(profileResult.UserId);
+                var result = await ReturnProfileAsync(profileResult.UserId);
+                return result;
             }
         }
         catch { }
