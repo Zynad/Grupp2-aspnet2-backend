@@ -15,7 +15,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 #region Databases
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DataDB")));
 #endregion
@@ -23,10 +22,12 @@ builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configura
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<ProductService>();
 #endregion
 
 #region Repositories
 builder.Services.AddScoped<UserProfileRepo>();
+builder.Services.AddScoped<ProductRepo>();
 #endregion
 
 #region Identity
