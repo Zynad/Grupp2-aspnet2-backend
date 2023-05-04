@@ -58,9 +58,11 @@ namespace WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateProfileAsync(UpdateUserSchema schema)
         {
+            
             if (ModelState.IsValid)
             {
-                var result = await _accountService.UpdateProfileAsync(schema);
+                var userName = HttpContext.User.Identity.Name;
+                var result = await _accountService.UpdateProfileAsync(schema,userName);
                 if(result != null)
                 {
                     return Ok("Update is done");

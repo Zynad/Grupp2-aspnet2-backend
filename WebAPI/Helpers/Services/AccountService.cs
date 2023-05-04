@@ -122,12 +122,12 @@ public class AccountService
         return dto;
     }
 
-    public async Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema)
+    public async Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema,string id)
     {
         try
         {
             //Hårdkodning utav id för test
-            IdentityUser identityUser = await _userManager.FindByIdAsync("5878c1c4-63e3-4e99-987f-09555614ed04");
+            IdentityUser identityUser = await _userManager.FindByIdAsync(id);
             UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser.Id);
             if (userProfile == null || identityUser == null)        
                 return null!;
