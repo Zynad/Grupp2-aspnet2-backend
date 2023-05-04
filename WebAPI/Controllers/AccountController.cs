@@ -52,5 +52,24 @@ namespace WebAPI.Controllers
             await _accountService.LogOutAsync();
             return Ok();
         }
+
+        [Authorize]
+        [Route("UpdateProfile")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateProfileAsync(UpdateUserSchema schema)
+        {
+            
+            if (ModelState.IsValid)
+            {
+                var userName = HttpContext.User.Identity.Name;
+                var result = await _accountService.UpdateProfileAsync(schema,userName);
+                if(result != null)
+                {
+                    return Ok("Update is done");
+                }
+                return BadRequest("Model valid, something else is wrong");
+            }
+            return BadRequest("Model not valid");
+        }
     }
 }

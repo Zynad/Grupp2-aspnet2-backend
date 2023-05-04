@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
@@ -88,5 +90,73 @@ public class AccountService
     public async Task LogOutAsync()
     {
         await _signInManager.SignOutAsync();
+
+        
+    }
+    public async Task<UserProfileDTO> ReturnProfileAsync(string Id)
+    {
+        var identityUser = await _userManager.FindByIdAsync(Id);
+        var profile = await _userProfileRepo.GetAsync(x => x.UserId == Id);
+        if (identityUser == null || profile == null)
+        {
+            return null!;
+        }
+
+        var dto = new UserProfileDTO
+        {
+            FirstName = profile.FirstName,
+            LastName = profile.LastName,
+            Email = identityUser.Email,
+        };
+
+        if (identityUser.PhoneNumber != null)
+        {
+            dto.PhoneNumber = identityUser.PhoneNumber;
+        }
+
+        if (profile.ImageUrl != null)
+        {
+            dto.ImageUrl = profile.ImageUrl;
+        }
+
+        return dto;
+    }
+
+    public async Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema,string userName)
+    {
+        try
+        {
+            IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
+            UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser.Id);
+            if (userProfile == null || identityUser == null)        
+                return null!;
+
+            userProfile.FirstName = schema.FirstName;
+            userProfile.LastName = schema.LastName;
+            identityUser.Email = schema.Email;
+            identityUser.UserName = schema.Email;
+            if(schema.PhoneNumber != null)
+            {
+                identityUser.PhoneNumber = schema.PhoneNumber;
+            }
+            if (schema.ImageUrl != null)
+            {
+                userProfile.ImageUrl = schema.ImageUrl;
+            }
+
+        
+            var identityResult = await _userManager.UpdateAsync(identityUser);
+            var profileResult = await _userProfileRepo.UpdateAsync(userProfile);
+
+            if (identityResult.Succeeded && profileResult != null)
+            {
+                var result = await ReturnProfileAsync(profileResult.UserId);
+                return result;
+            }
+        }
+        catch { }
+        
+
+        return null!;
     }
 }
