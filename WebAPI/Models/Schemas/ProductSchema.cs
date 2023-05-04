@@ -12,11 +12,13 @@ namespace WebAPI.Models.Schemas
 		public string Description { get; set; } = null!;
 		public int Rating { get; set; }
 		public string Brand { get; set; } = null!;
+		
 
 		public static implicit operator ProductEntity(ProductSchema schema)
 		{
-			return new ProductEntity
+			var entity = new ProductEntity
 			{
+				Id = Guid.NewGuid(),
 				Name = schema.Name,
 				Price = schema.Price,
 				ImageUrl = schema.ImageUrl,
@@ -25,7 +27,9 @@ namespace WebAPI.Models.Schemas
 				Brand = schema.Brand,
 				Category = schema.Category,
 				Tags = schema.Tags
+				
 			};
+
 		}
 	}
 }

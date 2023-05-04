@@ -4,9 +4,10 @@ namespace WebAPI.Models.Entities;
 
 public class TagEntity
 {
-    [Key] 
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [MaxLength(30)] 
     public string Name { get; set; } = null!;
+
+    public string PartitionKey => Id.ToString()!;
 }

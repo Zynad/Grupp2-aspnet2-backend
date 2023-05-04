@@ -6,7 +6,7 @@ namespace WebAPI.Models.Entities
 	public class ProductEntity
 	{
 		[Key]
-		public int Id { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
 		public string Category { get; set; }
 
@@ -31,6 +31,6 @@ namespace WebAPI.Models.Entities
 
 		public double? DiscountMultiplier { get; set; }
 		
-		public string PartitionKey { get; set; }
+		public string PartitionKey => Id.ToString();
 	}
 }

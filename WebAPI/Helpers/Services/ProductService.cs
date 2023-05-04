@@ -49,7 +49,7 @@ namespace WebAPI.Helpers.Services
 			return dto;
 		}
 
-		public async Task<ProductDTO> GetByIdAsync(int id)
+		public async Task<ProductDTO> GetByIdAsync(Guid id)
 		{
 			var product = await _productRepo.GetAsync(x => x.Id == id);
 
