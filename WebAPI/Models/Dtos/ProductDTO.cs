@@ -4,7 +4,7 @@ namespace WebAPI.Models.Dtos
 {
 	public class ProductDTO
 	{
-		public int Id { get; set; }
+		public Guid Id { get; set; }
 		public string Name { get; set; } = null!;
 		public double Price { get; set; }
 		public string ImageUrl { get; set; } = null!;

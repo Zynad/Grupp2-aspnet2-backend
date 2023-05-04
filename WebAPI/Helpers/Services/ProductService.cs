@@ -81,7 +81,7 @@ namespace WebAPI.Helpers.Services
 
 		}
 
-		public async Task<bool> DeleteAsync(int id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
 			var entity = await _productRepo.GetAsync(x => x.Id == id);
 

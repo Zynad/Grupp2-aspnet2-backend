@@ -26,7 +26,7 @@ namespace WebAPI.Controllers
 
 		[Route("Get")]
 		[HttpGet]
-		public async Task<IActionResult> GetById(int id)
+		public async Task<IActionResult> GetById(Guid id)
 		{
 			return Ok(await _productService.GetByIdAsync(id));
 		}
@@ -59,7 +59,7 @@ namespace WebAPI.Controllers
 		//[Authorize(Roles = "Admin, ProductManager")]
 		[Route("Delete")]
 		[HttpPost]
-		public async Task<IActionResult> DeleteProduct(int id)
+		public async Task<IActionResult> DeleteProduct(Guid id)
 		{
 			if (await _productService.DeleteAsync(id))
 				return Ok();

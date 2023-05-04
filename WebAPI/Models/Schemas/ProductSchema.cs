@@ -16,8 +16,8 @@ namespace WebAPI.Models.Schemas
 
 		public static implicit operator ProductEntity(ProductSchema schema)
 		{
-			var entity = new ProductEntity
-			{
+			return new ProductEntity
+			{ 
 				Id = Guid.NewGuid(),
 				Name = schema.Name,
 				Price = schema.Price,
@@ -27,7 +27,6 @@ namespace WebAPI.Models.Schemas
 				Brand = schema.Brand,
 				Category = schema.Category,
 				Tags = schema.Tags
-				
 			};
 
 		}
