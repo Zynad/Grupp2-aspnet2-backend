@@ -18,11 +18,11 @@ namespace WebAPI.Contexts
 
 			modelBuilder.Entity<CategoryEntity>()
 				.ToContainer("Categories")
-				.HasPartitionKey(x => x.Id);
+				.HasPartitionKey(x => x.PartitionKey);
 
 			modelBuilder.Entity<TagEntity>()
 				.ToContainer("Tags")
-				.HasPartitionKey(x => x.Id);
+				.HasPartitionKey(x => x.PartitionKey);
 		}
 	}
 }

@@ -5,6 +5,7 @@ namespace WebAPI.Models.Entities
 {
 	public class ProductEntity
 	{
+		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 		public string Category { get; set; }
 		public List<string> Tags { get; set; }
