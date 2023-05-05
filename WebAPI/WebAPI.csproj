@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
+    <PackageReference Include="Azure.Identity" Version="1.8.2" />
     <PackageReference Include="microsoft.aspnetcore.authentication.jwtbearer" Version="7.0.5" />
     <PackageReference Include="microsoft.aspnetcore.identity.entityframeworkcore" Version="7.0.5" />
     <PackageReference Include="microsoft.aspnetcore.identity.ui" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="7.0.5" />
     <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="7.0.5" />
     <PackageReference Include="microsoft.entityframeworkcore.tools" Version="7.0.5">
       <PrivateAssets>all</PrivateAssets>
