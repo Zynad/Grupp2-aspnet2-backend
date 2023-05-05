@@ -35,6 +35,21 @@ namespace WebAPI.Helpers.Services
 			return dtos;
 		}
 
+		public async Task<IEnumerable<ProductDTO>> GetBySalesCategory(string salesCategory)
+		{
+			var allProducts = await _productRepo.GetAllAsync();
+
+			var products = allProducts.Where(x => x.SalesCategory == salesCategory);
+
+			var dto = new List<ProductDTO>();
+
+			foreach(var entity in products)
+			{
+				dto.Add(entity);
+			}
+			return dto;
+		}
+
 		public async Task<IEnumerable<ProductDTO>> GetByTagAsync(List<string> tags)
 		{
 			var allProducts = await _productRepo.GetAllAsync();
@@ -83,7 +98,6 @@ namespace WebAPI.Helpers.Services
 			{
 				return false;
 			}
-
 		}
 
 		public async Task<bool> DeleteAsync(Guid id)

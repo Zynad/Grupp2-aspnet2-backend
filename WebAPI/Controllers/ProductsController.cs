@@ -29,7 +29,6 @@ namespace WebAPI.Controllers
 			{
 				return BadRequest("Something went wrong");
 			}
-			
 		}
 
 		[Route("Get")]
@@ -44,7 +43,6 @@ namespace WebAPI.Controllers
 			{
 				return BadRequest("Something went wrong");			
 			}
-			
 		}
 
 		[Route("Tag")]
@@ -54,6 +52,20 @@ namespace WebAPI.Controllers
 			try
 			{
 				return Ok(await _productService.GetByTagAsync(tags));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("SalesCategory")]
+		[HttpGet]
+		public async Task<IActionResult> GetBySalesCategory(string salescategory)
+		{
+			try
+			{
+				return Ok(await _productService.GetBySalesCategory(salescategory));
 			}
 			catch 
 			{
