@@ -36,14 +36,15 @@ public abstract class CosmosRepo<TEntity> where TEntity : class
 		return null!;
 	}
 
-	public virtual async Task<IEnumerable<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate)
+	public virtual async Task<IEnumerable<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate) 
 	{
 		var entities = await _context.Set<TEntity>().Where(predicate).ToListAsync();
 
 		if (entities != null)
+			
 			return entities;
 
-		return null!;
+		return Enumerable.Empty<TEntity>();
 	}
 
 	public virtual async Task<TEntity> UpdateAsync(TEntity entity)
