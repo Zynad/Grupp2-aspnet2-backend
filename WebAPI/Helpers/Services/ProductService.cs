@@ -3,6 +3,7 @@ using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Schemas;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace WebAPI.Helpers.Services
 {
@@ -27,29 +28,33 @@ namespace WebAPI.Helpers.Services
 
 			foreach (var entity in products)
 			{
-				ProductDTO product = entity;
-				dtos.Add(product);
+				//ProductDTO product = entity;
+				dtos.Add(entity);
 			}
 
 			return dtos;
 		}
 
-		public async Task<IEnumerable<ProductDTO>> GetByTagAsync(string tag)
+		public async Task<IEnumerable<ProductDTO>> GetByTagAsync(List<string> tags)
 		{
-			var products = await _productRepo.GetListAsync(x => x.Tags.Contains(tag));
+			var allProducts = await _productRepo.GetAllAsync();
+
+			//This retrieves all products that match any of the tags in the input instead of only products that match all tags as the query below does
+			//var products = allProducts.Where(x => x.Tags.Intersect(tags).Any());  
+
+			var products = allProducts.Where(p => tags.All(t => p.Tags.Contains(t)));
 
 			var dto = new List<ProductDTO>();
 
 			foreach (var entity in products)
 			{
-				ProductDTO product = entity;
-				dto.Add(product);
+				dto.Add(entity);
 			}
 
 			return dto;
 		}
 
-		public async Task<ProductDTO> GetByIdAsync(int id)
+		public async Task<ProductDTO> GetByIdAsync(Guid id)
 		{
 			var product = await _productRepo.GetAsync(x => x.Id == id);
 
@@ -60,9 +65,9 @@ namespace WebAPI.Helpers.Services
 
 		public async Task<IEnumerable<ProductDTO>> GetByNameAsync(string searchCondition)
 		{
-			Expression<Func<ProductEntity, bool>> predicate = p => p.Name.Contains(searchCondition);
+			Expression<Func<ProductEntity, bool>> predicate = p => p.Name.ToLower().Contains(searchCondition.ToLower());
 			var products = await _productRepo.GetListAsync(predicate);
-			return (IEnumerable<ProductDTO>)products;
+			return products.Select(p => (ProductDTO)p);
 		}
 
 		public async Task<bool> CreateAsync(ProductSchema schema)
@@ -81,7 +86,7 @@ namespace WebAPI.Helpers.Services
 
 		}
 
-		public async Task<bool> DeleteAsync(int id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
 			var entity = await _productRepo.GetAsync(x => x.Id == id);
 
