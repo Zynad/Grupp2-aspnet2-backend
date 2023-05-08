@@ -62,10 +62,28 @@ namespace WebAPI.Controllers
             if (ModelState.IsValid)
             {
                 var userName = HttpContext.User.Identity.Name;
-                var result = await _accountService.UpdateProfileAsync(schema,userName);
+                var result = await _accountService.UpdateProfileAsync(schema,userName!);
                 if(result != null)
                 {
                     return Ok("Update is done");
+                }
+                return BadRequest("Model valid, something else is wrong");
+            }
+            return BadRequest("Model not valid");
+        }
+        [Authorize]
+        [Route("UpdateProfile")]
+        [HttpGet]
+        public async Task<IActionResult> GetProfile()
+        {
+
+            if (ModelState.IsValid)
+            {
+                var userName = HttpContext.User.Identity.Name;
+                var result = await _accountService.GetProfile(userName!);
+                if (result != null)
+                {
+                    return Ok(result);
                 }
                 return BadRequest("Model valid, something else is wrong");
             }
