@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
+using WebAPI.Helpers.Repositories;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
@@ -21,28 +22,84 @@ namespace WebAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			return Ok(await _productService.GetAllAsync());
+			try
+			{
+				return Ok(await _productService.GetAllAsync());
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
 		}
 
 		[Route("Get")]
 		[HttpGet]
-		public async Task<IActionResult> GetById(int id)
+		public async Task<IActionResult> GetById(Guid id)
 		{
-			return Ok(await _productService.GetByIdAsync(id));
+			try
+			{
+				return Ok(await _productService.GetByIdAsync(id));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");			
+			}
 		}
 
 		[Route("Tag")]
 		[HttpGet]
-		public async Task<IActionResult> GetByTag(string tag)
+		public async Task<IActionResult> GetByTag([FromQuery]List<string> tags)
 		{
-			return Ok(await _productService.GetByTagAsync(tag));
+			try
+			{
+				return Ok(await _productService.GetByTagAsync(tags));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("Category")]
+		[HttpGet]
+		public async Task<IActionResult> GetByCategory(string category)
+		{
+			try
+			{
+				return Ok(await _productService.GetByCategoryAsync(category));
+			}
+			catch
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("SalesCategory")]
+		[HttpGet]
+		public async Task<IActionResult> GetBySalesCategory(string salescategory)
+		{
+			try
+			{
+				return Ok(await _productService.GetBySalesCategoryAsync(salescategory));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
 		}
 
 		[Route("Search")]
 		[HttpGet]
 		public async Task<IActionResult> GetByName(string name)
 		{
-			return Ok(await _productService.GetByNameAsync(name));
+			try
+			{
+				return Ok(await _productService.GetByNameAsync(name));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
 		}
 
 		//[Authorize(Roles = "Admin, ProductManager")]
@@ -59,7 +116,7 @@ namespace WebAPI.Controllers
 		//[Authorize(Roles = "Admin, ProductManager")]
 		[Route("Delete")]
 		[HttpPost]
-		public async Task<IActionResult> DeleteProduct(int id)
+		public async Task<IActionResult> DeleteProduct(Guid id)
 		{
 			if (await _productService.DeleteAsync(id))
 				return Ok();

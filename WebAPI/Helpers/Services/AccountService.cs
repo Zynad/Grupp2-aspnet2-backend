@@ -159,4 +159,20 @@ public class AccountService
 
         return null!;
     }
+
+    public async Task<UserProfileDTO> GetProfile(string userName)
+    {
+        try
+        {
+            IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
+            if (identityUser == null)
+                return null!;
+
+            return await ReturnProfileAsync(identityUser.Id);
+
+        }
+        catch { }
+
+        return null!;
+    }
 }
