@@ -72,7 +72,7 @@ namespace WebAPI.Controllers
             return BadRequest("Model not valid");
         }
         [Authorize]
-        [Route("UpdateProfile")]
+        [Route("GetProfile")]
         [HttpGet]
         public async Task<IActionResult> GetProfile()
         {
