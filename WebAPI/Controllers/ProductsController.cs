@@ -110,12 +110,14 @@ namespace WebAPI.Controllers
 			if (ModelState.IsValid)
 			{
 				var product = await _productService.CreateAsync(schema);
+        
 				if (product != null)
 				{
 					return Created("", product);
 				}
 			}
 			return BadRequest();
+
 		}
 
 		//[Authorize(Roles = "Admin, ProductManager")]
@@ -126,7 +128,7 @@ namespace WebAPI.Controllers
 			if (await _productService.DeleteAsync(id))
 				return Ok();
 
-			return BadRequest();
+			return BadRequest("Something went wrong");
 		}
 	}
 }
