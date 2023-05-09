@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
+using WebAPI.Helpers.Repositories;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
@@ -29,7 +30,6 @@ namespace WebAPI.Controllers
 			{
 				return BadRequest("Something went wrong");
 			}
-			
 		}
 
 		[Route("Get")]
@@ -44,7 +44,6 @@ namespace WebAPI.Controllers
 			{
 				return BadRequest("Something went wrong");			
 			}
-			
 		}
 
 		[Route("Tag")]
@@ -54,6 +53,34 @@ namespace WebAPI.Controllers
 			try
 			{
 				return Ok(await _productService.GetByTagAsync(tags));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("Category")]
+		[HttpGet]
+		public async Task<IActionResult> GetByCategory(string category)
+		{
+			try
+			{
+				return Ok(await _productService.GetByCategoryAsync(category));
+			}
+			catch
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("SalesCategory")]
+		[HttpGet]
+		public async Task<IActionResult> GetBySalesCategory(string salescategory)
+		{
+			try
+			{
+				return Ok(await _productService.GetBySalesCategoryAsync(salescategory));
 			}
 			catch 
 			{
