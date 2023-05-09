@@ -110,12 +110,14 @@ namespace WebAPI.Controllers
 			if (ModelState.IsValid)
 			{
 				var product = await _productService.CreateAsync(schema);
-				
+        
 				if (product != null)
+				{
 					return Created("", product);
+				}
 			}
-			
-			return BadRequest("Something went wrong");
+			return BadRequest();
+
 		}
 
 		//[Authorize(Roles = "Admin, ProductManager")]
