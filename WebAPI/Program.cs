@@ -8,6 +8,8 @@ using WebAPI.Contexts;
 using WebAPI.Helpers.Services;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Models.Email;
+using WebAPI.Models.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,10 @@ builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configura
 builder.Services.AddDbContext<CosmosContext>(x => x.UseCosmos(builder.Configuration.GetConnectionString("CosmosDB")!, "grupp2-cosmos"));
 #endregion
 
+#region EmailConfig
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
+builder.Services.AddTransient<IMailService, MailService>();
+#endregion
 
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
