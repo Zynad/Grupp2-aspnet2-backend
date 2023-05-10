@@ -9,7 +9,6 @@ using WebAPI.Models.Interfaces;
 
 namespace WebAPI.Controllers
 {
-    [UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class MailController : ControllerBase
@@ -22,7 +21,7 @@ namespace WebAPI.Controllers
             _mailService = mailService;
             _userManager = userManager;
         }
-        //[UseApiKey]
+        [UseApiKey]
         [Route("Sendmail")]
         [HttpPost]
         public async Task<IActionResult> SendMailAsync(MailData mailData)
