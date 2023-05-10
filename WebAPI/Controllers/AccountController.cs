@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
@@ -89,5 +88,20 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Model not valid");
         }
+        [Route("ResetPassword")]
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            if (!ModelState.IsValid)
+            {
+                if (await _accountService.ResetPassword(email))
+                {
+                    return Ok("An email has been sent");
+                }
+                return StatusCode(500, "Something went wrong on the server");
+            }
+            return BadRequest("You must enter an email");
+        }
+        
     }
 }

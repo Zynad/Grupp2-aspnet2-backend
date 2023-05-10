@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -175,4 +176,14 @@ public class AccountService
 
         return null!;
     }
+    public async Task<bool> ResetPassword(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);      
+        if (user != null)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+        return false;
+    }
+    
 }
