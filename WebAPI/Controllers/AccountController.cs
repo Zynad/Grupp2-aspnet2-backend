@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Twitter;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
@@ -19,7 +24,9 @@ namespace WebAPI.Controllers
             _accountService = accountService;
         }
 
-        [Route("Register")]
+		#region Standard stuff
+
+		[Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterAccountSchema schema)
         {
@@ -89,5 +96,48 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Model not valid");
         }
-    }
+        #endregion
+
+
+        #region External Login
+
+        public async Task Facebook() => await HttpContext.ChallengeAsync(
+            FacebookDefaults.AuthenticationScheme,
+            new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
+        );
+
+		public async Task Google() => await HttpContext.ChallengeAsync(
+			GoogleDefaults.AuthenticationScheme,
+			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
+		);
+
+		public async Task Twitter() => await HttpContext.ChallengeAsync(
+			TwitterDefaults.AuthenticationScheme,
+			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
+		);
+
+        public async Task<IActionResult> ExternalAuthentication()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (result.Succeeded)
+            {
+                var claims = result.Principal.Identities.FirstOrDefault()?.Claims.Select(claim => new
+                {
+                    claim.Type,
+                    claim.Value,
+                    claim.Issuer,
+                    claim.Subject,
+                    claim.Properties
+                });
+
+                return Json(claims);
+            }
+
+            ModelState.AddModelError("", "Unable to login");
+            return RedirectToAction("Index");
+        }
+
+		#endregion
+	}
 }
