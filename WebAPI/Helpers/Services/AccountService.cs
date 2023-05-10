@@ -63,7 +63,7 @@ public class AccountService
 
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
                     var apiKey = _configuration.GetValue<string>("ApiKey");
-                    var confirmationLink = $"{_configuration.GetValue<string>("Url")}api/account/confirmemail?userId={identityUser.Id}&token={WebUtility.UrlEncode(token)}&apiKey={WebUtility.UrlEncode(apiKey)}";
+                    var confirmationLink = $"{_configuration.GetValue<string>("Url")}api/account/confirmemail?email={WebUtility.UrlEncode(identityUser.Email)}&token={WebUtility.UrlEncode(token)}&apiKey={WebUtility.UrlEncode(apiKey)}";
                     var email = new MailData(new List<string> { identityUser.Email! }, "Confirmation link", $"Press {confirmationLink} to confirm your emailaddress");
                     var result = await _mailService.SendAsync(email, new CancellationToken());
                     return true;
