@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
@@ -12,10 +13,12 @@ namespace WebAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly AccountService _accountService;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AccountController(AccountService accountService)
+        public AccountController(AccountService accountService, UserManager<IdentityUser> userManager)
         {
             _accountService = accountService;
+            _userManager = userManager;
         }
 
         [Route("Register")]
@@ -63,7 +66,7 @@ namespace WebAPI.Controllers
                 var userName = HttpContext.User.Identity.Name;
                 var result = await _accountService.UpdateProfileAsync(schema,userName!);
                 if(result != null)
-                {
+                {                   
                     return Ok("Update is done");
                 }
                 return BadRequest("Model valid, something else is wrong");
@@ -101,6 +104,22 @@ namespace WebAPI.Controllers
                 return StatusCode(500, "Something went wrong on the server");
             }
             return BadRequest("You must enter an email");
+        }
+
+        [Route("ConfirmEmail")]
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+                if(result.Succeeded)
+                {
+                    return Ok("Email confirmed");
+                }
+            }
+            return StatusCode(500, "Something went wrong on the server");
         }
         
     }

@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MailKit;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Security.Claims;
+using System.Security.Policy;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
+using WebAPI.Models.Email;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
@@ -18,14 +22,18 @@ public class AccountService
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtToken _jwt;
+    private readonly MailService _mailService;
+    private readonly IConfiguration _configuration;
 
-    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo)
+    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration)
     {
         _jwt = jwt;
         _roleManager = roleManager;
         _signInManager = signInManager;
         _userManager = userManager;
         _userProfileRepo = userProfileRepo;
+        _mailService = mailService;
+        _configuration = configuration;
     }
 
     public async Task<bool> RegisterAsync(RegisterAccountSchema schema)
@@ -52,6 +60,12 @@ public class AccountService
                     UserProfileEntity userProfileEntity = schema;
                     userProfileEntity.UserId = identityUser!.Id;
                     await _userProfileRepo.AddAsync(userProfileEntity);
+
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+                    var apiKey = _configuration.GetValue<string>("ApiKey");
+                    var confirmationLink = $"{_configuration.GetValue<string>("Url")}api/account/confirmemail?userId={identityUser.Id}&token={WebUtility.UrlEncode(token)}&apiKey={WebUtility.UrlEncode(apiKey)}";
+                    var email = new MailData(new List<string> { identityUser.Email! }, "Confirmation link", $"Press {confirmationLink} to confirm your emailaddress");
+                    var result = await _mailService.SendAsync(email, new CancellationToken());
                     return true;
                 }
             }
