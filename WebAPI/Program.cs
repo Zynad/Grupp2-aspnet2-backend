@@ -47,7 +47,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.SignIn.RequireConfirmedAccount = false;
     x.User.RequireUniqueEmail = true;
 
-}).AddEntityFrameworkStores<DataContext>();
+}).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 #endregion
 
 #region Authentication
