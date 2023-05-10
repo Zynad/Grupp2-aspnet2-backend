@@ -114,39 +114,6 @@ namespace WebAPI.Helpers.Services
 			return products.Select(p => (ProductDTO)p);
 		}
 
-		//public async Task<IEnumerable<ProductDTO>> GetByNameAsync(string searchCondition, int? minPrice = null, int? maxPrice = null, List<string> tags = null, string category = null, string salesCategory = null)
-		//{
-		//	Expression<Func<ProductEntity, bool>> predicate = p => p.Name.ToLower().Contains(searchCondition.ToLower());
-		//	var products = await _productRepo.GetListAsync(predicate);
-
-		//	if (minPrice != null)
-		//	{
-		//		products = products.Where(p => p.Price >= minPrice.Value);
-		//	}
-
-		//	if (maxPrice != null)
-		//	{
-		//		products = products.Where(p => p.Price <= maxPrice.Value);
-		//	}
-
-		//	if (tags != null && tags.Count > 0)
-		//	{
-		//		products = products.Where(p => tags.All(t => p.Tags.Contains(t)));
-		//	}
-
-		//	if (!string.IsNullOrEmpty(category))
-		//	{
-		//		products = products.Where(p => p.Category == category);
-		//	}
-
-		//	if (!string.IsNullOrEmpty(salesCategory))
-		//	{
-		//		products = products.Where(p => p.SalesCategory == salesCategory);
-		//	}
-
-		//	return products.Select(p => (ProductDTO)p);
-		//}
-
 		public async Task<bool> CreateAsync(ProductSchema schema)
 		{
 			ProductEntity entity = schema;
@@ -182,6 +149,7 @@ namespace WebAPI.Helpers.Services
 		{
 			var products = await _productRepo.GetAllAsync();
 			var dtos = new List<ProductDTO>();
+			
 			foreach (var product in products)
 			{
 				dtos.Add(product);
@@ -207,7 +175,7 @@ namespace WebAPI.Helpers.Services
 			{
 				dtos = dtos.Where(p => p.SalesCategory == salesCategory).ToList();
 			}
-
+			
 			return dtos;
 		}
 	}
