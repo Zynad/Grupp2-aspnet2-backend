@@ -25,6 +25,8 @@ builder.Services.AddDbContext<CosmosContext>(x => x.UseCosmos(builder.Configurat
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<TagService>();
 #endregion
 
 #region Repositories
