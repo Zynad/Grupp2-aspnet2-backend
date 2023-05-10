@@ -3,25 +3,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
+using WebAPI.Helpers.Services;
 using WebAPI.Models.Email;
 using WebAPI.Models.Interfaces;
 
 namespace WebAPI.Controllers
 {
-    
+    [UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class MailController : ControllerBase
     {
-        private readonly IMailService _mailService;
+        private readonly MailService _mailService;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public MailController(IMailService mailService, UserManager<IdentityUser> userManager)
+        public MailController(MailService mailService, UserManager<IdentityUser> userManager)
         {
             _mailService = mailService;
             _userManager = userManager;
         }
-        [UseApiKey]
+        //[UseApiKey]
         [Route("Sendmail")]
         [HttpPost]
         public async Task<IActionResult> SendMailAsync(MailData mailData)
@@ -39,7 +40,7 @@ namespace WebAPI.Controllers
         }
         [Route("ConfirmEmail")]
         [HttpGet]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string token, string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
