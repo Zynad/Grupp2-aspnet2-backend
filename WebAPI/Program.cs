@@ -32,6 +32,7 @@ builder.Services.AddScoped<UserProfileRepo>();
 builder.Services.AddScoped<ProductRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<TagRepo>();
+builder.Services.AddScoped<CouponRepo>();
 #endregion
 
 #region Identity
