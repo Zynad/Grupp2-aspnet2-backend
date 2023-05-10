@@ -88,6 +88,20 @@ namespace WebAPI.Controllers
 			}
 		}
 
+		[Route("Price")]
+		[HttpGet]
+		public async Task<IActionResult> GetByPrice(int minPrice, int maxPrice)
+		{
+			try
+			{
+				return Ok(await _productService.GetByPriceAsync(minPrice, maxPrice));
+			}
+			catch
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
 		[Route("Search")]
 		[HttpGet]
 		public async Task<IActionResult> GetByName(string name)

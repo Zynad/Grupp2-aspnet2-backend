@@ -93,6 +93,20 @@ namespace WebAPI.Helpers.Services
 			return dto;
 		}
 
+		public async Task<IEnumerable<ProductDTO>> GetByPriceAsync(int minPrice, int maxPrice)
+		{
+			var products = await _productRepo.GetListAsync(x => x.Price >= minPrice && x.Price <= maxPrice);
+
+			var dto = new List<ProductDTO>();
+
+			foreach(var entity in products)
+			{
+				dto.Add(entity);
+			}
+
+			return dto;
+		}
+
 		public async Task<IEnumerable<ProductDTO>> GetByNameAsync(string searchCondition)
 		{
 			Expression<Func<ProductEntity, bool>> predicate = p => p.Name.ToLower().Contains(searchCondition.ToLower());
