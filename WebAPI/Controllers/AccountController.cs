@@ -13,12 +13,10 @@ namespace WebAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly AccountService _accountService;
-        private readonly UserManager<IdentityUser> _userManager;
 
-        public AccountController(AccountService accountService, UserManager<IdentityUser> userManager)
+        public AccountController(AccountService accountService)
         {
             _accountService = accountService;
-            _userManager = userManager;
         }
 
         [Route("Register")]
@@ -104,24 +102,6 @@ namespace WebAPI.Controllers
                 return StatusCode(500, "Something went wrong on the server");
             }
             return BadRequest("You must enter an email");
-        }
-
-        [Route("ConfirmEmail")]
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string token, string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user != null)
-            {
-                var result = await _userManager.ConfirmEmailAsync(user, token);
-                if(result.Succeeded)
-                {
-                    return Ok("Email confirmed");
-                }
-            }
-            return StatusCode(500, "Something went wrong on the server");
-        }
-        
+        } 
     }
 }
