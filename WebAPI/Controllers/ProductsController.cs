@@ -107,10 +107,17 @@ namespace WebAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> AddProduct(ProductSchema schema)
 		{
-			if (await _productService.CreateAsync(schema))
-				return Created("", null);
-
+			if (ModelState.IsValid)
+			{
+				var product = await _productService.CreateAsync(schema);
+        
+				if (product != null)
+				{
+					return Created("", product);
+				}
+			}
 			return BadRequest();
+
 		}
 
 		//[Authorize(Roles = "Admin, ProductManager")]
@@ -121,7 +128,7 @@ namespace WebAPI.Controllers
 			if (await _productService.DeleteAsync(id))
 				return Ok();
 
-			return BadRequest();
+			return BadRequest("Something went wrong");
 		}
 	}
 }
