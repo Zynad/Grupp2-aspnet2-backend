@@ -102,6 +102,6 @@ namespace WebAPI.Controllers
                 return StatusCode(500, "Something went wrong on the server");
             }
             return BadRequest("You must enter an email");
-        } 
+        }
     }
 }

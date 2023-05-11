@@ -17,6 +17,7 @@ namespace WebAPI.Helpers.Services;
 
 public class AccountService
 {
+    #region Properties & Constructors
     private readonly UserProfileRepo _userProfileRepo;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
@@ -35,7 +36,7 @@ public class AccountService
         _mailService = mailService;
         _configuration = configuration;
     }
-
+    #endregion
     public async Task<bool> RegisterAsync(RegisterAccountSchema schema)
     {
         try
