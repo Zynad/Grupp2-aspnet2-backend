@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'grupp2-aspnet2-inl-daniel-test'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2A13ABDEEAB541FF8ECBADF703B6012C }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4EAD9805E319412BA543C2BCAC4F0C82 }}
           package: .
