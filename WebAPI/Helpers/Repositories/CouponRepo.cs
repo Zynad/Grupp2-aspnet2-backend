@@ -9,10 +9,5 @@ namespace WebAPI.Helpers.Repositories
         public CouponRepo(CosmosContext context) : base(context)
         {
         }
-
-        internal Task DeleteAsync()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

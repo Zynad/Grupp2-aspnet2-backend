@@ -6,7 +6,7 @@ namespace WebAPI.Models.Entities
     {
         [Key]
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
         public string Code { get; set; } = null!;
@@ -15,7 +15,7 @@ namespace WebAPI.Models.Entities
         public decimal DiscountAmount { get; set; }
 
         [Required]
-        public DateTime? ExpriyDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
 
         public string PartitionKey { get; set; } = "Coupon";
     }

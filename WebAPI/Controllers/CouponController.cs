@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
+    [UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class CouponController : ControllerBase
@@ -22,7 +24,7 @@ namespace WebAPI.Controllers
 
 
 
-        [Route("Get")]
+        [Route("GetCoupon")]
         [HttpGet]
         public async Task<IActionResult> GetCoupon(string code)
         {
@@ -36,7 +38,7 @@ namespace WebAPI.Controllers
 
 
         [Authorize(Roles = "Admin, ProductManager")]
-        [Route("Delete")]
+        [Route("DeleteCoupon")]
         [HttpPost]
         public async Task<IActionResult> DeleteCoupon(string code)
         {
@@ -49,7 +51,7 @@ namespace WebAPI.Controllers
 
 
         [Authorize(Roles = "Admin, ProductManager")]
-        [Route("Add")]
+        [Route("AddCoupon")]
         [HttpPost]
         public async Task<IActionResult> AddCoupon(CouponSchema schema)
         {
