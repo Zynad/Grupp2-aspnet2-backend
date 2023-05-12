@@ -141,7 +141,7 @@ public class AccountService
     {
         try
         {
-            IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
+            var identityUser = await _userManager.FindByEmailAsync(userName);
             UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser!.Id);
             if (userProfile == null || identityUser == null)        
                 return null!;
@@ -179,7 +179,7 @@ public class AccountService
     {
         try
         {
-            IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
+            var identityUser = await _userManager.FindByEmailAsync(userName);
             if (identityUser == null)
                 return null!;
 
