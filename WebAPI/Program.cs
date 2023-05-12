@@ -8,6 +8,7 @@ using WebAPI.Contexts;
 using WebAPI.Helpers.Services;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TagService>();
+builder.Services.AddScoped<ReviewService>();
 #endregion
 
 #region Repositories
@@ -34,6 +36,7 @@ builder.Services.AddScoped<UserProfileRepo>();
 builder.Services.AddScoped<ProductRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<TagRepo>();
+builder.Services.AddScoped<ReviewRepo>();
 #endregion
 
 #region Identity

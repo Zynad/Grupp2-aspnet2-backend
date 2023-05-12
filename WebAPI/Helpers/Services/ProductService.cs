@@ -12,12 +12,14 @@ namespace WebAPI.Helpers.Services
 		private readonly ProductRepo _productRepo;
 		private readonly CategoryRepo _categoryRepo;
 		private readonly TagRepo _tagRepo;
+		private readonly ReviewRepo _reviewRepo;
 
-		public ProductService(ProductRepo productRepo, CategoryRepo categoryRepo, TagRepo tagRepo)
+		public ProductService(ProductRepo productRepo, CategoryRepo categoryRepo, TagRepo tagRepo, ReviewRepo reviewRepo)
 		{
 			_productRepo = productRepo;
 			_categoryRepo = categoryRepo;
 			_tagRepo = tagRepo;
+			_reviewRepo = reviewRepo;
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetAllAsync()
@@ -144,8 +146,41 @@ namespace WebAPI.Helpers.Services
 			}
 		}
 
+		public async Task<bool> UpdateRatingAsync(Guid productId)
+		{
+			var ratings = new List<double>();
+			var product = await _productRepo.GetAsync(p => p.Id == productId);
+			var reviews = await _reviewRepo.GetListAsync(r => r.ProductId == productId);
+			if (product == null)
+			{
+				return false;
+			}
+
+			foreach (var review in reviews)
+			{
+				ratings.Add(review.Rating);
+			}
+
+			double count = ratings.Count;
+			if (count > 0)
+				product!.Rating = ratings.Sum() / count;
+			else
+				return false;
+			
+			try
+			{
+				await _productRepo.UpdateAsync(product!);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		//ta bort GetByName, implementera det som en where här bara.....
 		//Hämta alla produkter i metoden eller ta en lista på produkter som redan valts från annat?
-		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(int? minPrice, int? maxPrice, List<string>? tags, string? category, string? salesCategory)
+		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(string? name, int? minPrice, int? maxPrice, List<string>? tags, string? category, string? salesCategory)
 		{
 			var products = await _productRepo.GetAllAsync();
 			var dtos = new List<ProductDTO>();
@@ -154,7 +189,7 @@ namespace WebAPI.Helpers.Services
 			{
 				dtos.Add(product);
 			}
-
+			
 			if(minPrice != null)
 			{
 				dtos = dtos.Where(p => p.Price >= minPrice).ToList();
@@ -166,6 +201,10 @@ namespace WebAPI.Helpers.Services
 			if(tags != null && tags.Count > 0)
 			{
 				dtos = dtos.Where(p => tags.All(t => p.Tags.Contains(t))).ToList();
+			}
+			if (!string.IsNullOrEmpty(name))
+			{
+				dtos = dtos.Where(p => p.Name.ToLower().Contains(name.ToLower())).ToList();
 			}
 			if(!string.IsNullOrEmpty(category))
 			{
