@@ -89,11 +89,11 @@ namespace WebAPI.Controllers
         }
         [Route("ResetPassword")]
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(string email)
+        public async Task<IActionResult> ResetPassword(ResetPasswordSchema schema)
         {
             if (!ModelState.IsValid)
             {
-                if (await _accountService.ResetPassword(email))
+                if (await _accountService.ResetPassword(schema.Email))
                 {
                     return Ok("An email has been sent");
                 }
