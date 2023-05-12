@@ -141,7 +141,7 @@ public class AccountService
     {
         try
         {
-            IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
+            var identityUser = await _userManager.FindByEmailAsync(userName);
             UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser!.Id);
             if (userProfile == null || identityUser == null)        
                 return null!;
@@ -179,7 +179,7 @@ public class AccountService
     {
         try
         {
-            IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
+            var identityUser = await _userManager.FindByEmailAsync(userName);
             if (identityUser == null)
                 return null!;
 
@@ -216,13 +216,29 @@ public class AccountService
             {
                 var result = await _userManager.ResetPasswordAsync(user,schema.Token,schema.Password);
                 if(result.Succeeded)
-                {
+                {                   
                     return true;
                 }
             }
         }
         catch { } 
         return false;
+    }
+    public async Task<bool> ChangePassword(ChangePasswordSchema schema,string email)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var result = await _userManager.ChangePasswordAsync(user, schema.CurrentPassword, schema.NewPassword);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        } catch { } return false;
+        
     }
     
 }
