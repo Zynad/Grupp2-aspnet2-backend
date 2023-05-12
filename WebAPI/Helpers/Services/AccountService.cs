@@ -196,7 +196,7 @@ public class AccountService
         if (user != null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var mailLink = $"{_configuration.GetSection("Urls").GetValue<string>("ApiUrl")}?email={WebUtility.UrlEncode(user.Email)}&token={WebUtility.UrlEncode(token)}";
+            var mailLink = $"{_configuration.GetSection("Urls").GetValue<string>("RecoverPasswordUrl")}?email={WebUtility.UrlEncode(user.Email)}&token={WebUtility.UrlEncode(token)}";
             var passwordMail = new MailData(new List<string> { user.Email }, "Reset password", $"Press {mailLink} to reset your password");
             var result = await _mailService.SendAsync(passwordMail, new CancellationToken());
         }

@@ -107,5 +107,16 @@ namespace WebAPI.Controllers
             }
             return BadRequest("You must enter an email");
         }
+        [Route("ResetPassword")]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> RecoverPassword()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
     }
 }
