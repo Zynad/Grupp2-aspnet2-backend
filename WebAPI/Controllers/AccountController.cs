@@ -115,5 +115,22 @@ namespace WebAPI.Controllers
             }
             return BadRequest();
         }
+        [Route("ChangePassword")]
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordSchema schema)
+        {
+            if (ModelState.IsValid)
+            {
+                var userName = HttpContext.User.Identity!.Name;
+                var result = await _accountService.ChangePassword(schema, userName!);
+                if (result)
+                {
+                    return Ok("Your password is changed");
+                }
+                return StatusCode(500, "Something went wrong on the server");
+            }
+            return BadRequest("");
+        }
     }
 }

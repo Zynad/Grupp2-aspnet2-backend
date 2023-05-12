@@ -216,13 +216,29 @@ public class AccountService
             {
                 var result = await _userManager.ResetPasswordAsync(user,schema.Token,schema.Password);
                 if(result.Succeeded)
-                {
+                {                   
                     return true;
                 }
             }
         }
         catch { } 
         return false;
+    }
+    public async Task<bool> ChangePassword(ChangePasswordSchema schema,string email)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var result = await _userManager.ChangePasswordAsync(user, schema.CurrentPassword, schema.NewPassword);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        } catch { } return false;
+        
     }
     
 }
