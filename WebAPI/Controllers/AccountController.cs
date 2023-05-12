@@ -6,7 +6,8 @@ using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
-{  
+{
+    [UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -17,7 +18,6 @@ namespace WebAPI.Controllers
         {
             _accountService = accountService;
         }
-        [UseApiKey]
         [Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterAccountSchema schema)
@@ -31,7 +31,6 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Something went wrong, try again!");
         }
-        [UseApiKey]
         [Route("Login")]
         [HttpPost]
         public async Task<IActionResult> Login(LoginAccountSchema schema)
@@ -44,7 +43,6 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Incorrect email or password");
         }
-        [UseApiKey]
         [Authorize]
         [Route("LogOut")]
         [HttpPost]
@@ -53,7 +51,6 @@ namespace WebAPI.Controllers
             await _accountService.LogOutAsync();
             return Ok();
         }
-        [UseApiKey]
         [Authorize]
         [Route("UpdateProfile")]
         [HttpPut]
@@ -62,7 +59,7 @@ namespace WebAPI.Controllers
             
             if (ModelState.IsValid)
             {
-                var userName = HttpContext.User.Identity.Name;
+                var userName = HttpContext.User.Identity!.Name;
                 var result = await _accountService.UpdateProfileAsync(schema,userName!);
                 if(result != null)
                 {                   
@@ -72,7 +69,6 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Model not valid");
         }
-        [UseApiKey]
         [Authorize]
         [Route("GetProfile")]
         [HttpGet]
@@ -81,7 +77,7 @@ namespace WebAPI.Controllers
 
             if (ModelState.IsValid)
             {
-                var userName = HttpContext.User.Identity.Name;
+                var userName = HttpContext.User.Identity!.Name;
                 var result = await _accountService.GetProfile(userName!);
                 if (result != null)
                 {
@@ -93,7 +89,6 @@ namespace WebAPI.Controllers
         }
         [Route("ResetPassword")]
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string email)
         {
             if (!ModelState.IsValid)
@@ -108,12 +103,15 @@ namespace WebAPI.Controllers
         }
         [Route("RecoverPassword")]
         [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> RecoverPassword(string email,string token, string newPassword)
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordSchema schema)
         {
             if (!ModelState.IsValid)
             {
-                return Ok();
+                var result = await _accountService.ChangePassword(schema);
+                if (result)
+                {
+                    return Ok("Your password has been changed");
+                }
             }
             return BadRequest();
         }
