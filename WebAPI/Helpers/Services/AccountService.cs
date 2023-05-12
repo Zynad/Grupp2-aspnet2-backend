@@ -17,6 +17,7 @@ namespace WebAPI.Helpers.Services;
 
 public class AccountService
 {
+    #region Properties & Constructors
     private readonly UserProfileRepo _userProfileRepo;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
@@ -35,7 +36,7 @@ public class AccountService
         _mailService = mailService;
         _configuration = configuration;
     }
-
+    #endregion
     public async Task<bool> RegisterAsync(RegisterAccountSchema schema)
     {
         try
@@ -62,7 +63,7 @@ public class AccountService
                     await _userProfileRepo.AddAsync(userProfileEntity);
 
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
-                    var confirmationLink = $"{_configuration.GetValue<string>("Url")}api/mail/confirmemail?email={WebUtility.UrlEncode(identityUser.Email)}&token={WebUtility.UrlEncode(token)}";
+                    var confirmationLink = $"{_configuration.GetSection("Urls").GetValue<string>("ApiUrl")}api/mail/confirmemail?email={WebUtility.UrlEncode(identityUser.Email)}&token={WebUtility.UrlEncode(token)}";
                     var email = new MailData(new List<string> { identityUser.Email! }, "Confirmation link", $"Press {confirmationLink} to confirm your emailaddress");
                     var result = await _mailService.SendAsync(email, new CancellationToken());
                     return true;
@@ -195,6 +196,10 @@ public class AccountService
         if (user != null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var mailLink = $"{_configuration.GetSection("Urls").GetValue<string>("RecoverPasswordUrl" +
+                "")}?email={WebUtility.UrlEncode(user.Email)}&token={WebUtility.UrlEncode(token)}";
+            var passwordMail = new MailData(new List<string> { user.Email }, "Reset password", $"Press {mailLink} to reset your password");
+            var result = await _mailService.SendAsync(passwordMail, new CancellationToken());
         }
         return false;
     }

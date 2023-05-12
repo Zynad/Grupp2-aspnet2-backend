@@ -6,8 +6,7 @@ using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
-{
-    [UseApiKey]
+{  
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -18,7 +17,7 @@ namespace WebAPI.Controllers
         {
             _accountService = accountService;
         }
-
+        [UseApiKey]
         [Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterAccountSchema schema)
@@ -32,6 +31,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Something went wrong, try again!");
         }
+        [UseApiKey]
         [Route("Login")]
         [HttpPost]
         public async Task<IActionResult> Login(LoginAccountSchema schema)
@@ -44,6 +44,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Incorrect email or password");
         }
+        [UseApiKey]
         [Authorize]
         [Route("LogOut")]
         [HttpPost]
@@ -52,7 +53,7 @@ namespace WebAPI.Controllers
             await _accountService.LogOutAsync();
             return Ok();
         }
-
+        [UseApiKey]
         [Authorize]
         [Route("UpdateProfile")]
         [HttpPut]
@@ -71,6 +72,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Model not valid");
         }
+        [UseApiKey]
         [Authorize]
         [Route("GetProfile")]
         [HttpGet]
@@ -91,6 +93,7 @@ namespace WebAPI.Controllers
         }
         [Route("ResetPassword")]
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string email)
         {
             if (!ModelState.IsValid)
@@ -102,6 +105,17 @@ namespace WebAPI.Controllers
                 return StatusCode(500, "Something went wrong on the server");
             }
             return BadRequest("You must enter an email");
-        } 
+        }
+        [Route("RecoverPassword")]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> RecoverPassword(string email,string token, string newPassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
     }
 }

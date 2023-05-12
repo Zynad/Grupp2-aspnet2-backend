@@ -48,6 +48,11 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.User.RequireUniqueEmail = true;
 
 }).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
+{
+    x.TokenLifespan = TimeSpan.FromHours(10);
+});
 #endregion
 
 #region Authentication
