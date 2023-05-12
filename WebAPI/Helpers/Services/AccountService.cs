@@ -121,7 +121,7 @@ public class AccountService
         {
             FirstName = profile.FirstName,
             LastName = profile.LastName,
-            Email = identityUser.Email,
+            Email = identityUser.Email!,
         };
 
         if (identityUser.PhoneNumber != null)
@@ -142,7 +142,7 @@ public class AccountService
         try
         {
             IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
-            UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser.Id);
+            UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser!.Id);
             if (userProfile == null || identityUser == null)        
                 return null!;
 
@@ -198,9 +198,30 @@ public class AccountService
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var mailLink = $"{_configuration.GetSection("Urls").GetValue<string>("RecoverPasswordUrl" +
                 "")}?email={WebUtility.UrlEncode(user.Email)}&token={WebUtility.UrlEncode(token)}";
-            var passwordMail = new MailData(new List<string> { user.Email }, "Reset password", $"Press {mailLink} to reset your password");
+            var passwordMail = new MailData(new List<string> { user.Email! }, "Reset password", $"Press {mailLink} to reset your password");
             var result = await _mailService.SendAsync(passwordMail, new CancellationToken());
+            if (result)
+            {
+                return true;
+            }
         }
+        return false;
+    }
+    public async Task<bool> ChangePassword(RecoverPasswordSchema schema)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(schema.Email);
+            if (user != null)
+            {
+                var result = await _userManager.ResetPasswordAsync(user,schema.Token,schema.Password);
+                if(result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        }
+        catch { } 
         return false;
     }
     
