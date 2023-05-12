@@ -11,7 +11,8 @@ using WebAPI.Helpers.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -25,6 +26,7 @@ builder.Services.AddDbContext<CosmosContext>(x => x.UseCosmos(builder.Configurat
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<AddressService>();
 #endregion
 
 #region Repositories
@@ -32,6 +34,9 @@ builder.Services.AddScoped<UserProfileRepo>();
 builder.Services.AddScoped<ProductRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<TagRepo>();
+builder.Services.AddScoped<AddressRepo>();
+builder.Services.AddScoped<AddressItemRepo>();
+builder.Services.AddScoped<UserProfileAddressItemRepo>();
 #endregion
 
 #region Identity
