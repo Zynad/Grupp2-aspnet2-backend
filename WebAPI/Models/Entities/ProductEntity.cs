@@ -29,7 +29,7 @@ namespace WebAPI.Models.Entities
 		[Required]
 		public string Description { get; set; } = null!;
 
-		public double Rating { get; set; } = 0;
+		public double Rating { get; set; } = 0.00;
 
 		[Required]
 		public string Brand { get; set; } = null!;

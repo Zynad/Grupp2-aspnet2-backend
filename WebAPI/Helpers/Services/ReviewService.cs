@@ -42,7 +42,7 @@ public class ReviewService
         try
         {
             await _reviewRepo.AddAsync(entity);
-            await _productService.UpdateRatingAsync(entity.Id);
+            await _productService.UpdateRatingAsync(entity.ProductId);
             return true;
         }
         catch

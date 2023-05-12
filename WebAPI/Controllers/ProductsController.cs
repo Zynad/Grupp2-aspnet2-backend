@@ -6,7 +6,7 @@ using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
-	// [UseApiKey]
+	[UseApiKey]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class ProductsController : ControllerBase
