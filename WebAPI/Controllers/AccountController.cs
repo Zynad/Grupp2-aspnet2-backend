@@ -6,8 +6,7 @@ using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
-{
-    
+{  
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -107,10 +106,10 @@ namespace WebAPI.Controllers
             }
             return BadRequest("You must enter an email");
         }
-        [Route("ResetPassword")]
+        [Route("RecoverPassword")]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> RecoverPassword()
+        public async Task<IActionResult> RecoverPassword(string email,string token, string newPassword)
         {
             if (!ModelState.IsValid)
             {
