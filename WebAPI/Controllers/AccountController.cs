@@ -91,7 +91,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordSchema schema)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 if (await _accountService.ResetPassword(schema.Email))
                 {
@@ -105,7 +105,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> RecoverPassword(RecoverPasswordSchema schema)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var result = await _accountService.ChangePassword(schema);
                 if (result)
