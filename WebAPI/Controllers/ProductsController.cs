@@ -6,7 +6,7 @@ using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
-	[UseApiKey]
+	// [UseApiKey]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class ProductsController : ControllerBase
@@ -118,11 +118,11 @@ namespace WebAPI.Controllers
 
 		[Route("Filter")]
 		[HttpGet]
-		public async Task<IActionResult> GetFiltered(int? minPrice, int? maxPrice, [FromQuery]List<string>? tags, string? category, string? salesCategory)
+		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, [FromQuery]List<string>? tags, string? category, string? salesCategory)
 		{
 			try
 			{
-				return Ok(await _productService.GetFilteredProductsAsync(minPrice, maxPrice, tags, category, salesCategory));
+				return Ok(await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory));
 			}
 			catch 
 			{
