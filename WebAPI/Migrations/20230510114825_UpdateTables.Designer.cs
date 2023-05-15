@@ -12,8 +12,8 @@ using WebAPI.Contexts;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230503083602_Register account")]
-    partial class Registeraccount
+    [Migration("20230510114825_UpdateTables")]
+    partial class UpdateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -223,6 +223,78 @@ namespace WebAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WebAPI.Models.Entities.AddressEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AddressEntities");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.AddressItemEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AddressItems");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileAddressItemEntity", b =>
+                {
+                    b.Property<string>("UserProfileId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AddressItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserProfileAddressItemEntityAddressItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserProfileAddressItemEntityUserProfileId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserProfileId", "AddressItemId");
+
+                    b.HasIndex("AddressItemId");
+
+                    b.HasIndex("UserProfileAddressItemEntityUserProfileId", "UserProfileAddressItemEntityAddressItemId");
+
+                    b.ToTable("UserAddressItems");
+                });
+
             modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
                 {
                     b.Property<string>("UserId")
@@ -295,6 +367,29 @@ namespace WebAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileAddressItemEntity", b =>
+                {
+                    b.HasOne("WebAPI.Models.Entities.AddressItemEntity", "AddressItem")
+                        .WithMany()
+                        .HasForeignKey("AddressItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebAPI.Models.Entities.UserProfileEntity", "UserProfile")
+                        .WithMany("UserProfileAddressItems")
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebAPI.Models.Entities.UserProfileAddressItemEntity", null)
+                        .WithMany("UserProfileAddressItems")
+                        .HasForeignKey("UserProfileAddressItemEntityUserProfileId", "UserProfileAddressItemEntityAddressItemId");
+
+                    b.Navigation("AddressItem");
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
@@ -304,6 +399,16 @@ namespace WebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileAddressItemEntity", b =>
+                {
+                    b.Navigation("UserProfileAddressItems");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
+                {
+                    b.Navigation("UserProfileAddressItems");
                 });
 #pragma warning restore 612, 618
         }
