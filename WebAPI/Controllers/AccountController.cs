@@ -10,6 +10,7 @@ using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
+
 namespace WebAPI.Controllers
 {
     [UseApiKey]
@@ -131,7 +132,7 @@ namespace WebAPI.Controllers
                     claim.Properties
                 });
 
-                return Json(claims);
+                return Ok(claims);
             }
 
             ModelState.AddModelError("", "Unable to login");

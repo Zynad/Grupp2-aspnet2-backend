@@ -64,7 +64,7 @@ public class AccountService
     {
         var identityUser = await _userManager.FindByEmailAsync(schema.Email);
         if(identityUser != null)
-        {
+        { // Normal login
             var signInResult = await _signInManager.CheckPasswordSignInAsync(identityUser, schema.Password,false);
             if(signInResult.Succeeded)
             {
@@ -75,15 +75,38 @@ public class AccountService
                     new Claim(ClaimTypes.Name, identityUser.Email!),
                     new Claim(ClaimTypes.Role, role[0])
                 });
-                if(schema.RememberMe == false)              
+                if(schema.RememberMe == false)
                     return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
 
                 else
                     return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddYears(1));
-
-
             }
         }
+        else
+        { // External login
+			var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+			if (externalLoginInfo != null)
+			{
+				var signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
+				if (signInResult.Succeeded)
+				{
+					var user = await _userManager.FindByLoginAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
+					var role = await _userManager.GetRolesAsync(user);
+					var claimsIdentity = new ClaimsIdentity(new Claim[]
+					{
+					    new Claim("id", user.Id.ToString()),
+					    new Claim(ClaimTypes.Name, user.Email!),
+					    new Claim(ClaimTypes.Role, role[0])
+					});
+					if (schema.RememberMe == false)
+						return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
+
+					else
+						return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddYears(1));
+				}
+			}
+		}
+
         return string.Empty;
     }
 
