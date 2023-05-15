@@ -88,6 +88,20 @@ namespace WebAPI.Controllers
 			}
 		}
 
+		[Route("Price")]
+		[HttpGet]
+		public async Task<IActionResult> GetByPrice(int minPrice, int maxPrice)
+		{
+			try
+			{
+				return Ok(await _productService.GetByPriceAsync(minPrice, maxPrice));
+			}
+			catch
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
 		[Route("Search")]
 		[HttpGet]
 		public async Task<IActionResult> GetByName(string name)
@@ -95,6 +109,20 @@ namespace WebAPI.Controllers
 			try
 			{
 				return Ok(await _productService.GetByNameAsync(name));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("Filter")]
+		[HttpGet]
+		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, [FromQuery]List<string>? tags, string? category, string? salesCategory)
+		{
+			try
+			{
+				return Ok(await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory));
 			}
 			catch 
 			{
