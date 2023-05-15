@@ -1,19 +1,18 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebAPI.Contexts;
-using WebAPI.Helpers.Services;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Helpers.Services;
 using WebAPI.Models.Email;
-using WebAPI.Models.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -27,10 +26,17 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof
 builder.Services.AddScoped<MailService>();
 #endregion
 
+#region SmsConfig
+builder.Services.AddScoped<SmsService>();
+#endregion
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<AddressService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<TagService>();
+builder.Services.AddScoped<ReviewService>();
 #endregion
 
 #region Repositories
@@ -38,6 +44,10 @@ builder.Services.AddScoped<UserProfileRepo>();
 builder.Services.AddScoped<ProductRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<TagRepo>();
+builder.Services.AddScoped<AddressRepo>();
+builder.Services.AddScoped<AddressItemRepo>();
+builder.Services.AddScoped<UserProfileAddressItemRepo>();
+builder.Services.AddScoped<ReviewRepo>();
 #endregion
 
 #region Identity
@@ -46,8 +56,10 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.Password.RequiredLength = 8;
     x.SignIn.RequireConfirmedAccount = false;
     x.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<DataContext>()
+.AddDefaultTokenProviders();
 
-}).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {
