@@ -19,66 +19,88 @@ namespace WebAPI.Helpers.Services
 
 		public async Task<IEnumerable<ProductDTO>> GetAllAsync()
 		{
-			var products = await _productRepo.GetAllAsync();
-
-			var dtos = new List<ProductDTO>();
-
-			foreach (var entity in products)
+			try
 			{
-				//ProductDTO product = entity;
-				dtos.Add(entity);
-			}
+				var products = await _productRepo.GetAllAsync();
 
-			return dtos;
+				var dtos = new List<ProductDTO>();
+
+				foreach (var entity in products)
+				{
+					//ProductDTO product = entity;
+					dtos.Add(entity);
+				}
+
+				return dtos;
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetBySalesCategoryAsync(string salesCategory)
 		{
-			var allProducts = await _productRepo.GetAllAsync();
-
-			var products = allProducts.Where(x => x.SalesCategory == salesCategory);
-
-			var dto = new List<ProductDTO>();
-
-			foreach(var entity in products)
+			try
 			{
-				dto.Add(entity);
+				var allProducts = await _productRepo.GetAllAsync();
+
+				var products = allProducts.Where(x => x.SalesCategory == salesCategory);
+
+				var dto = new List<ProductDTO>();
+
+				foreach (var entity in products)
+				{
+					dto.Add(entity);
+				}
+
+				return dto;
 			}
-			return dto;
+			catch { }
+			return null!;
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetByTagAsync(List<string> tags)
 		{
-			var allProducts = await _productRepo.GetAllAsync();
-
-			//This retrieves all products that match any of the tags in the input instead of only products that match all tags as the query below does
-			//var products = allProducts.Where(x => x.Tags.Intersect(tags).Any());  
-
-			var products = allProducts.Where(p => tags.All(t => p.Tags!.Contains(t)));
-
-			var dto = new List<ProductDTO>();
-
-			foreach (var entity in products)
+			try
 			{
-				dto.Add(entity);
-			}
+				var allProducts = await _productRepo.GetAllAsync();
 
-			return dto;
+				//This retrieves all products that match any of the tags in the input instead of only products that match all tags as the query below does
+				//var products = allProducts.Where(x => x.Tags.Intersect(tags).Any());  
+
+				var products = allProducts.Where(p => tags.All(t => p.Tags!.Contains(t)));
+
+				var dto = new List<ProductDTO>();
+
+				foreach (var entity in products)
+				{
+					dto.Add(entity);
+				}
+
+				return dto;
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetByCategoryAsync(string category)
 		{
-			var allProducts = await _productRepo.GetAllAsync();
-
-			var products = allProducts.Where(x => x.Category == category);
-
-			var dto = new List<ProductDTO>();
-
-			foreach (var entity in products)
+			try
 			{
-				dto.Add(entity);
+				var allProducts = await _productRepo.GetAllAsync();
+
+				var products = allProducts.Where(x => x.Category == category);
+
+				var dto = new List<ProductDTO>();
+
+				foreach (var entity in products)
+				{
+					dto.Add(entity);
+				}
+
+				return dto;
 			}
-			return dto;
+			catch { }
+			return null!;
 		}
 
 		public async Task<ProductDTO> GetByIdAsync(Guid id)
@@ -92,121 +114,129 @@ namespace WebAPI.Helpers.Services
 
 		public async Task<IEnumerable<ProductDTO>> GetByPriceAsync(int minPrice, int maxPrice)
 		{
-			var products = await _productRepo.GetListAsync(x => x.Price >= minPrice && x.Price <= maxPrice);
-
-			var dto = new List<ProductDTO>();
-
-			foreach(var entity in products)
+			try
 			{
-				dto.Add(entity);
-			}
+				var products = await _productRepo.GetListAsync(x => x.Price >= minPrice && x.Price <= maxPrice);
 
-			return dto;
+				var dto = new List<ProductDTO>();
+
+				foreach (var entity in products)
+				{
+					dto.Add(entity);
+				}
+
+				return dto;
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetByNameAsync(string searchCondition)
 		{
-			Expression<Func<ProductEntity, bool>> predicate = p => p.Name.ToLower().Contains(searchCondition.ToLower());
-			var products = await _productRepo.GetListAsync(predicate);
-			return products.Select(p => (ProductDTO)p);
+			try
+			{
+				Expression<Func<ProductEntity, bool>> predicate = p => p.Name.ToLower().Contains(searchCondition.ToLower());
+				var products = await _productRepo.GetListAsync(predicate);
+
+				return products.Select(p => (ProductDTO)p);
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<bool> CreateAsync(ProductSchema schema)
 		{
-			ProductEntity entity = schema;
-
 			try
 			{
+				ProductEntity entity = schema;
 				await _productRepo.AddAsync(entity);
+
 				return true;
 			}
-			catch
-			{
-				return false;
-			}
+			catch { }
+			return false;
 		}
 
 		public async Task<bool> DeleteAsync(Guid id)
 		{
-			var entity = await _productRepo.GetAsync(x => x.Id == id);
-
 			try
 			{
+				var entity = await _productRepo.GetAsync(x => x.Id == id);
 				await _productRepo.DeleteAsync(entity!);
+
 				return true;
 			}
-			catch
-			{
-				return false;
-			}
+			catch { }		
+			return false;
 		}
 
 		public async Task<bool> UpdateRatingAsync(Guid productId)
 		{
-			var ratings = new List<double>();
-			var product = await _productRepo.GetAsync(p => p.Id == productId);
-			var reviews = await _reviewRepo.GetListAsync(r => r.ProductId == productId);
-			if (product != null)
-				return false;
-			
-			foreach (var review in reviews)
-			{
-				ratings.Add(review.Rating);
-			}
-
-			double count = ratings.Count;
-			if (count > 0)
-				product!.Rating = ratings.Sum() / count;
-			else
-				return false;
-			
 			try
 			{
-				await _productRepo.UpdateAsync(product!);
-				return true;
+				var ratings = new List<double>();
+				var product = await _productRepo.GetAsync(p => p.Id == productId);
+				var reviews = await _reviewRepo.GetListAsync(r => r.ProductId == productId);
+
+				foreach (var review in reviews)
+				{
+					ratings.Add(review.Rating);
+				}
+
+				double count = ratings.Count;
+				if (count > 0)
+				{
+					product!.Rating = ratings.Sum() / count;
+					await _productRepo.UpdateAsync(product!);
+
+					return true;
+				}
 			}
-			catch
-			{
-				return false;
-			}
+			catch { }
+			return false;
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(string? name, int? minPrice, int? maxPrice, List<string>? tags, string? category, string? salesCategory)
 		{
-			var products = await _productRepo.GetAllAsync();
-			var dtos = new List<ProductDTO>();
-			
-			foreach (var product in products)
+			try
 			{
-				dtos.Add(product);
+				var products = await _productRepo.GetAllAsync();
+				var dtos = new List<ProductDTO>();
+
+				foreach (var product in products)
+				{
+					dtos.Add(product);
+				}
+
+				if (minPrice != null)
+				{
+					dtos = dtos.Where(p => p.Price >= minPrice).ToList();
+				}
+				if (maxPrice != null)
+				{
+					dtos = dtos.Where(p => p.Price <= maxPrice).ToList();
+				}
+				if (tags != null && tags.Count > 0)
+				{
+					dtos = dtos.Where(p => tags.All(t => p.Tags.Contains(t))).ToList();
+				}
+				if (!string.IsNullOrEmpty(name))
+				{
+					dtos = dtos.Where(p => p.Name.ToLower().Contains(name.ToLower())).ToList();
+				}
+				if (!string.IsNullOrEmpty(category))
+				{
+					dtos = dtos.Where(p => p.Category == category).ToList();
+				}
+				if (!string.IsNullOrEmpty(salesCategory))
+				{
+					dtos = dtos.Where(p => p.SalesCategory == salesCategory).ToList();
+				}
+
+				return dtos;
 			}
-			
-			if(minPrice != null)
-			{
-				dtos = dtos.Where(p => p.Price >= minPrice).ToList();
-			}
-			if(maxPrice != null)
-			{
-				dtos = dtos.Where(p => p.Price <= maxPrice).ToList();
-			}
-			if(tags != null && tags.Count > 0)
-			{
-				dtos = dtos.Where(p => tags.All(t => p.Tags.Contains(t))).ToList();
-			}
-			if (!string.IsNullOrEmpty(name))
-			{
-				dtos = dtos.Where(p => p.Name.ToLower().Contains(name.ToLower())).ToList();
-			}
-			if(!string.IsNullOrEmpty(category))
-			{
-				dtos = dtos.Where(p => p.Category == category).ToList();
-			}
-			if(!string.IsNullOrEmpty(salesCategory))
-			{
-				dtos = dtos.Where(p => p.SalesCategory == salesCategory).ToList();
-			}
-			
-			return dtos;
+			catch { }
+			return null!;
 		}
 	}
 }
