@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
@@ -18,7 +18,6 @@ namespace WebAPI.Controllers
         {
             _accountService = accountService;
         }
-
         [Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterAccountSchema schema)
@@ -52,7 +51,6 @@ namespace WebAPI.Controllers
             await _accountService.LogOutAsync();
             return Ok();
         }
-
         [Authorize]
         [Route("UpdateProfile")]
         [HttpPut]
@@ -61,10 +59,10 @@ namespace WebAPI.Controllers
             
             if (ModelState.IsValid)
             {
-                var userName = HttpContext.User.Identity.Name;
+                var userName = HttpContext.User.Identity!.Name;
                 var result = await _accountService.UpdateProfileAsync(schema,userName!);
                 if(result != null)
-                {
+                {                   
                     return Ok("Update is done");
                 }
                 return BadRequest("Model valid, something else is wrong");
@@ -79,7 +77,7 @@ namespace WebAPI.Controllers
 
             if (ModelState.IsValid)
             {
-                var userName = HttpContext.User.Identity.Name;
+                var userName = HttpContext.User.Identity!.Name;
                 var result = await _accountService.GetProfile(userName!);
                 if (result != null)
                 {
@@ -88,6 +86,51 @@ namespace WebAPI.Controllers
                 return BadRequest("Model valid, something else is wrong");
             }
             return BadRequest("Model not valid");
+        }
+        [Route("ResetPassword")]
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordSchema schema)
+        {
+            if (ModelState.IsValid)
+            {
+                if (await _accountService.ResetPassword(schema.Email))
+                {
+                    return Ok("An email has been sent");
+                }
+                return StatusCode(500, "Something went wrong on the server");
+            }
+            return BadRequest("You must enter an email");
+        }
+        [Route("RecoverPassword")]
+        [HttpPost]
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordSchema schema)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.ChangePassword(schema);
+                if (result)
+                {
+                    return Ok("Your password has been changed");
+                }
+            }
+            return BadRequest();
+        }
+        [Route("ChangePassword")]
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordSchema schema)
+        {
+            if (ModelState.IsValid)
+            {
+                var userName = HttpContext.User.Identity!.Name;
+                var result = await _accountService.ChangePassword(schema, userName!);
+                if (result)
+                {
+                    return Ok("Your password is changed");
+                }
+                return StatusCode(500, "Something went wrong on the server");
+            }
+            return BadRequest("");
         }
     }
 }

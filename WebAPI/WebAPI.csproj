@@ -4,11 +4,13 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>2d84a2e3-c0d1-472b-a954-0520ff387a54</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="Azure.Identity" Version="1.8.2" />
+    <PackageReference Include="MailKit" Version="4.0.0" />
     <PackageReference Include="microsoft.aspnetcore.authentication.jwtbearer" Version="7.0.5" />
     <PackageReference Include="microsoft.aspnetcore.identity.entityframeworkcore" Version="7.0.5" />
     <PackageReference Include="microsoft.aspnetcore.identity.ui" Version="7.0.5" />
