@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
+using WebAPI.Helpers.Repositories;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
@@ -59,15 +60,43 @@ namespace WebAPI.Controllers
 			}
 		}
 
+		[Route("Category")]
+		[HttpGet]
+		public async Task<IActionResult> GetByCategory(string category)
+		{
+			try
+			{
+				return Ok(await _productService.GetByCategoryAsync(category));
+			}
+			catch
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
 		[Route("SalesCategory")]
 		[HttpGet]
 		public async Task<IActionResult> GetBySalesCategory(string salescategory)
 		{
 			try
 			{
-				return Ok(await _productService.GetBySalesCategory(salescategory));
+				return Ok(await _productService.GetBySalesCategoryAsync(salescategory));
 			}
 			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("Price")]
+		[HttpGet]
+		public async Task<IActionResult> GetByPrice(int minPrice, int maxPrice)
+		{
+			try
+			{
+				return Ok(await _productService.GetByPriceAsync(minPrice, maxPrice));
+			}
+			catch
 			{
 				return BadRequest("Something went wrong");
 			}
@@ -87,15 +116,36 @@ namespace WebAPI.Controllers
 			}
 		}
 
+		[Route("Filter")]
+		[HttpGet]
+		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, [FromQuery]List<string>? tags, string? category, string? salesCategory)
+		{
+			try
+			{
+				return Ok(await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
 		//[Authorize(Roles = "Admin, ProductManager")]
 		[Route("Add")]
 		[HttpPost]
 		public async Task<IActionResult> AddProduct(ProductSchema schema)
 		{
-			if (await _productService.CreateAsync(schema))
-				return Created("", null);
-
+			if (ModelState.IsValid)
+			{
+				var product = await _productService.CreateAsync(schema);
+        
+				if (product != null)
+				{
+					return Created("", product);
+				}
+			}
 			return BadRequest();
+
 		}
 
 		//[Authorize(Roles = "Admin, ProductManager")]
@@ -106,7 +156,7 @@ namespace WebAPI.Controllers
 			if (await _productService.DeleteAsync(id))
 				return Ok();
 
-			return BadRequest();
+			return BadRequest("Something went wrong");
 		}
 	}
 }

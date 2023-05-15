@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MailKit;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Security.Claims;
+using System.Security.Policy;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
+using WebAPI.Models.Email;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
@@ -12,21 +17,26 @@ namespace WebAPI.Helpers.Services;
 
 public class AccountService
 {
+    #region Properties & Constructors
     private readonly UserProfileRepo _userProfileRepo;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtToken _jwt;
+    private readonly MailService _mailService;
+    private readonly IConfiguration _configuration;
 
-    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo)
+    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration)
     {
         _jwt = jwt;
         _roleManager = roleManager;
         _signInManager = signInManager;
         _userManager = userManager;
         _userProfileRepo = userProfileRepo;
+        _mailService = mailService;
+        _configuration = configuration;
     }
-
+    #endregion
     public async Task<bool> RegisterAsync(RegisterAccountSchema schema)
     {
         try
@@ -51,6 +61,11 @@ public class AccountService
                     UserProfileEntity userProfileEntity = schema;
                     userProfileEntity.UserId = identityUser!.Id;
                     await _userProfileRepo.AddAsync(userProfileEntity);
+
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+                    var confirmationLink = $"{_configuration.GetSection("Urls").GetValue<string>("ApiUrl")}api/mail/confirmemail?email={WebUtility.UrlEncode(identityUser.Email)}&token={WebUtility.UrlEncode(token)}";
+                    var email = new MailData(new List<string> { identityUser.Email! }, "Confirmation link", $"Press {confirmationLink} to confirm your emailaddress");
+                    var result = await _mailService.SendAsync(email, new CancellationToken());
                     return true;
                 }
             }
@@ -106,7 +121,7 @@ public class AccountService
         {
             FirstName = profile.FirstName,
             LastName = profile.LastName,
-            Email = identityUser.Email,
+            Email = identityUser.Email!,
         };
 
         if (identityUser.PhoneNumber != null)
@@ -126,8 +141,8 @@ public class AccountService
     {
         try
         {
-            IdentityUser identityUser = await _userManager.FindByEmailAsync(userName);
-            UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser.Id);
+            var identityUser = await _userManager.FindByEmailAsync(userName);
+            UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser!.Id);
             if (userProfile == null || identityUser == null)        
                 return null!;
 
@@ -159,4 +174,71 @@ public class AccountService
 
         return null!;
     }
+
+    public async Task<UserProfileDTO> GetProfile(string userName)
+    {
+        try
+        {
+            var identityUser = await _userManager.FindByEmailAsync(userName);
+            if (identityUser == null)
+                return null!;
+
+            return await ReturnProfileAsync(identityUser.Id);
+
+        }
+        catch { }
+
+        return null!;
+    }
+    public async Task<bool> ResetPassword(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);      
+        if (user != null)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var mailLink = $"{_configuration.GetSection("Urls").GetValue<string>("RecoverPasswordUrl" +
+                "")}?email={WebUtility.UrlEncode(user.Email)}&token={WebUtility.UrlEncode(token)}";
+            var passwordMail = new MailData(new List<string> { user.Email! }, "Reset password", $"Press {mailLink} to reset your password");
+            var result = await _mailService.SendAsync(passwordMail, new CancellationToken());
+            if (result)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public async Task<bool> ChangePassword(RecoverPasswordSchema schema)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(schema.Email);
+            if (user != null)
+            {
+                var result = await _userManager.ResetPasswordAsync(user,schema.Token,schema.Password);
+                if(result.Succeeded)
+                {                   
+                    return true;
+                }
+            }
+        }
+        catch { } 
+        return false;
+    }
+    public async Task<bool> ChangePassword(ChangePasswordSchema schema,string email)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var result = await _userManager.ChangePasswordAsync(user, schema.CurrentPassword, schema.NewPassword);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        } catch { } return false;
+        
+    }
+    
 }
