@@ -59,8 +59,17 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.Password.RequiredLength = 8;
     x.SignIn.RequireConfirmedAccount = false;
     x.User.RequireUniqueEmail = true;
+    x.Tokens.ChangePhoneNumberTokenProvider = "Phone";
+    x.Tokens.ProviderMap.Add("Phone", new TokenProviderDescriptor(typeof(PhoneNumberTokenProvider<IdentityUser>)));
+})
+.AddEntityFrameworkStores<DataContext>()
+.AddDefaultTokenProviders();
 
-}).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+builder.Services.Configure<PhoneNumberTokenProvider>("Phone", x =>
+{
+    x.TokenLifespan = TimeSpan.FromMinutes(5);
+    x.NumberOfDigits = 6;
+});
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {

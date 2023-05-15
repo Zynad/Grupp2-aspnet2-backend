@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
@@ -32,6 +33,16 @@ public class SmsController : ControllerBase
             return StatusCode(500, "Something went wrong on the server");
         }
         return BadRequest();
-
+    }
+    [Route("VerifyPhone")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> VerifyPhone()
+    {
+        if (ModelState.IsValid)
+        {
+            return Ok();
+        }
+        return BadRequest();
     }
 }
