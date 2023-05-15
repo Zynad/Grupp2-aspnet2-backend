@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
+using Microsoft.IdentityModel.Tokens;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
@@ -13,7 +15,7 @@ using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
-    [UseApiKey]
+    //[UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -79,7 +81,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Model not valid");
         }
-        [Authorize]
+        //[Authorize]
         [Route("GetProfile")]
         [HttpGet]
         public async Task<IActionResult> GetProfile()
@@ -97,47 +99,52 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Model not valid");
         }
-        #endregion
+		#endregion
 
 
-        #region External Login
+		#region External Login
 
-        public async Task Facebook() => await HttpContext.ChallengeAsync(
-            FacebookDefaults.AuthenticationScheme,
-            new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
-        );
+		[Route("Facebook")]
+		[HttpGet]
+		public async Task Facebook() => await HttpContext.ChallengeAsync(
+			FacebookDefaults.AuthenticationScheme,
+			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
+		);
 
+		[Route("Google")]
+		[HttpGet]
 		public async Task Google() => await HttpContext.ChallengeAsync(
 			GoogleDefaults.AuthenticationScheme,
 			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
 		);
 
-		public async Task Twitter() => await HttpContext.ChallengeAsync(
-			TwitterDefaults.AuthenticationScheme,
-			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
-		);
-
-        public async Task<IActionResult> ExternalAuthentication()
-        {
+		[Route("External")]
+		[HttpGet]
+		public async Task<IActionResult> ExternalAuthentication()
+		{
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            if (result.Succeeded)
-            {
-                var claims = result.Principal.Identities.FirstOrDefault()?.Claims.Select(claim => new
-                {
-                    claim.Type,
-                    claim.Value,
-                    claim.Issuer,
-                    claim.Subject,
-                    claim.Properties
-                });
+			if (result.Succeeded)
+			{
+				/*
+				var claims = result.Principal.Identities.FirstOrDefault()?.Claims.Select(claim => new
+				{
+					claim.Type,
+					claim.Value,
+					claim.Issuer,
+				});
+                */
 
-                return Ok(claims);
-            }
+				var token = await _accountService.LogInExternalAsync();
 
-            ModelState.AddModelError("", "Unable to login");
-            return RedirectToAction("Index");
-        }
+				if (!string.IsNullOrEmpty(token))
+				{
+					return Ok(token);
+				}
+			}
+
+			return BadRequest("Failiure to authenticate.");
+		}
 
 		#endregion
 	}
