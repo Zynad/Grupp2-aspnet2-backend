@@ -3,22 +3,17 @@ using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Schemas;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace WebAPI.Helpers.Services
 {
 	public class ProductService
 	{
 		private readonly ProductRepo _productRepo;
-		private readonly CategoryRepo _categoryRepo;
-		private readonly TagRepo _tagRepo;
 		private readonly ReviewRepo _reviewRepo;
 
-		public ProductService(ProductRepo productRepo, CategoryRepo categoryRepo, TagRepo tagRepo, ReviewRepo reviewRepo)
+		public ProductService(ProductRepo productRepo, ReviewRepo reviewRepo)
 		{
 			_productRepo = productRepo;
-			_categoryRepo = categoryRepo;
-			_tagRepo = tagRepo;
 			_reviewRepo = reviewRepo;
 		}
 
@@ -59,7 +54,7 @@ namespace WebAPI.Helpers.Services
 			//This retrieves all products that match any of the tags in the input instead of only products that match all tags as the query below does
 			//var products = allProducts.Where(x => x.Tags.Intersect(tags).Any());  
 
-			var products = allProducts.Where(p => tags.All(t => p.Tags.Contains(t)));
+			var products = allProducts.Where(p => tags.All(t => p.Tags!.Contains(t)));
 
 			var dto = new List<ProductDTO>();
 
@@ -151,11 +146,9 @@ namespace WebAPI.Helpers.Services
 			var ratings = new List<double>();
 			var product = await _productRepo.GetAsync(p => p.Id == productId);
 			var reviews = await _reviewRepo.GetListAsync(r => r.ProductId == productId);
-			if (product == null)
-			{
+			if (product != null)
 				return false;
-			}
-
+			
 			foreach (var review in reviews)
 			{
 				ratings.Add(review.Rating);
@@ -178,8 +171,6 @@ namespace WebAPI.Helpers.Services
 			}
 		}
 
-		//ta bort GetByName, implementera det som en where här bara.....
-		//Hämta alla produkter i metoden eller ta en lista på produkter som redan valts från annat?
 		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(string? name, int? minPrice, int? maxPrice, List<string>? tags, string? category, string? salesCategory)
 		{
 			var products = await _productRepo.GetAllAsync();
