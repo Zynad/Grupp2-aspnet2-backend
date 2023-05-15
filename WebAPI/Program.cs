@@ -29,6 +29,9 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof
 builder.Services.AddScoped<MailService>();
 #endregion
 
+#region SmsConfig
+builder.Services.AddScoped<SmsService>();
+#endregion
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();

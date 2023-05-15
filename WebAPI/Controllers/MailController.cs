@@ -7,51 +7,50 @@ using WebAPI.Helpers.Services;
 using WebAPI.Models.Email;
 using WebAPI.Models.Interfaces;
 
-namespace WebAPI.Controllers
+namespace WebAPI.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class MailController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class MailController : ControllerBase
+    private readonly MailService _mailService;
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public MailController(MailService mailService, UserManager<IdentityUser> userManager)
     {
-        private readonly MailService _mailService;
-        private readonly UserManager<IdentityUser> _userManager;
+        _mailService = mailService;
+        _userManager = userManager;
+    }
+    [UseApiKey]
+    [Route("Sendmail")]
+    [HttpPost]
+    public async Task<IActionResult> SendMailAsync(MailData mailData)
+    {
+        bool result = await _mailService.SendAsync(mailData, new CancellationToken());
 
-        public MailController(MailService mailService, UserManager<IdentityUser> userManager)
+        if (result)
         {
-            _mailService = mailService;
-            _userManager = userManager;
+            return StatusCode(StatusCodes.Status200OK, "Mail has successfully been sent.");
         }
-        [UseApiKey]
-        [Route("Sendmail")]
-        [HttpPost]
-        public async Task<IActionResult> SendMailAsync(MailData mailData)
+        else
         {
-            bool result = await _mailService.SendAsync(mailData, new CancellationToken());
-
-            if (result)
-            {
-                return StatusCode(StatusCodes.Status200OK, "Mail has successfully been sent.");
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured. The Mail could not be sent.");
-            }
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occured. The Mail could not be sent.");
         }
-        [Route("ConfirmEmail")]
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string token, string email)
+    }
+    [Route("ConfirmEmail")]
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user != null)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user != null)
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
             {
-                var result = await _userManager.ConfirmEmailAsync(user, token);
-                if (result.Succeeded)
-                {
-                    return Ok("Email confirmed");
-                }
+                return Ok("Email confirmed");
             }
-            return StatusCode(500, "Something went wrong on the server");
         }
+        return StatusCode(500, "Something went wrong on the server");
     }
 }
