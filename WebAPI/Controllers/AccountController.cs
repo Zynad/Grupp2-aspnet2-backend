@@ -65,7 +65,7 @@ public class AccountController : ControllerBase
             {                   
                 return Ok("Update is done");
             }
-            return BadRequest("Model valid, something else is wrong");
+            return Problem("Model valid, something else is wrong");
         }
         return BadRequest("Model not valid");
     }
@@ -83,7 +83,7 @@ public class AccountController : ControllerBase
             {
                 return Ok(result);
             }
-            return BadRequest("Model valid, something else is wrong");
+            return Problem("Model valid, something else is wrong");
         }
         return BadRequest("Model not valid");
     }
@@ -97,7 +97,7 @@ public class AccountController : ControllerBase
             {
                 return Ok("An email has been sent");
             }
-            return StatusCode(500, "Something went wrong on the server");
+            return Problem("Something went wrong on the server");
         }
         return BadRequest("You must enter an email");
     }
@@ -128,7 +128,7 @@ public class AccountController : ControllerBase
             {
                 return Ok("Your password is changed");
             }
-            return StatusCode(500, "Something went wrong on the server");
+            return Problem("Something went wrong on the server");
         }
         return BadRequest("");
     }

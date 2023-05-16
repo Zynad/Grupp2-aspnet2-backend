@@ -30,7 +30,7 @@ public class SmsController : ControllerBase
             {
                 return Ok();
             }
-            return StatusCode(500, "Something went wrong on the server");
+            return Problem("Something went wrong on the server");
         }
         return BadRequest();
     }

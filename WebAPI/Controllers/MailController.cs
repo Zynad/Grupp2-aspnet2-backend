@@ -30,11 +30,11 @@ public class MailController : ControllerBase
 
         if (result)
         {
-            return StatusCode(StatusCodes.Status200OK, "Mail has successfully been sent.");
+            return Ok("Mail has successfully been sent.");
         }
         else
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occured. The Mail could not be sent.");
+            return Problem("An error occured. The Mail could not be sent.");
         }
     }
     [Route("ConfirmEmail")]
@@ -51,6 +51,6 @@ public class MailController : ControllerBase
                 return Ok("Email confirmed");
             }
         }
-        return StatusCode(500, "Something went wrong on the server");
+        return Problem("Something went wrong on the server");
     }
 }
