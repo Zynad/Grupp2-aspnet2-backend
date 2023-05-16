@@ -132,4 +132,21 @@ public class AccountController : ControllerBase
         }
         return BadRequest("");
     }
+    [Route("VerifyPhone")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> ConfirmPhone(ConfirmPhoneSchema schema)
+    {
+        if (ModelState.IsValid)
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            var dto = await _accountService.ConfirmPhone(schema.Phone,userName!);
+            if(dto.Code != null)
+            {
+                return Ok(dto.Code);
+            }
+            return Problem("Something went wrong on the server");
+        }
+        return BadRequest("You need to enter a phone number");
+    }
 }

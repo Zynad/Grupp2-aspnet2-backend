@@ -239,5 +239,39 @@ public class AccountService
         } catch { } return false;
         
     }
+    public async Task<ConfirmPhoneDTO> ConfirmPhone(string phoneNo,string email)
+    {
+        var dto = new ConfirmPhoneDTO();
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                dto.Message = "Can't find the user in the database";
+                return dto;
+            }
+
+            if (user.PhoneNumber == phoneNo)
+            {
+                dto.Message = "Your number is already confirmed";
+                return dto;
+            }
+
+            if (!user.PhoneNumberConfirmed)
+            {
+                dto.Code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNo);
+                dto.Message = "Success";
+                return dto;
+            }
+
+            dto.Message = "The number you have entered is not the same as the one registered in your account";
+            return dto;
+        }
+        catch { }
+        dto.Message = "Something went wrong";
+        return dto;
+       
+    }
     
 }

@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
 			{
 				var tag = await _tagService.CreateAsync(schema);
 
-				if (tag != null)
+				if (tag)
 				{
 					return Created("", tag);
 				}
