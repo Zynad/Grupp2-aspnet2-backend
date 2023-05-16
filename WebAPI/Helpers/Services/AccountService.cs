@@ -113,19 +113,29 @@ public class AccountService
 			// Extract necessary user information from the external login
 			var email = externalUser.Principal.FindFirstValue(ClaimTypes.Email);
 
-			// Create a new local user account
+			// Create a new local identity
 			var newIdentityUser = new IdentityUser { UserName = email, Email = email };
 			var newIdentityUserResult = await _userManager.CreateAsync(newIdentityUser);
 
 			if (newIdentityUserResult.Succeeded)
 			{
-				// Add the external login to the new local account
+                // Create new local user entity
+                UserProfileEntity newUser = new UserProfileEntity
+                {
+                    FirstName = externalUser.Principal.Claims.ToArray()[2].Value,
+                    LastName = externalUser.Principal.Claims.ToArray()[3].Value,
+					UserId = newIdentityUser!.Id
+			    };
+				await _userProfileRepo.AddAsync(newUser);
+
+
+				// Add the external login to the new identity
 				var addLoginResult = await _userManager.AddLoginAsync(newIdentityUser, externalUser);
 				var roleResult = await _userManager.AddToRoleAsync(newIdentityUser!, "user");
 
 				if (addLoginResult.Succeeded)
 				{
-					// Sign in the user with the newly created local account
+					// Sign in the user with the newly created identity
 					await _signInManager.SignInAsync(newIdentityUser, isPersistent: false);
 
 					// Generate JWT token for the signed-in user
@@ -141,7 +151,7 @@ public class AccountService
 				}
 			}
 
-			return string.Empty; // Failed to create and sign in with the new local account
+			return string.Empty; // Failed to create and sign in
 		}
 	}
 
