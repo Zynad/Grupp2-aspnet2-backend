@@ -59,7 +59,7 @@ namespace WebAPI.Helpers.Services
 			//This retrieves all products that match any of the tags in the input instead of only products that match all tags as the query below does
 			//var products = allProducts.Where(x => x.Tags.Intersect(tags).Any());  
 
-			var products = allProducts.Where(p => tags.All(t => p.Tags.Contains(t)));
+			var products = allProducts.Where(p => tags.All(t => p.Tags!.Contains(t)));
 
 			var dto = new List<ProductDTO>();
 
@@ -200,7 +200,7 @@ namespace WebAPI.Helpers.Services
 			}
 			if(tags != null && tags.Count > 0)
 			{
-				dtos = dtos.Where(p => tags.All(t => p.Tags.Contains(t))).ToList();
+				dtos = dtos.Where(p => tags.All(t => p.Tags!.Contains(t))).ToList();
 			}
 			if (!string.IsNullOrEmpty(name))
 			{
