@@ -89,18 +89,12 @@ public class AccountService
         return string.Empty;
     }
 
-    public async Task<string> LogInExternalAsync()
+    public async Task<string> LogInExternalAsync(ExternalLoginInfo externalUser)
     {
-		var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
-        if (externalLoginInfo == null)
-		{
-			throw new Exception("External login information not available.");
-		}
-
-		var signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
+		var signInResult = await _signInManager.ExternalLoginSignInAsync(externalUser.LoginProvider, externalUser.ProviderKey, isPersistent: false);
 		if (signInResult.Succeeded)
 		{
-			var user = await _userManager.FindByLoginAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
+			var user = await _userManager.FindByLoginAsync(externalUser.LoginProvider, externalUser.ProviderKey);
 			var role = await _userManager.GetRolesAsync(user);
 			var claimsIdentity = new ClaimsIdentity(new Claim[]
 			{
@@ -117,8 +111,7 @@ public class AccountService
         {
             // No local account connected, create a new account
 			// Extract necessary user information from the external login
-			var email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
-			// ... Extract other required user information ...
+			var email = externalUser.Principal.FindFirstValue(ClaimTypes.Email);
 
 			// Create a new local user account
 			var newIdentityUser = new IdentityUser { UserName = email, Email = email };
@@ -127,7 +120,8 @@ public class AccountService
 			if (newIdentityUserResult.Succeeded)
 			{
 				// Add the external login to the new local account
-				var addLoginResult = await _userManager.AddLoginAsync(newIdentityUser, externalLoginInfo);
+				var addLoginResult = await _userManager.AddLoginAsync(newIdentityUser, externalUser);
+				var roleResult = await _userManager.AddToRoleAsync(newIdentityUser!, "user");
 
 				if (addLoginResult.Succeeded)
 				{

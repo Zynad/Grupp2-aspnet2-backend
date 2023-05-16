@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.IdentityModel.Tokens;
@@ -122,10 +124,15 @@ namespace WebAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> ExternalAuthentication()
 		{
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
 			if (result.Succeeded)
 			{
+                ExternalLoginInfo externalUser = new ExternalLoginInfo(
+                    result.Principal,
+                    result.Principal.Identity.AuthenticationType,
+                    result.Principal.Claims.First().ToString(),
+                    result.Principal.Identity.AuthenticationType);
 				/*
 				var claims = result.Principal.Identities.FirstOrDefault()?.Claims.Select(claim => new
 				{
@@ -135,7 +142,7 @@ namespace WebAPI.Controllers
 				});
                 */
 
-				var token = await _accountService.LogInExternalAsync();
+				var token = await _accountService.LogInExternalAsync(externalUser);
 
 				if (!string.IsNullOrEmpty(token))
 				{
