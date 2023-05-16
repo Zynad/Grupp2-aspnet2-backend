@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
 			{
 				var product = await _productService.CreateAsync(schema);
         
-				if (product != null)
+				if (product)
 				{
 					return Created("", product);
 				}

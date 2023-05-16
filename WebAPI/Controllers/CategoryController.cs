@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
 			{
 				var category = await _categoryService.CreateAsync(schema);
 
-				if (category != null)
+				if (category)
 				{
 					return Created("", category);
 				}

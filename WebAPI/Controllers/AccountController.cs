@@ -65,7 +65,7 @@ public class AccountController : ControllerBase
             {                   
                 return Ok("Update is done");
             }
-            return BadRequest("Model valid, something else is wrong");
+            return Problem("Model valid, something else is wrong");
         }
         return BadRequest("Model not valid");
     }
@@ -83,7 +83,7 @@ public class AccountController : ControllerBase
             {
                 return Ok(result);
             }
-            return BadRequest("Model valid, something else is wrong");
+            return Problem("Model valid, something else is wrong");
         }
         return BadRequest("Model not valid");
     }
@@ -97,7 +97,7 @@ public class AccountController : ControllerBase
             {
                 return Ok("An email has been sent");
             }
-            return StatusCode(500, "Something went wrong on the server");
+            return Problem("Something went wrong on the server");
         }
         return BadRequest("You must enter an email");
     }
@@ -128,8 +128,40 @@ public class AccountController : ControllerBase
             {
                 return Ok("Your password is changed");
             }
-            return StatusCode(500, "Something went wrong on the server");
+            return Problem("Something went wrong on the server");
         }
         return BadRequest("");
+    }
+    [Route("ConfirmPhone")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> ConfirmPhone(ConfirmPhoneSchema schema)
+    {
+        if (ModelState.IsValid)
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            var dto = await _accountService.ConfirmPhone(schema.Phone,userName!);
+            if(dto.Code != null)
+            {
+                return Ok(dto.Code);
+            }
+            return BadRequest(dto.Message);
+        }
+        return BadRequest("You need to enter a phone number");
+    }
+    [Route("VerifyPhone")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> VerifyPhone()
+    {
+        if (ModelState.IsValid)
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            if(await _accountService.VerifyPhone(userName!))
+            {
+                return Ok("Your phone number is confirmed");
+            }
+        }
+        return Problem("Something went wrong, try again!");
     }
 }

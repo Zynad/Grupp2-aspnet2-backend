@@ -7,7 +7,7 @@ using WebAPI.Models.Sms;
 
 namespace WebAPI.Controllers;
 
-//[UseApiKey]
+[UseApiKey]
 [Route("api/[controller]")]
 [ApiController]
 public class SmsController : ControllerBase
@@ -25,24 +25,14 @@ public class SmsController : ControllerBase
     {
         if(ModelState.IsValid)
         {
-            var result = await _service.SendSms(schema);
+            var result = await _service.SendSmsAsync(schema.PhoneNumber,schema.Message);
             if (result)
             {
-                return Ok();
+                return Ok("Your message have been sent");
             }
-            return StatusCode(500, "Something went wrong on the server");
+            return Problem("Something went wrong on the server");
         }
-        return BadRequest();
+        return BadRequest("You need to enter a valid phone number and a message");
     }
-    [Route("VerifyPhone")]
-    [HttpPost]
-    [Authorize]
-    public async Task<IActionResult> VerifyPhone()
-    {
-        if (ModelState.IsValid)
-        {
-            return Ok();
-        }
-        return BadRequest();
-    }
+    
 }

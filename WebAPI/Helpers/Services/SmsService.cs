@@ -14,7 +14,7 @@ public class SmsService
         _configuration = configuration;
     }
 
-    public async Task<bool> SendSms(SendSmsSchema schema)
+    public async Task<bool> SendSmsAsync(string phoneNo,string smsBody)
     {
         try
         {
@@ -23,9 +23,9 @@ public class SmsService
             TwilioClient.Init(accountSid, authToken);
 
             var messageOptions = new CreateMessageOptions(
-                new PhoneNumber(schema.PhoneNumber));
+                new PhoneNumber(phoneNo));
             messageOptions.From = _configuration.GetSection("PhoneService").GetValue<string>("FromNumber");
-            messageOptions.Body = schema.Message;
+            messageOptions.Body = smsBody;
 
             var message = await MessageResource.CreateAsync(messageOptions);
             if(message != null) 
