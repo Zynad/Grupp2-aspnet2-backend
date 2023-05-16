@@ -25,7 +25,7 @@ public class SmsController : ControllerBase
     {
         if(ModelState.IsValid)
         {
-            var result = await _service.SendSms(schema);
+            var result = await _service.SendSmsAsync(schema.PhoneNumber,schema.Message);
             if (result)
             {
                 return Ok("Your message have been sent");

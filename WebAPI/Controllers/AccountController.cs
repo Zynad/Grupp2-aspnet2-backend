@@ -132,7 +132,7 @@ public class AccountController : ControllerBase
         }
         return BadRequest("");
     }
-    [Route("VerifyPhone")]
+    [Route("ConfirmPhone")]
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> ConfirmPhone(ConfirmPhoneSchema schema)
@@ -145,8 +145,23 @@ public class AccountController : ControllerBase
             {
                 return Ok(dto.Code);
             }
-            return Problem("Something went wrong on the server");
+            return BadRequest(dto.Message);
         }
         return BadRequest("You need to enter a phone number");
+    }
+    [Route("VerifyPhone")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> VerifyPhone()
+    {
+        if (ModelState.IsValid)
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            if(await _accountService.VerifyPhone(userName!))
+            {
+                return Ok("Your phone number is confirmed");
+            }
+        }
+        return Problem("Something went wrong, try again!");
     }
 }

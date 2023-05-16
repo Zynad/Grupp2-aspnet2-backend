@@ -25,8 +25,9 @@ public class AccountService
     private readonly JwtToken _jwt;
     private readonly MailService _mailService;
     private readonly IConfiguration _configuration;
+    private readonly SmsService _smsService;
 
-    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration)
+    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration, SmsService smsService)
     {
         _jwt = jwt;
         _roleManager = roleManager;
@@ -35,6 +36,7 @@ public class AccountService
         _userProfileRepo = userProfileRepo;
         _mailService = mailService;
         _configuration = configuration;
+        _smsService = smsService;
     }
     #endregion
     public async Task<bool> RegisterAsync(RegisterAccountSchema schema)
@@ -252,7 +254,7 @@ public class AccountService
                 return dto;
             }
 
-            if (user.PhoneNumber == phoneNo)
+            if (user.PhoneNumber != phoneNo)
             {
                 dto.Message = "Your number is already confirmed";
                 return dto;
@@ -260,8 +262,16 @@ public class AccountService
 
             if (!user.PhoneNumberConfirmed)
             {
-                dto.Code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNo);
-                dto.Message = "Success";
+                var Code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNo);
+                
+                var result = await _smsService.SendSmsAsync(phoneNo,$"Your code is : {Code}");
+                if (result)
+                {
+                    dto.Code = Code;
+                    dto.Message = "Success";
+                    return dto;
+                }
+                dto.Message = "Something went wrong with sending the sms, try again later";
                 return dto;
             }
 
@@ -272,6 +282,20 @@ public class AccountService
         dto.Message = "Something went wrong";
         return dto;
        
+    }
+    public async Task<bool> VerifyPhone(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if(user != null)
+        {
+            user.PhoneNumberConfirmed = true;
+            var result = await _userManager.UpdateAsync(user);
+            if(result.Succeeded)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
 }
