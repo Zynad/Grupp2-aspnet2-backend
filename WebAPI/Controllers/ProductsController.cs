@@ -135,8 +135,9 @@ namespace WebAPI.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var userName = HttpContext.User.Identity!.Name;
-				if (userName != null)
+				var product = await _productService.CreateAsync(schema);
+        
+				if (product)
 				{
 					var result = await _productService.CreateAsync(schema);
 					if (result)

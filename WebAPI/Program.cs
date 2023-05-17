@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebAPI.Contexts;
-using WebAPI.Helpers.Services;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
-using WebAPI.Models.Entities;
+using WebAPI.Helpers.Services;
 using WebAPI.Models.Email;
-using WebAPI.Models.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +26,9 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof
 builder.Services.AddScoped<MailService>();
 #endregion
 
+#region SmsConfig
+builder.Services.AddScoped<SmsService>();
+#endregion
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();
@@ -37,6 +37,7 @@ builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<PaymentService>();
 #endregion
 
 #region Repositories
@@ -48,6 +49,8 @@ builder.Services.AddScoped<AddressRepo>();
 builder.Services.AddScoped<AddressItemRepo>();
 builder.Services.AddScoped<UserProfileAddressItemRepo>();
 builder.Services.AddScoped<ReviewRepo>();
+builder.Services.AddScoped<CreditCardRepo>();
+builder.Services.AddScoped<UserProfileCreditCardRepo>();
 #endregion
 
 #region Identity
@@ -56,8 +59,10 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.Password.RequiredLength = 8;
     x.SignIn.RequireConfirmedAccount = false;
     x.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<DataContext>()
+.AddDefaultTokenProviders();
 
-}).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {
@@ -99,11 +104,29 @@ builder.Services.AddAuthentication(x =>
 });
 #endregion
 
+#region External Auth
+
+builder.Services.AddAuthentication()
+    .AddFacebook(x =>
+    {
+        x.ClientId = builder.Configuration["Facebook:ClientId"]!;
+        x.ClientSecret = builder.Configuration["Facebook:ClientSecret"]!;
+    })
+    .AddGoogle(x =>
+    {
+        x.ClientId = builder.Configuration["Google:ClientId"]!;
+        x.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
+    });
+
+
+#endregion
+
 var app = builder.Build();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
