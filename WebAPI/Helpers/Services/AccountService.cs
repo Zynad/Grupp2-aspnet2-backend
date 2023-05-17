@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -75,17 +76,104 @@ public class AccountService
                     new Claim(ClaimTypes.Name, identityUser.Email!),
                     new Claim(ClaimTypes.Role, role[0])
                 });
-                if(schema.RememberMe == false)              
+
+				await _signInManager.SignInAsync(identityUser, isPersistent: schema.RememberMe);
+
+				if (schema.RememberMe == false)
                     return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
 
                 else
                     return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddYears(1));
-
-
-            }
+			}
         }
         return string.Empty;
     }
+
+    public async Task<string> LogInExternalAsync(ExternalLoginInfo externalUser)
+    {
+        // Attempt login with external info to connected local account
+		var signInResult = await _signInManager.ExternalLoginSignInAsync(externalUser.LoginProvider, externalUser.ProviderKey, isPersistent: false);
+		if (signInResult.Succeeded)
+		{
+			var user = await _userManager.FindByLoginAsync(externalUser.LoginProvider, externalUser.ProviderKey);
+			var role = await _userManager.GetRolesAsync(user!);
+			var claimsIdentity = new ClaimsIdentity(new Claim[]
+			{
+					new Claim("id", user!.Id.ToString()),
+					new Claim(ClaimTypes.Name, user.Email!),
+					new Claim(ClaimTypes.Role, role[0])
+			});
+
+			await _signInManager.SignInAsync(user, isPersistent: false);
+				
+            return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
+		}
+        else
+        {
+            // No local account connected, create a new account
+			// Extract necessary user information from the external login
+			var email = externalUser.Principal.FindFirstValue(ClaimTypes.Email);
+
+			// Create a new local identity
+			var newIdentityUser = new IdentityUser { UserName = email, Email = email };
+			var newIdentityUserResult = await _userManager.CreateAsync(newIdentityUser);
+
+			if (newIdentityUserResult.Succeeded)
+			{
+                // Create new local user entity
+                // Principal.Claims array looks different for Google/Facebook
+                if (externalUser.LoginProvider == "Google")
+                {
+                    UserProfileEntity newUser = new UserProfileEntity
+                    {
+                        FirstName = externalUser.Principal.Claims.ToArray()[2].Value,
+                        LastName = externalUser.Principal.Claims.ToArray()[3].Value,
+					    UserId = newIdentityUser!.Id
+			        };
+					await _userProfileRepo.AddAsync(newUser);
+				}
+                else if (externalUser.LoginProvider == "Facebook")
+                {
+					UserProfileEntity newUser = new UserProfileEntity
+					{
+						FirstName = externalUser.Principal.Claims.ToArray()[3].Value,
+						LastName = externalUser.Principal.Claims.ToArray()[4].Value,
+						UserId = newIdentityUser!.Id
+					};
+					await _userProfileRepo.AddAsync(newUser);
+				}
+                else
+                {
+                    throw new Exception();
+                }
+
+
+
+				// Add the external login to the new identity
+				var addLoginResult = await _userManager.AddLoginAsync(newIdentityUser, externalUser);
+				var roleResult = await _userManager.AddToRoleAsync(newIdentityUser!, "user");
+
+				if (addLoginResult.Succeeded)
+				{
+					// Sign in the user with the newly created identity
+					await _signInManager.SignInAsync(newIdentityUser, isPersistent: false);
+
+					// Generate JWT token for the signed-in user
+					var role = await _userManager.GetRolesAsync(newIdentityUser);
+					var claimsIdentity = new ClaimsIdentity(new Claim[]
+					{
+					    new Claim("id", newIdentityUser.Id.ToString()),
+					    new Claim(ClaimTypes.Name, newIdentityUser.Email!),
+					    new Claim(ClaimTypes.Role, role[0])
+					});
+
+					return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
+				}
+			}
+
+			return string.Empty; // Failed to create and sign in
+		}
+	}
 
     public async Task LogOutAsync()
     {
@@ -106,7 +194,7 @@ public class AccountService
         {
             FirstName = profile.FirstName,
             LastName = profile.LastName,
-            Email = identityUser.Email,
+            Email = identityUser.Email!,
         };
 
         if (identityUser.PhoneNumber != null)

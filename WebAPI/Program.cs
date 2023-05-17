@@ -78,11 +78,29 @@ builder.Services.AddAuthentication(x =>
 });
 #endregion
 
+#region External Auth
+
+builder.Services.AddAuthentication()
+    .AddFacebook(x =>
+    {
+        x.ClientId = builder.Configuration["Facebook:ClientId"]!;
+        x.ClientSecret = builder.Configuration["Facebook:ClientSecret"]!;
+    })
+    .AddGoogle(x =>
+    {
+        x.ClientId = builder.Configuration["Google:ClientId"]!;
+        x.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
+    });
+
+
+#endregion
+
 var app = builder.Build();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
