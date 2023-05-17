@@ -17,7 +17,7 @@ using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
-    //[UseApiKey]
+    [UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -83,7 +83,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Model not valid");
         }
-        //[Authorize]
+        [Authorize]
         [Route("GetProfile")]
         [HttpGet]
         public async Task<IActionResult> GetProfile()
@@ -110,37 +110,58 @@ namespace WebAPI.Controllers
 		[HttpGet]
 		public async Task Facebook() => await HttpContext.ChallengeAsync(
 			FacebookDefaults.AuthenticationScheme,
-			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
+			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthFacebook") }
 		);
 
 		[Route("Google")]
 		[HttpGet]
 		public async Task Google() => await HttpContext.ChallengeAsync(
 			GoogleDefaults.AuthenticationScheme,
-			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthentication") }
+			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthGoogle") }
 		);
 
-		[Route("External")]
+		[Route("ExternalFacebook")]
 		[HttpGet]
-		public async Task<IActionResult> ExternalAuthentication()
+		public async Task<IActionResult> ExternalAuthFacebook()
 		{
-            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            var result = await HttpContext.AuthenticateAsync(FacebookDefaults.AuthenticationScheme);
 
 			if (result.Succeeded)
 			{
-                ExternalLoginInfo externalUser = new ExternalLoginInfo(
-                    result.Principal,
-                    result.Principal.Identity.AuthenticationType,
-                    result.Principal.Claims.First().ToString(),
-                    result.Principal.Identity.AuthenticationType);
-				/*
-				var claims = result.Principal.Identities.FirstOrDefault()?.Claims.Select(claim => new
+                ExternalLoginInfo externalUser = new ExternalLoginInfo
+                    (
+                        result.Principal,
+                        result.Principal.Identity!.AuthenticationType!,
+                        result.Principal.Claims.First().ToString(),
+                        result.Principal.Identity.AuthenticationType!
+                    );
+
+				var token = await _accountService.LogInExternalAsync(externalUser);
+
+				if (!string.IsNullOrEmpty(token))
 				{
-					claim.Type,
-					claim.Value,
-					claim.Issuer,
-				});
-                */
+					return Ok(token);
+				}
+			}
+
+			return BadRequest("Failiure to authenticate.");
+		}
+
+		[Route("ExternalGoogle")]
+		[HttpGet]
+		public async Task<IActionResult> ExternalAuthGoogle()
+		{
+			var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+			if (result.Succeeded)
+			{
+				ExternalLoginInfo externalUser = new ExternalLoginInfo
+                    (
+					    result.Principal,
+					    result.Principal.Identity!.AuthenticationType!,
+					    result.Principal.Claims.First().ToString(),
+					    result.Principal.Identity.AuthenticationType!
+                    );
 
 				var token = await _accountService.LogInExternalAsync(externalUser);
 

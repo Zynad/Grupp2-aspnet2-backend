@@ -91,14 +91,15 @@ public class AccountService
 
     public async Task<string> LogInExternalAsync(ExternalLoginInfo externalUser)
     {
+        // Attempt login with external info to connected local account
 		var signInResult = await _signInManager.ExternalLoginSignInAsync(externalUser.LoginProvider, externalUser.ProviderKey, isPersistent: false);
 		if (signInResult.Succeeded)
 		{
 			var user = await _userManager.FindByLoginAsync(externalUser.LoginProvider, externalUser.ProviderKey);
-			var role = await _userManager.GetRolesAsync(user);
+			var role = await _userManager.GetRolesAsync(user!);
 			var claimsIdentity = new ClaimsIdentity(new Claim[]
 			{
-					new Claim("id", user.Id.ToString()),
+					new Claim("id", user!.Id.ToString()),
 					new Claim(ClaimTypes.Name, user.Email!),
 					new Claim(ClaimTypes.Role, role[0])
 			});
@@ -120,13 +121,32 @@ public class AccountService
 			if (newIdentityUserResult.Succeeded)
 			{
                 // Create new local user entity
-                UserProfileEntity newUser = new UserProfileEntity
+                // Principal.Claims array looks different for Google/Facebook
+                if (externalUser.LoginProvider == "Google")
                 {
-                    FirstName = externalUser.Principal.Claims.ToArray()[2].Value,
-                    LastName = externalUser.Principal.Claims.ToArray()[3].Value,
-					UserId = newIdentityUser!.Id
-			    };
-				await _userProfileRepo.AddAsync(newUser);
+                    UserProfileEntity newUser = new UserProfileEntity
+                    {
+                        FirstName = externalUser.Principal.Claims.ToArray()[2].Value,
+                        LastName = externalUser.Principal.Claims.ToArray()[3].Value,
+					    UserId = newIdentityUser!.Id
+			        };
+					await _userProfileRepo.AddAsync(newUser);
+				}
+                else if (externalUser.LoginProvider == "Facebook")
+                {
+					UserProfileEntity newUser = new UserProfileEntity
+					{
+						FirstName = externalUser.Principal.Claims.ToArray()[3].Value,
+						LastName = externalUser.Principal.Claims.ToArray()[4].Value,
+						UserId = newIdentityUser!.Id
+					};
+					await _userProfileRepo.AddAsync(newUser);
+				}
+                else
+                {
+                    throw new Exception();
+                }
+
 
 
 				// Add the external login to the new identity
@@ -174,7 +194,7 @@ public class AccountService
         {
             FirstName = profile.FirstName,
             LastName = profile.LastName,
-            Email = identityUser.Email,
+            Email = identityUser.Email!,
         };
 
         if (identityUser.PhoneNumber != null)

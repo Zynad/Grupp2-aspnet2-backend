@@ -91,12 +91,7 @@ builder.Services.AddAuthentication()
         x.ClientId = builder.Configuration["Google:ClientId"]!;
         x.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
     })
-    .AddTwitter(x =>
-    {
-        x.ConsumerKey = builder.Configuration["Facebook:ClientId"]!;
-        x.ConsumerSecret = builder.Configuration["Facebook:ClientSecret"]!;
-    })
-    .AddCookie();
+    .AddCookie(); // Might be unneccesary?
 
 
 #endregion
