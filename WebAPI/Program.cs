@@ -37,6 +37,7 @@ builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<PaymentService>();
 #endregion
 
 #region Repositories
@@ -48,6 +49,8 @@ builder.Services.AddScoped<AddressRepo>();
 builder.Services.AddScoped<AddressItemRepo>();
 builder.Services.AddScoped<UserProfileAddressItemRepo>();
 builder.Services.AddScoped<ReviewRepo>();
+builder.Services.AddScoped<CreditCardRepo>();
+builder.Services.AddScoped<UserProfileCreditCardRepo>();
 #endregion
 
 #region Identity
