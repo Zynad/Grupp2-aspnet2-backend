@@ -22,7 +22,6 @@ namespace WebAPI.Helpers.Services
 			try
 			{
 				var products = await _productRepo.GetAllAsync();
-
 				var dtos = new List<ProductDTO>();
 
 				foreach (var entity in products)
@@ -42,9 +41,7 @@ namespace WebAPI.Helpers.Services
 			try
 			{
 				var allProducts = await _productRepo.GetAllAsync();
-
 				var products = allProducts.Where(x => x.SalesCategory == salesCategory);
-
 				var dto = new List<ProductDTO>();
 
 				foreach (var entity in products)
@@ -63,12 +60,10 @@ namespace WebAPI.Helpers.Services
 			try
 			{
 				var allProducts = await _productRepo.GetAllAsync();
-
 				//This retrieves all products that match any of the tags in the input instead of only products that match all tags as the query below does
 				//var products = allProducts.Where(x => x.Tags.Intersect(tags).Any());  
 
 				var products = allProducts.Where(p => tags.All(t => p.Tags!.Contains(t)));
-
 				var dto = new List<ProductDTO>();
 
 				foreach (var entity in products)
@@ -87,9 +82,7 @@ namespace WebAPI.Helpers.Services
 			try
 			{
 				var allProducts = await _productRepo.GetAllAsync();
-
 				var products = allProducts.Where(x => x.Category == category);
-
 				var dto = new List<ProductDTO>();
 
 				foreach (var entity in products)
@@ -106,7 +99,6 @@ namespace WebAPI.Helpers.Services
 		public async Task<ProductDTO> GetByIdAsync(Guid id)
 		{
 			var product = await _productRepo.GetAsync(x => x.Id == id);
-
 			ProductDTO dto = product;
 
 			return dto;
@@ -117,7 +109,6 @@ namespace WebAPI.Helpers.Services
 			try
 			{
 				var products = await _productRepo.GetListAsync(x => x.Price >= minPrice && x.Price <= maxPrice);
-
 				var dto = new List<ProductDTO>();
 
 				foreach (var entity in products)
@@ -162,7 +153,7 @@ namespace WebAPI.Helpers.Services
 			try
 			{
 				var entity = await _productRepo.GetAsync(x => x.Id == id);
-				await _productRepo.DeleteAsync(entity!);
+				await _productRepo.DeleteAsync(entity);
 
 				return true;
 			}
@@ -186,8 +177,8 @@ namespace WebAPI.Helpers.Services
 				double count = ratings.Count;
 				if (count > 0)
 				{
-					product!.Rating = ratings.Sum() / count;
-					await _productRepo.UpdateAsync(product!);
+					product.Rating = ratings.Sum() / count;
+					await _productRepo.UpdateAsync(product);
 
 					return true;
 				}
@@ -218,7 +209,7 @@ namespace WebAPI.Helpers.Services
 				}
 				if (tags != null && tags.Count > 0)
 				{
-					dtos = dtos.Where(p => tags.All(t => p.Tags.Contains(t))).ToList();
+					dtos = dtos.Where(p => tags.All(t => p.Tags!.Contains(t))).ToList();
 				}
 				if (!string.IsNullOrEmpty(name))
 				{
