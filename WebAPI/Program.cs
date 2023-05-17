@@ -37,6 +37,7 @@ builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<PaymentService>();
 #endregion
 
 #region Repositories
@@ -48,6 +49,8 @@ builder.Services.AddScoped<AddressRepo>();
 builder.Services.AddScoped<AddressItemRepo>();
 builder.Services.AddScoped<UserProfileAddressItemRepo>();
 builder.Services.AddScoped<ReviewRepo>();
+builder.Services.AddScoped<CreditCardRepo>();
+builder.Services.AddScoped<UserProfileCreditCardRepo>();
 #endregion
 
 #region Identity
@@ -101,11 +104,29 @@ builder.Services.AddAuthentication(x =>
 });
 #endregion
 
+#region External Auth
+
+builder.Services.AddAuthentication()
+    .AddFacebook(x =>
+    {
+        x.ClientId = builder.Configuration["Facebook:ClientId"]!;
+        x.ClientSecret = builder.Configuration["Facebook:ClientSecret"]!;
+    })
+    .AddGoogle(x =>
+    {
+        x.ClientId = builder.Configuration["Google:ClientId"]!;
+        x.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
+    });
+
+
+#endregion
+
 var app = builder.Build();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

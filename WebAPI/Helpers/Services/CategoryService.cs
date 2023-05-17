@@ -16,55 +16,59 @@ namespace WebAPI.Helpers.Services
 
 		public async Task<IEnumerable<CategoryDTO>> GetAllAsync()
 		{
-			var categories = await _categoryRepo.GetAllAsync();
-
-			var dtos = new List<CategoryDTO>();
-
-			foreach (var entity in categories)
+			try
 			{
-				dtos.Add(entity);
-			}
+				var categories = await _categoryRepo.GetAllAsync();
+				var dtos = new List<CategoryDTO>();
 
-			return dtos;
+				foreach (var entity in categories)
+				{
+					dtos.Add(entity);
+				}
+
+				return dtos;
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<CategoryDTO> GetByIdAsync(Guid id)
 		{
-			var category = await _categoryRepo.GetAsync(x => x.Id == id);
+			try
+			{
+				var category = await _categoryRepo.GetAsync(x => x.Id == id);
+				CategoryDTO dto = category;
 
-			CategoryDTO dto = category;
-
-			return dto;
+				return dto;
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<bool> CreateAsync(CategorySchema schema)
 		{
-			CategoryEntity entity = schema;
-
 			try
 			{
+				CategoryEntity entity = schema;
 				await _categoryRepo.AddAsync(entity);
+
 				return true;
 			}
-			catch
-			{
-				return false;
-			}
+			catch { }
+			return false;
 		}
 
 		public async Task<bool> DeleteAsync(Guid id)
 		{
-			var entity = await _categoryRepo.GetAsync(x => x.Id == id);
-
 			try
 			{
+				var entity = await _categoryRepo.GetAsync(x => x.Id == id);
 				await _categoryRepo.DeleteAsync(entity!);
+
 				return true;
 			}
-			catch
-			{
-				return false;
-			}
+			catch { }
+			return false;
 		}
 	}
 }
