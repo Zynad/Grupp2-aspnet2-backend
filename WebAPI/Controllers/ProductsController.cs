@@ -88,6 +88,20 @@ namespace WebAPI.Controllers
 			}
 		}
 
+		[Route("Price")]
+		[HttpGet]
+		public async Task<IActionResult> GetByPrice(int minPrice, int maxPrice)
+		{
+			try
+			{
+				return Ok(await _productService.GetByPriceAsync(minPrice, maxPrice));
+			}
+			catch
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
 		[Route("Search")]
 		[HttpGet]
 		public async Task<IActionResult> GetByName(string name)
@@ -95,6 +109,20 @@ namespace WebAPI.Controllers
 			try
 			{
 				return Ok(await _productService.GetByNameAsync(name));
+			}
+			catch 
+			{
+				return BadRequest("Something went wrong");
+			}
+		}
+
+		[Route("Filter")]
+		[HttpGet]
+		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, [FromQuery]List<string>? tags, string? category, string? salesCategory)
+		{
+			try
+			{
+				return Ok(await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory));
 			}
 			catch 
 			{
@@ -110,12 +138,14 @@ namespace WebAPI.Controllers
 			if (ModelState.IsValid)
 			{
 				var product = await _productService.CreateAsync(schema);
+        
 				if (product != null)
 				{
 					return Created("", product);
 				}
 			}
 			return BadRequest();
+
 		}
 
 		//[Authorize(Roles = "Admin, ProductManager")]
@@ -126,7 +156,7 @@ namespace WebAPI.Controllers
 			if (await _productService.DeleteAsync(id))
 				return Ok();
 
-			return BadRequest();
+			return BadRequest("Something went wrong");
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace WebAPI.Models.Dtos
 		public string? Category { get; set; }
 		public string? SalesCategory { get; set; }
 		public string Description { get; set; } = null!;
-		public int Rating { get; set; }
+		public double Rating { get; set; }
 		public string Brand { get; set; } = null!;
 		public double? DiscountMultiplier { get; set; }
 
