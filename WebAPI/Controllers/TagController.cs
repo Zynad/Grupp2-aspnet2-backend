@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
@@ -22,56 +21,63 @@ namespace WebAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _tagService.GetAllAsync());
+				var result = await _tagService.GetAllAsync();
+				if (result != null)
+					return Ok(result);
 			}
-			catch
-			{
-				return BadRequest("Something went wrong");
-			}
+
+			return BadRequest("Something went wrong, try again!");
 		}
 
 		[Route("GetTagById")]
 		[HttpGet]
 		public async Task<IActionResult> GetById(Guid id)
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _tagService.GetByIdAsync(id));
+				var result = await _tagService.GetByIdAsync(id);
+				if (result != null)
+					return Ok(result);
 			}
-			catch
-			{
-				return BadRequest("Something went wrong");
-			}
-		}
 
-		//[Authorize(Roles = "Admin")]
+			return BadRequest("Something went wrong, try again!");
+		}
+		
 		[Route("AddTag")]
 		[HttpPost]
 		public async Task<IActionResult> AddTag(TagSchema schema)
 		{
 			if (ModelState.IsValid)
 			{
-				var tag = await _tagService.CreateAsync(schema);
-
-				if (tag != null)
+				var userName = HttpContext.User.Identity!.Name;
+				if (userName != null)
 				{
-					return Created("", tag);
+					var result = await _tagService.CreateAsync(schema);
+					if (result)
+						return Created("", null);
 				}
 			}
-			return BadRequest();
+			return BadRequest("Something went wrong, try again!");
 		}
-
-		//[Authorize(Roles = "Admin")]
+		
 		[Route("DeleteTag")]
 		[HttpPost]
 		public async Task<IActionResult> DeleteTag(Guid id)
 		{
-			if (await _tagService.DeleteAsync(id))
-				return Ok();
-
-			return BadRequest("Something went wrong");
+			if (ModelState.IsValid)
+			{
+				var userName = HttpContext.User.Identity!.Name;
+				if (userName != null)
+				{
+					var result = await _tagService.DeleteAsync(id);
+					if (result)
+						return Ok("Tag deleted");
+				}
+			}
+			
+			return BadRequest("Something went wrong, try again!");
 		}
 	}
 }

@@ -16,55 +16,59 @@ namespace WebAPI.Helpers.Services
 
 		public async Task<IEnumerable<TagDTO>> GetAllAsync()
 		{
-			var tags = await _tagRepo.GetAllAsync();
-
-			var dtos = new List<TagDTO>();
-
-			foreach (var entity in tags)
+			try
 			{
-				dtos.Add(entity);
-			}
+				var tags = await _tagRepo.GetAllAsync();
+				var dtos = new List<TagDTO>();
 
-			return dtos;
+				foreach (var entity in tags)
+				{
+					dtos.Add(entity);
+				}
+
+				return dtos;
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<TagDTO> GetByIdAsync(Guid id)
 		{
-			var tag = await _tagRepo.GetAsync(x => x.Id == id);
+			try
+			{
+				var tag = await _tagRepo.GetAsync(x => x.Id == id);
+				TagDTO dto = tag;
 
-			TagDTO dto = tag;
-
-			return dto;
+				return dto;
+			}
+			catch { }
+			return null!;
 		}
 
 		public async Task<bool> CreateAsync(TagSchema schema)
 		{
-			TagEntity entity = schema;
-
 			try
 			{
+				TagEntity entity = schema;
 				await _tagRepo.AddAsync(entity);
+
 				return true;
 			}
-			catch
-			{
-				return false;
-			}
+			catch { }
+			return false;
 		}
 
 		public async Task<bool> DeleteAsync(Guid id)
 		{
-			var entity = await _tagRepo.GetAsync(x => x.Id == id);
-
 			try
 			{
+				var entity = await _tagRepo.GetAsync(x => x.Id == id);
 				await _tagRepo.DeleteAsync(entity!);
+
 				return true;
 			}
-			catch
-			{
-				return false;
-			}
+			catch { }
+			return false;
 		}
 	}
 }
