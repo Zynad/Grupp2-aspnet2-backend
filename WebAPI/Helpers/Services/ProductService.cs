@@ -62,10 +62,8 @@ namespace WebAPI.Helpers.Services
 				var allProducts = await _productRepo.GetAllAsync();
 				//This retrieves all products that match any of the tags in the input instead of only products that match all tags as the query below does
 				//var products = allProducts.Where(x => x.Tags.Intersect(tags).Any());  
-
 				var products = allProducts.Where(p => tags.All(t => p.Tags!.Contains(t)));
 				var dto = new List<ProductDTO>();
-
 				foreach (var entity in products)
 				{
 					dto.Add(entity);
@@ -189,6 +187,7 @@ namespace WebAPI.Helpers.Services
 
 		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(string? name, int? minPrice, int? maxPrice, List<string>? tags, string? category, string? salesCategory)
 		{
+
 			try
 			{
 				var products = await _productRepo.GetAllAsync();

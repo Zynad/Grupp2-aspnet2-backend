@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebAPI.Contexts;
-using WebAPI.Helpers.Services;
 using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
-using WebAPI.Models.Entities;
+using WebAPI.Helpers.Services;
 using WebAPI.Models.Email;
-using WebAPI.Models.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +26,9 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof
 builder.Services.AddScoped<MailService>();
 #endregion
 
+#region SmsConfig
+builder.Services.AddScoped<SmsService>();
+#endregion
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();
@@ -59,8 +59,10 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(x =>
     x.Password.RequiredLength = 8;
     x.SignIn.RequireConfirmedAccount = false;
     x.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<DataContext>()
+.AddDefaultTokenProviders();
 
-}).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(x =>
 {

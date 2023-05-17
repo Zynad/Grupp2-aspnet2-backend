@@ -51,8 +51,8 @@ namespace WebAPI.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var userName = HttpContext.User.Identity!.Name;
-				if (userName != null)
+				var category = await _categoryService.CreateAsync(schema);
+				if (category)
 				{
 					var result = await _categoryService.CreateAsync(schema);
 					if (result)

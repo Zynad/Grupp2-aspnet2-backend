@@ -51,8 +51,10 @@ namespace WebAPI.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var userName = HttpContext.User.Identity!.Name;
-				if (userName != null)
+
+				var tag = await _tagService.CreateAsync(schema);
+
+				if (tag)
 				{
 					var result = await _tagService.CreateAsync(schema);
 					if (result)
