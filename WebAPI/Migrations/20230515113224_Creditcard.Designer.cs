@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAPI.Contexts;
 
@@ -11,9 +12,11 @@ using WebAPI.Contexts;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230515113224_Creditcard")]
+    partial class Creditcard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,7 +299,17 @@ namespace WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserProfileId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("CreditCardEntities");
                 });
@@ -314,21 +327,6 @@ namespace WebAPI.Migrations
                     b.HasIndex("AddressItemId");
 
                     b.ToTable("UserAddressItems");
-                });
-
-            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileCreditCardEntity", b =>
-                {
-                    b.Property<string>("UserProfileId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("CreditCardId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserProfileId", "CreditCardId");
-
-                    b.HasIndex("CreditCardId");
-
-                    b.ToTable("UserProfileCreditCards");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
@@ -414,6 +412,17 @@ namespace WebAPI.Migrations
                     b.Navigation("Address");
                 });
 
+            modelBuilder.Entity("WebAPI.Models.Entities.CreditCardEntity", b =>
+                {
+                    b.HasOne("WebAPI.Models.Entities.UserProfileEntity", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("WebAPI.Models.Entities.UserProfileAddressItemEntity", b =>
                 {
                     b.HasOne("WebAPI.Models.Entities.AddressItemEntity", "AddressItem")
@@ -429,25 +438,6 @@ namespace WebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("AddressItem");
-
-                    b.Navigation("UserProfile");
-                });
-
-            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileCreditCardEntity", b =>
-                {
-                    b.HasOne("WebAPI.Models.Entities.CreditCardEntity", "CreditCard")
-                        .WithMany("UserProfileCreditCards")
-                        .HasForeignKey("CreditCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebAPI.Models.Entities.UserProfileEntity", "UserProfile")
-                        .WithMany("UserProfileCreditCards")
-                        .HasForeignKey("UserProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreditCard");
 
                     b.Navigation("UserProfile");
                 });
@@ -468,16 +458,9 @@ namespace WebAPI.Migrations
                     b.Navigation("UserProfileAddressItems");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.Entities.CreditCardEntity", b =>
-                {
-                    b.Navigation("UserProfileCreditCards");
-                });
-
             modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
                 {
                     b.Navigation("UserProfileAddressItems");
-
-                    b.Navigation("UserProfileCreditCards");
                 });
 #pragma warning restore 612, 618
         }
