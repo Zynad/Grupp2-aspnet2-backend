@@ -31,7 +31,7 @@ namespace WebAPI.Controllers
         
 		#region Standard stuff
 
-		    [Route("Register")]
+		[Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterAccountSchema schema)
         {
@@ -175,7 +175,6 @@ namespace WebAPI.Controllers
 		}
 
 		#endregion
-	}
 
         [Route("ResetPassword")]
         [HttpPost]
