@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
@@ -6,7 +5,7 @@ using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
-    [UseApiKey]
+	[UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewController : ControllerBase
