@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
@@ -22,31 +21,30 @@ namespace WebAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _categoryService.GetAllAsync());
+				var result = await _categoryService.GetAllAsync();
+				if (result != null)
+					return Ok(result);
 			}
-			catch
-			{
-				return BadRequest("Something went wrong");
-			}
+
+			return BadRequest("Something went wrong, try again");
 		}
 
 		[Route("GetCategoryById")]
 		[HttpGet]
 		public async Task<IActionResult> GetById(Guid id)
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _categoryService.GetByIdAsync(id));
+				var result = await _categoryService.GetByIdAsync(id);
+				if (result != null)
+					return Ok(result);
 			}
-			catch
-			{
-				return BadRequest("Something went wrong");
-			}
-		}
 
-		//[Authorize(Roles = "Admin")]
+			return BadRequest("Something went wrong, try again!");
+		}
+		
 		[Route("AddCategory")]
 		[HttpPost]
 		public async Task<IActionResult> AddCategory(CategorySchema schema)
@@ -54,25 +52,33 @@ namespace WebAPI.Controllers
 			if (ModelState.IsValid)
 			{
 				var category = await _categoryService.CreateAsync(schema);
-
-				if (category != null)
+				if (category)
 				{
-					return Created("", category);
+					var result = await _categoryService.CreateAsync(schema);
+					if (result)
+						return Created("", null);
 				}
 			}
-			return BadRequest();
 
+			return BadRequest("Something went wrong, try again!");
 		}
-
-		//[Authorize(Roles = "Admin")]
+		
 		[Route("DeleteCategory")]
 		[HttpPost]
 		public async Task<IActionResult> DeleteCategory(Guid id)
 		{
-			if (await _categoryService.DeleteAsync(id))
-				return Ok();
+			if (ModelState.IsValid)
+			{
+				var userName = HttpContext.User.Identity!.Name;
+				if (userName != null)
+				{
+					var result = await _categoryService.DeleteAsync(id);
+					if (result)
+						return Ok("Category deleted");
+				}
+			}
 
-			return BadRequest("Something went wrong");
+			return BadRequest("Something went wrong, try again!");
 		}
 
 	}

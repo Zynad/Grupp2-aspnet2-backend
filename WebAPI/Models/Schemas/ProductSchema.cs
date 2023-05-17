@@ -11,6 +11,8 @@ namespace WebAPI.Models.Schemas
 		public string? Category { get; set; }
 		public string Description { get; set; } = null!;
 		public string Brand { get; set; } = null!;
+		public string? Color { get; set; }
+		public string? Size { get; set; } 
 		
 
 		public static implicit operator ProductEntity(ProductSchema schema)
@@ -24,7 +26,9 @@ namespace WebAPI.Models.Schemas
 				Description = schema.Description,
 				Brand = schema.Brand,
 				Category = schema.Category,
-				Tags = schema.Tags
+				Tags = schema.Tags,
+				Color = schema.Color,
+				Size = schema.Size
 			};
 		}
 	}
