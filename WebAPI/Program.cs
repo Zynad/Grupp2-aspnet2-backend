@@ -90,8 +90,7 @@ builder.Services.AddAuthentication()
     {
         x.ClientId = builder.Configuration["Google:ClientId"]!;
         x.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
-    })
-    .AddCookie(); // Might be unneccesary?
+    });
 
 
 #endregion
