@@ -221,20 +221,6 @@ public class AccountController : ControllerBase
 
 		#endregion
 
-        [Route("ResetPassword")]
-        [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordSchema schema)
-        {
-            var userName = HttpContext.User.Identity!.Name;
-            var result = await _accountService.ChangePassword(schema, userName!);
-            if (result)
-            {
-                return Ok("Your password is changed");
-            }
-            return Problem("Something went wrong on the server");
-        }
-        return BadRequest("");
-    }
     [Route("ConfirmPhone")]
     [HttpPost]
     [Authorize]
