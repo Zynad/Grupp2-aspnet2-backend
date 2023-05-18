@@ -23,7 +23,7 @@ public class CouponController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCoupon(string code)
     {
-        if(ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var coupon = await _couponService.GetCouponByCodeAsync(code);
             if (coupon == null)
@@ -40,20 +40,19 @@ public class CouponController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> DeleteCoupon(string code)
     {
-        if(ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             if (await _couponService.DeleteAsync(code))
                 return Ok();
         }
         return BadRequest();
     }
-
     [Authorize]
     [Route("AddCoupon")]
     [HttpPost]
     public async Task<IActionResult> AddCoupon(CouponSchema schema)
     {
-        if(ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             if (await _couponService.AddAsync(schema))
                 return Ok();

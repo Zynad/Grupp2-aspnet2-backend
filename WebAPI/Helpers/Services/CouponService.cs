@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
@@ -16,24 +17,25 @@ public class CouponService
 
     public async Task<CouponEntity> GetCouponByCodeAsync(string voucherCode)
     {
-
-        var result = await _couponRepo.GetAsync(x => x.VoucherCode == voucherCode);
-        if(result != null)
+        try
         {
-            return result;
+            var result = await _couponRepo.GetAsync(x => x.VoucherCode == voucherCode);
+            if (result != null)
+            {
+                return result;
+            }
         }
-        return null!;
-        
-    }
+        catch { }
 
+        return null!;
+    }
 
     public async Task<bool> DeleteAsync(string voucherCode)
     {
-
         try
         {
             var coupon = await _couponRepo.GetAsync(x => x.VoucherCode == voucherCode);
-            if(coupon != null)
+            if (coupon != null)
             {
                 await _couponRepo.DeleteAsync(coupon);
                 return true;
@@ -55,7 +57,7 @@ public class CouponService
             return true;
         }
         catch { }
-        
+
         return false;
     }
 
