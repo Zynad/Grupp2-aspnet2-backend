@@ -24,7 +24,7 @@ builder.Services.AddDbContext<CosmosContext>(x => x.UseCosmos(builder.Configurat
 #endregion
 
 #region EmailConfig
-builder.Services.AddScoped<MailSettings>();
+//builder.Services.AddScoped<MailSettings>();
 builder.Services.AddScoped<MailService>();
 #endregion
 
