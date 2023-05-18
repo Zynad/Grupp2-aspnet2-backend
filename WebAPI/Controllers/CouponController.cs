@@ -5,28 +5,25 @@ using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
 
-namespace WebAPI.Controllers
+namespace WebAPI.Controllers;
+
+[UseApiKey]
+[Route("api/[controller]")]
+[ApiController]
+public class CouponController : ControllerBase
 {
-    [UseApiKey]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CouponController : ControllerBase
+
+    private readonly CouponService _couponService;
+
+    public CouponController(CouponService couponService)
     {
-
-        private readonly CouponService _couponService;
-
-        public CouponController(CouponService couponService)
-        {
-            _couponService = couponService;
-        }
-
-
-
-
-
-        [Route("GetCoupon")]
-        [HttpGet]
-        public async Task<IActionResult> GetCoupon(string code)
+        _couponService = couponService;
+    }
+    [Route("GetCoupon")]
+    [HttpGet]
+    public async Task<IActionResult> GetCoupon(string code)
+    {
+        if(ModelState.IsValid)
         {
             var coupon = await _couponService.GetCouponByCodeAsync(code);
             if (coupon == null)
@@ -35,39 +32,32 @@ namespace WebAPI.Controllers
             }
             return Ok(coupon);
         }
+        return BadRequest();
+    }
 
-
-        [Authorize(Roles = "Admin, ProductManager")]
-        [Route("DeleteCoupon")]
-        [HttpPost]
-        public async Task<IActionResult> DeleteCoupon(string code)
+    [Authorize]
+    [Route("DeleteCoupon")]
+    [HttpPost]
+    public async Task<IActionResult> DeleteCoupon(string code)
+    {
+        if(ModelState.IsValid)
         {
             if (await _couponService.DeleteAsync(code))
                 return Ok();
-
-            return BadRequest();
         }
+        return BadRequest();
+    }
 
-
-
-        [Authorize(Roles = "Admin, ProductManager")]
-        [Route("AddCoupon")]
-        [HttpPost]
-        public async Task<IActionResult> AddCoupon(CouponSchema schema)
+    [Authorize]
+    [Route("AddCoupon")]
+    [HttpPost]
+    public async Task<IActionResult> AddCoupon(CouponSchema schema)
+    {
+        if(ModelState.IsValid)
         {
             if (await _couponService.AddAsync(schema))
                 return Ok();
-
-            return BadRequest();
         }
-
-
-
-        
-
-
-
+        return BadRequest();
     }
-
-    
 }
