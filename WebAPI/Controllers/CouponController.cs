@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
 
 
 
-        [Route("GetCoupon")]
+        [Route("Get")]
         [HttpGet]
         public async Task<IActionResult> GetCoupon(string code)
         {
@@ -37,8 +37,25 @@ namespace WebAPI.Controllers
         }
 
 
+        [Route("All")]
+        [HttpGet]
+        public async Task<IActionResult> GetCoupons()
+        {
+            try
+            {
+                return Ok(await _couponService.GetAllAsync());
+            }
+            catch (Exception)
+            {
+
+                return BadRequest("Something went wrong");
+            }
+
+        }
+
+
         [Authorize(Roles = "Admin, ProductManager")]
-        [Route("DeleteCoupon")]
+        [Route("Delete")]
         [HttpPost]
         public async Task<IActionResult> DeleteCoupon(string code)
         {
@@ -50,8 +67,8 @@ namespace WebAPI.Controllers
 
 
 
-        [Authorize(Roles = "Admin, ProductManager")]
-        [Route("AddCoupon")]
+        //[Authorize(Roles = "Admin, ProductManager")]
+        [Route("Add")]
         [HttpPost]
         public async Task<IActionResult> AddCoupon(CouponSchema schema)
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
@@ -63,6 +64,22 @@ namespace WebAPI.Helpers.Services
             {
                 return false;
             }
+        }
+
+
+        public async Task<IEnumerable<CouponDTO>> GetAllAsync()
+        {
+            var coupons = await _couponRepo.GetAllAsync();
+
+            var dtos = new List<CouponDTO>();
+
+            foreach (var entity in coupons)
+            {
+                
+                dtos.Add(entity);
+            }
+
+            return dtos;
         }
 
     }

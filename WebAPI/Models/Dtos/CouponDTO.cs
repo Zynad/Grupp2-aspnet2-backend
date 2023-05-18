@@ -1,4 +1,7 @@
-﻿namespace WebAPI.Models.Dtos
+﻿using System.Security.Policy;
+using WebAPI.Models.Entities;
+
+namespace WebAPI.Models.Dtos
 {
     public class CouponDTO
     {
@@ -6,9 +9,18 @@
         public Guid Id { get; set; }
         public string Code { get; set; } = null!;
         public decimal DiscountAmount { get; set; } 
-        //public string Products { get; set; } = null!;
+        
         public DateTime? ExpiryDate { get; set; }
         
-
+        public static implicit operator CouponDTO(CouponEntity couponEntity)
+        {
+            return new CouponDTO
+            {
+                Id = couponEntity.Id,
+                Code = couponEntity.Code,
+                DiscountAmount = couponEntity.DiscountAmount,
+                ExpiryDate = couponEntity.ExpiryDate
+            };
+        }
     }
 }
