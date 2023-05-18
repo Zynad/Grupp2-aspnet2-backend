@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,14 +16,15 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"),new DefaultAzureCredential());
 
 #region Databases
-builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DataDB")));
-builder.Services.AddDbContext<CosmosContext>(x => x.UseCosmos(builder.Configuration.GetConnectionString("CosmosDB")!, "grupp2-cosmos"));
+builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration["DataDB"]));
+builder.Services.AddDbContext<CosmosContext>(x => x.UseCosmos(builder.Configuration["CosmosDB"]!, "grupp2-cosmos"));
 #endregion
 
 #region EmailConfig
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
+builder.Services.AddScoped<MailSettings>();
 builder.Services.AddScoped<MailService>();
 #endregion
 
@@ -93,13 +95,13 @@ builder.Services.AddAuthentication(x =>
     x.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration.GetSection("TokenValidation").GetValue<string>("Issuer")!,
+        ValidIssuer = builder.Configuration["TokenIssuer"],
         ValidateAudience = true,
-        ValidAudience = builder.Configuration.GetSection("TokenValidation").GetValue<string>("Audience")!,
+        ValidAudience = builder.Configuration["TokenAudience"],
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration.GetSection("TokenValidation").GetValue<string>("SecretKey")!))
+            Encoding.UTF8.GetBytes(builder.Configuration["TokenSecretKey"]!))
     };
 });
 #endregion
@@ -109,13 +111,13 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthentication()
     .AddFacebook(x =>
     {
-        x.ClientId = builder.Configuration["Facebook:ClientId"]!;
-        x.ClientSecret = builder.Configuration["Facebook:ClientSecret"]!;
+        x.ClientId = builder.Configuration["FacebookClientId"]!;
+        x.ClientSecret = builder.Configuration["FacebookClientSecret"]!;
     })
     .AddGoogle(x =>
     {
-        x.ClientId = builder.Configuration["Google:ClientId"]!;
-        x.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
+        x.ClientId = builder.Configuration["GoogleClientId"]!;
+        x.ClientSecret = builder.Configuration["GoogleClientSecret"]!;
     });
 
 
