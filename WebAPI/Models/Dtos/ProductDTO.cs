@@ -15,8 +15,6 @@ namespace WebAPI.Models.Dtos
 		public string? SalesCategory { get; set; }
 		public string Description { get; set; } = null!;
 		public double Rating { get; set; }
-		public string? Color { get; set; } = "";
-		public string? Size { get; set; } = "";
 		public string Brand { get; set; } = null!;
 		public double? DiscountMultiplier { get; set; }
 
@@ -34,8 +32,6 @@ namespace WebAPI.Models.Dtos
 				SalesCategory = entity.SalesCategory,
 				Description = entity.Description,
 				Rating = entity.Rating,
-				Color = entity.Color,
-				Size = entity.Color,
 				Brand = entity.Brand,
 				DiscountMultiplier = entity.DiscountMultiplier,
 

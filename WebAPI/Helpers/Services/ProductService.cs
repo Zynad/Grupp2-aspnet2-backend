@@ -3,6 +3,8 @@ using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Schemas;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI.Helpers.Services
 {
@@ -146,6 +148,19 @@ namespace WebAPI.Helpers.Services
 			return false;
 		}
 
+		public async Task<bool> UpdateAsync(ProductSchema schema)
+		{
+			try
+			{
+				ProductEntity entity = schema;
+				await _productRepo.UpdateAsync(entity);
+
+				return true;
+			}
+			catch { }
+			return false;
+		}
+
 		public async Task<bool> DeleteAsync(Guid id)
 		{
 			try
@@ -185,13 +200,19 @@ namespace WebAPI.Helpers.Services
 			return false;
 		}
 
-		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(string? name, int? minPrice, int? maxPrice, List<string>? tags, string? category, string? salesCategory)
+		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(string? name, int? minPrice, int? maxPrice, string? tagsString, string? category, string? salesCategory, int? amount)
 		{
 
 			try
 			{
 				var products = await _productRepo.GetAllAsync();
 				var dtos = new List<ProductDTO>();
+				var tags = new List<string>();
+
+				if (!string.IsNullOrEmpty(tagsString))
+				{
+					tags = tagsString.Split(',').Select(t => t.Trim()).ToList();
+				}
 
 				foreach (var product in products)
 				{
@@ -206,9 +227,10 @@ namespace WebAPI.Helpers.Services
 				{
 					dtos = dtos.Where(p => p.Price <= maxPrice).ToList();
 				}
-				if (tags != null && tags.Count > 0)
+				if (tags.Any() && tags.Count > 0)
 				{
-					dtos = dtos.Where(p => tags.All(t => p.Tags!.Contains(t))).ToList();
+					dtos = dtos.Where(p => tags.All(t => p.Tags != null && p.Tags.Any(pt => string.Equals(pt, t, StringComparison.OrdinalIgnoreCase)))).ToList();
+					// dtos = dtos.Where(p => tags.All(t => p.Tags!.Contains(t))).ToList();
 				}
 				if (!string.IsNullOrEmpty(name))
 				{
@@ -223,6 +245,9 @@ namespace WebAPI.Helpers.Services
 					dtos = dtos.Where(p => p.SalesCategory == salesCategory).ToList();
 				}
 
+				if (amount.HasValue)
+					dtos = dtos.Take(amount.Value).ToList();
+									
 				return dtos;
 			}
 			catch { }
