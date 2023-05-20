@@ -18,13 +18,13 @@ public class SmsService
     {
         try
         {
-            var accountSid = _configuration.GetSection("PhoneService").GetValue<string>("AccountSID");
-            var authToken = _configuration.GetSection("PhoneService").GetValue<string>("AuthToken");
+            var accountSid = _configuration["PhoneAccountSID"];
+            var authToken = _configuration["PhoneAuthToken"];
             TwilioClient.Init(accountSid, authToken);
 
             var messageOptions = new CreateMessageOptions(
                 new PhoneNumber(phoneNo));
-            messageOptions.From = _configuration.GetSection("PhoneService").GetValue<string>("FromNumber");
+            messageOptions.From = _configuration["PhoneFromNumber"];
             messageOptions.Body = smsBody;
 
             var message = await MessageResource.CreateAsync(messageOptions);
