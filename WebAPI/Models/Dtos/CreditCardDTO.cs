@@ -6,6 +6,7 @@ namespace WebAPI.Models.Dtos;
 
 public class CreditCardDTO
 {
+    public int Id { get; set; }
     public string NameOnCard { get; set; } = null!;
     public string CardNo { get; set; } = null!;
     public int ExpireMonth { get; set; }
