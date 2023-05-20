@@ -16,7 +16,11 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"),new DefaultAzureCredential());
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+{
+    builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
+}
+    
 
 #region Databases
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration["DataDB"]));
