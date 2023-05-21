@@ -7,7 +7,7 @@ namespace WebAPI.Models.Dtos
     {
         
         public Guid Id { get; set; }
-        public string Code { get; set; } = null!;
+        public string Vouchercode{ get; set; } = null!;
         public decimal DiscountAmount { get; set; } 
         
         public DateTime? ExpiryDate { get; set; }
@@ -17,7 +17,7 @@ namespace WebAPI.Models.Dtos
             return new CouponDTO
             {
                 Id = couponEntity.Id,
-                Code = couponEntity.Code,
+                Vouchercode= couponEntity.VoucherCode,
                 DiscountAmount = couponEntity.DiscountAmount,
                 ExpiryDate = couponEntity.ExpiryDate
             };

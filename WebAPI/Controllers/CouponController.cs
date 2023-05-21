@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
+using Microsoft.Extensions.Azure;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
@@ -33,6 +36,22 @@ public class CouponController : ControllerBase
             return Ok(coupon);
         }
         return BadRequest();
+    }
+
+    [Route("GetCoupons")]
+    [HttpGet]
+    public async Task<IActionResult> GetCoupons()
+    {
+        try
+        {
+            return Ok(await _couponService.GetAllAsync());
+        }
+        catch (Exception)
+        {
+
+            return BadRequest("Something went wrong");
+        }
+
     }
 
     [Authorize]
