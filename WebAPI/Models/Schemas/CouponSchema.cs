@@ -7,6 +7,10 @@ namespace WebAPI.Models.Schemas
     {
         [Required]
         public string Title { get; set; } = null!;
+
+        [Required]
+        public string UserId { get; set; } = null!;
+
         [Required]
         public string VoucherCode { get; set; } = null!;
         [Required]
@@ -19,7 +23,13 @@ namespace WebAPI.Models.Schemas
 
         public static implicit operator CouponEntity(CouponSchema schema)
         {
-            return new CouponEntity { Title = schema.Title ,VoucherCode = schema.VoucherCode, DiscountAmount = schema.DiscountAmount,ExpiryDate = schema.ExpiryDate  };
+            return new CouponEntity { 
+                Id = Guid.NewGuid(),
+                UserId = schema.UserId,
+                Title = schema.Title ,
+                VoucherCode = schema.VoucherCode, 
+                DiscountAmount = schema.DiscountAmount,
+                ExpiryDate = schema.ExpiryDate  };
         }
     }
 

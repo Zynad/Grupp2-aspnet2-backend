@@ -6,6 +6,7 @@ namespace WebAPI.Models.Entities
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
+        public string UserId { get; set; } = null!;
         public string Title { get; set; } = null!;
         public string VoucherCode { get; set; } = null!;
         public decimal DiscountAmount { get; set; }
