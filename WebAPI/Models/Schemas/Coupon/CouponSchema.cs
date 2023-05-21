@@ -8,8 +8,7 @@ namespace WebAPI.Models.Schemas
         [Required]
         public string Title { get; set; } = null!;
 
-        [Required]
-        public string UserId { get; set; } = null!;
+       
 
         [Required]
         public string VoucherCode { get; set; } = null!;
@@ -25,7 +24,6 @@ namespace WebAPI.Models.Schemas
         {
             return new CouponEntity { 
                 Id = Guid.NewGuid(),
-                UserId = schema.UserId,
                 Title = schema.Title ,
                 VoucherCode = schema.VoucherCode, 
                 DiscountAmount = schema.DiscountAmount,
