@@ -50,6 +50,8 @@ public class MailController : ControllerBase
             {
                 return Ok("Email confirmed");
             }
+            string errorDescription = result.Errors.FirstOrDefault()!.Description;
+            return Problem(errorDescription ?? "An error occurred on the server");
         }
         return Problem("Something went wrong on the server");
     }

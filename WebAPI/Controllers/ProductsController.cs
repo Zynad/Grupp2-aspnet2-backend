@@ -117,11 +117,11 @@ namespace WebAPI.Controllers
 
 		[Route("Filter")]
 		[HttpGet]
-		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, [FromQuery]List<string>? tags, string? category, string? salesCategory)
+		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, string? tags, string? category, string? salesCategory, int? amount)
 		{
 			if (ModelState.IsValid)
 			{
-				var result = await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory);
+				var result = await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory, amount);
 				if (result != null)
 					return Ok(result);
 			}
@@ -135,14 +135,9 @@ namespace WebAPI.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var product = await _productService.CreateAsync(schema);
-        
-				if (product)
-				{
 					var result = await _productService.CreateAsync(schema);
 					if (result)
 						return Created("", null);
-				}
 			}
 			
 			return BadRequest("Something went wrong, try again!");
@@ -160,6 +155,24 @@ namespace WebAPI.Controllers
 					var result = await _productService.DeleteAsync(id);
 					if (result)
 						return Ok("Product deleted");
+				}
+			}
+			
+			return BadRequest("Something went wrong, try again!");
+		}
+
+		[Route("Update")]
+		[HttpPut]
+		public async Task<IActionResult> UpdateProduct(ProductSchema schema)
+		{
+			if (ModelState.IsValid)
+			{
+				var userName = HttpContext.User.Identity!.Name;
+				if (userName != null)
+				{
+					var result = await _productService.UpdateAsync(schema);
+					if (result)
+						return Ok("Product updated");
 				}
 			}
 			

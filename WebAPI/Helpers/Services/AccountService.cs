@@ -344,7 +344,7 @@ public class AccountService
 
             if (user.PhoneNumber != phoneNo)
             {
-                dto.Message = "Your number is already confirmed";
+                dto.Message = "The number you entered don't match the Phone number in our database";
                 return dto;
             }
 
@@ -363,7 +363,7 @@ public class AccountService
                 return dto;
             }
 
-            dto.Message = "The number you have entered is not the same as the one registered in your account";
+            dto.Message = "Your number is already confirmed in our database";
             return dto;
         }
         catch { }
