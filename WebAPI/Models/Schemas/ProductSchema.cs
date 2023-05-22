@@ -13,6 +13,7 @@ namespace WebAPI.Models.Schemas
 		public string Description { get; set; } = null!;
 		public string Brand { get; set; } = null!;
 		public string? SalesCategory { get; set; }
+		public DateTime CreatedDate { get; set; }
 
 
 		public static implicit operator ProductEntity(ProductSchema schema)
@@ -31,6 +32,7 @@ namespace WebAPI.Models.Schemas
 				Category = schema.Category,
 				SalesCategory = salesCat,
 				Tags = schema.Tags,
+				CreatedDate = DateTime.Now
 			};
 		}
 	}

@@ -191,6 +191,7 @@ namespace WebAPI.Helpers.Services
 				if (count > 0)
 				{
 					product.Rating = ratings.Sum() / count;
+					product.ReviewCount = ratings.Count;
 					await _productRepo.UpdateAsync(product);
 
 					return true;
