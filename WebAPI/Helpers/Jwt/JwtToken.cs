@@ -19,13 +19,13 @@ public class JwtToken
         var tokenHandler = new JwtSecurityTokenHandler();
         var securityTokenDescriptor = new SecurityTokenDescriptor
         {
-            Issuer = _configuration.GetSection("TokenValidation").GetValue<string>("Issuer")!,
-            Audience = _configuration.GetSection("TokenValidation").GetValue<string>("Audience")!,
+            Issuer = _configuration["TokenIssuer"],
+            Audience = _configuration["TokenAudience"],
             Subject = claimsIdentity,
             Expires = expiresAt,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_configuration.GetSection("TokenValidation").GetValue<string>("SecretKey")!)),
+                    Encoding.UTF8.GetBytes(_configuration["TokenSecretKey"]!)),
                 SecurityAlgorithms.HmacSha512Signature)
         };
         return tokenHandler.WriteToken(tokenHandler.CreateToken(securityTokenDescriptor));
