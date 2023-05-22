@@ -11,7 +11,7 @@ namespace WebAPI.Models.Entities
 		public string? Category { get; set; }
 		public List<string>? Tags { get; set; }
 
-		public string SalesCategory { get; set; } = "New";
+		public string? SalesCategory { get; set; } = "New";
 		
 		[MaxLength(100)]
 		[Required]
@@ -30,11 +30,12 @@ namespace WebAPI.Models.Entities
 
 		public double Rating { get; set; }
 
+		public int ReviewCount { get; set; }
+
+		public DateTime CreatedDate { get; set; }
+
 		[Required]
 		public string Brand { get; set; } = null!;
-
-		public string? Color { get; set; } = "";
-		public string? Size { get; set; } = "";
 
 		public bool Discount { get; set; }
 
