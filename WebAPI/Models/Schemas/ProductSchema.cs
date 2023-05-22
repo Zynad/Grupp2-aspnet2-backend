@@ -1,19 +1,24 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Build.Framework;
+using Microsoft.IdentityModel.Tokens;
 using WebAPI.Models.Entities;
 
 namespace WebAPI.Models.Schemas
 {
 	public class ProductSchema
 	{
+		[Required]
 		public string Name { get; set; } = null!;
+		[Required]
 		public double Price { get; set; }
+		[Required]
 		public string ImageUrl { get; set; } = null!;
 		public List<string>? Tags { get; set; }
 		public string? Category { get; set; }
+		[Required]
 		public string Description { get; set; } = null!;
+		[Required]
 		public string Brand { get; set; } = null!;
 		public string? SalesCategory { get; set; }
-		public DateTime CreatedDate { get; set; }
 
 
 		public static implicit operator ProductEntity(ProductSchema schema)
@@ -32,7 +37,6 @@ namespace WebAPI.Models.Schemas
 				Category = schema.Category,
 				SalesCategory = salesCat,
 				Tags = schema.Tags,
-				CreatedDate = DateTime.Now
 			};
 		}
 	}

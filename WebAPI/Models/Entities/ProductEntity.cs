@@ -32,7 +32,8 @@ namespace WebAPI.Models.Entities
 
 		public int ReviewCount { get; set; }
 
-		public DateTime CreatedDate { get; set; }
+		[Required]
+		public DateTime CreatedDate { get; set; } = DateTime.Now;
 
 		[Required]
 		public string Brand { get; set; } = null!;
