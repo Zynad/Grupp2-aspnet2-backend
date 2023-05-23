@@ -11,7 +11,7 @@ public class ReviewEntity
     public Guid ProductId { get; set; }
     
     [Required]
-    public string UserName { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     [Required]
     public string Comment { get; set; } = null!;
