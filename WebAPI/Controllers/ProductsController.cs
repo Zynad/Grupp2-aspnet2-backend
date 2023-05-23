@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
@@ -131,6 +132,7 @@ namespace WebAPI.Controllers
 		
 		[Route("Add")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> AddProduct(ProductSchema schema)
 		{
 			if (ModelState.IsValid)
@@ -145,6 +147,7 @@ namespace WebAPI.Controllers
 		
 		[Route("Delete")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> DeleteProduct(Guid id)
 		{
 			if (ModelState.IsValid)
@@ -163,6 +166,7 @@ namespace WebAPI.Controllers
 
 		[Route("Update")]
 		[HttpPut]
+		[Authorize]
 		public async Task<IActionResult> UpdateProduct(ProductSchema schema)
 		{
 			if (ModelState.IsValid)

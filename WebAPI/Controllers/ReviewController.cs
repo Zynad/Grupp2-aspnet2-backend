@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
@@ -47,6 +48,7 @@ namespace WebAPI.Controllers
 
         [Route("AddReview")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddReview(ReviewSchema schema)
         {
             if (ModelState.IsValid)

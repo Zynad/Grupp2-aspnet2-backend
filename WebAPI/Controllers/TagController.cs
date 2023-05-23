@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
@@ -47,6 +48,7 @@ namespace WebAPI.Controllers
 		
 		[Route("AddTag")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> AddTag(TagSchema schema)
 		{
 			if (ModelState.IsValid)
@@ -66,6 +68,7 @@ namespace WebAPI.Controllers
 		
 		[Route("DeleteTag")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> DeleteTag(Guid id)
 		{
 			if (ModelState.IsValid)
