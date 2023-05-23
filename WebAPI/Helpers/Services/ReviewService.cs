@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
@@ -9,11 +10,15 @@ public class ReviewService
 {
     private readonly ReviewRepo _reviewRepo;
     private readonly ProductService _productService;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserProfileRepo _userProfileRepo;
 
-    public ReviewService(ReviewRepo reviewRepo, ProductService productService)
+    public ReviewService(ReviewRepo reviewRepo, ProductService productService, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo)
     {
         _reviewRepo = reviewRepo;
         _productService = productService;
+        _userManager = userManager;
+        _userProfileRepo = userProfileRepo;
     }
 
     public async Task<IEnumerable<ReviewDTO>> GetAllAsync()
@@ -50,12 +55,18 @@ public class ReviewService
     {
         try
         {
-			ReviewEntity entity = schema;
-			entity.UserName = userName;
-			await _reviewRepo.AddAsync(entity);
-            await _productService.UpdateRatingAsync(entity.ProductId);
+            var user = await _userManager.FindByEmailAsync(userName);
+            var userProfile = await _userProfileRepo.GetAsync(x => x.UserId == user!.Id);
+            if(userProfile != null)
+            {
+                ReviewEntity entity = schema;
+                entity.Name = $"{userProfile.FirstName} {userProfile.LastName}";
+                await _reviewRepo.AddAsync(entity);
+                await _productService.UpdateRatingAsync(entity.ProductId);
 
-            return true;
+                return true;
+            }
+			
         }
         catch { }
         return false;   
