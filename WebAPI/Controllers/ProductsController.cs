@@ -135,14 +135,9 @@ namespace WebAPI.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var product = await _productService.CreateAsync(schema);
-        
-				if (product)
-				{
-					var result = await _productService.CreateAsync(schema);
-					if (result)
-						return Created("", null);
-				}
+				var result = await _productService.CreateAsync(schema);
+				if (result)
+					return Created("", null);
 			}
 			
 			return BadRequest("Something went wrong, try again!");
