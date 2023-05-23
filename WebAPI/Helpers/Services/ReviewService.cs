@@ -46,11 +46,12 @@ public class ReviewService
         return null!;
     }
 
-    public async Task<bool> CreateAsync(ReviewSchema schema)
+    public async Task<bool> CreateAsync(ReviewSchema schema, string userName)
     {
         try
         {
 			ReviewEntity entity = schema;
+			entity.UserName = userName;
 			await _reviewRepo.AddAsync(entity);
             await _productService.UpdateRatingAsync(entity.ProductId);
 
