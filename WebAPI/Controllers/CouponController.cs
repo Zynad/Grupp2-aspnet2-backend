@@ -55,8 +55,8 @@ public class CouponController : ControllerBase
     }
 
     [Authorize]
-    [Route("DeleteCoupon")]
-    [HttpPost]
+    [Route("DeleteCoupon/{id}")]
+    [HttpDelete]
     public async Task<IActionResult> DeleteCoupon(string code)
     {
         if (ModelState.IsValid)
