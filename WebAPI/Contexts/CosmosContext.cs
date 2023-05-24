@@ -25,12 +25,12 @@ namespace WebAPI.Contexts
 				.HasPartitionKey(x => x.PartitionKey);
 
 
+
 			modelBuilder.Entity<CouponEntity>()
 				.ToContainer("Coupons")
         .HasPartitionKey(x => x.PartitionKey);
 			modelBuilder.Entity<ReviewEntity>()
 				.ToContainer("Reviews")
-
 				.HasPartitionKey(x => x.PartitionKey);
 		}
 	}

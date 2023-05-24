@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.Extensions.Azure;
+
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
+
 
 namespace WebAPI.Controllers;
 
@@ -29,12 +32,14 @@ public class CouponController : ControllerBase
         if (ModelState.IsValid)
         {
             var coupon = await _couponService.GetCouponByCodeAsync(voucher);
+
             if (coupon == null)
             {
                 return NotFound();
             }
             return Ok(coupon);
         }
+
         return BadRequest();
     }
 
@@ -76,4 +81,5 @@ public class CouponController : ControllerBase
         }
         return BadRequest();
     }
+
 }

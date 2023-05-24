@@ -5,6 +5,7 @@ namespace WebAPI.Models.Entities
     public class CouponEntity
     {
         [Key]
+
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Title { get; set; } = null!;
         public string VoucherCode { get; set; } = null!;
