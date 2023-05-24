@@ -1,6 +1,5 @@
 ﻿namespace WebAPI.Models.Schemas
 {
-	// string? name, int? minPrice, int? maxPrice, string? tags, string? category, string? salesCategory, int? amount
 	public class FilterSchema
 	{
 		public string? Name { get; set; }
