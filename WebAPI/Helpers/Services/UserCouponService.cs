@@ -1,6 +1,6 @@
 ﻿using WebAPI.Helpers.Repositories;
 
-namespace WebAPI.Helpers.Services.Coupon
+namespace WebAPI.Helpers.Services
 {
     public class UserCouponService
     {
@@ -11,6 +11,6 @@ namespace WebAPI.Helpers.Services.Coupon
             _userCouponRepo = userCouponRepo;
         }
 
-  
+
     }
 }

@@ -7,18 +7,12 @@ namespace WebAPI.Models.Schemas
     {
         [Required]
         public string Title { get; set; } = null!;
-
-       
-
         [Required]
         public string VoucherCode { get; set; } = null!;
         [Required]
         public decimal DiscountAmount { get; set; }
         [Required]
         public DateTime ExpiryDate { get; set; }
-
-
-
 
         public static implicit operator CouponEntity(CouponSchema schema)
         {
@@ -30,6 +24,4 @@ namespace WebAPI.Models.Schemas
                 ExpiryDate = schema.ExpiryDate  };
         }
     }
-
-   
 }

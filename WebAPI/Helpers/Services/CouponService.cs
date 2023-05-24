@@ -69,7 +69,6 @@ public class CouponService
 
         foreach (var entity in coupons)
         {
-
             dtos.Add(entity);
         }
 
