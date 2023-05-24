@@ -1,73 +1,84 @@
 ﻿using System.Collections;
 using WebAPI.Helpers.Repositories;
+
+using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
-namespace WebAPI.Helpers.Services
+namespace WebAPI.Helpers.Services;
+
+public class CouponService
 {
-    public class CouponService
+    private readonly CouponRepo _couponRepo;
+
+    public CouponService(CouponRepo couponRepo)
     {
-        private readonly CouponRepo _couponRepo;
+        _couponRepo = couponRepo;
+    }
 
-        public CouponService(CouponRepo couponRepo)
+    public async Task<CouponEntity> GetCouponByCodeAsync(string voucherCode)
+    {
+        try
         {
-            _couponRepo = couponRepo;
-        }
-
-        public object CouponDTO { get; internal set; }
-
-        public async Task<CouponEntity> GetCouponByCodeAsync(string code)
-        {
-            if (code is null)
+            var result = await _couponRepo.GetAsync(x => x.VoucherCode == voucherCode);
+            if (result != null)
             {
-                throw new ArgumentNullException(nameof(code));
+                return result;
             }
-
-            var result= await _couponRepo.GetAsync(x => x.Code == code);
-            return result;
         }
+        catch { }
 
+        return null!;
+    }
 
-        public async Task<bool> DeleteAsync(string code)
+    public async Task<bool> DeleteAsync(string voucherCode)
+    {
+        try
         {
-            if (code is null)
+            var coupon = await _couponRepo.GetAsync(x => x.VoucherCode == voucherCode);
+            if (coupon != null)
             {
-                throw new ArgumentNullException(nameof(code));
-            }
-
-            try
-            {
-                var coupon = await _couponRepo.GetAsync(x => x.Code == code);
                 await _couponRepo.DeleteAsync(coupon);
                 return true;
             }
-            catch (Exception)
-            {
-
-                return false;
-            }
-
-            
         }
+        catch { }
 
-        public async Task<bool> AddAsync(CouponSchema schema)
-        {
-            CouponEntity entity = schema;
-
-            try
-            {
-                await _couponRepo.AddAsync(entity);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        return false;
 
     }
 
+    public async Task<bool> AddAsync(CouponSchema schema)
+    {
+        var entity = schema;
 
+        try
+        {
+            await _couponRepo.AddAsync(entity);
+            return true;
+        }
+        catch { }
 
-    
+        return false;
+    }
+
+    public async Task<IEnumerable<CouponDTO>> GetAllAsync()
+    {
+        var coupons = await _couponRepo.GetAllAsync();
+
+        var dtos = new List<CouponDTO>();
+
+        foreach (var entity in coupons)
+        {
+            dtos.Add(entity);
+        }
+
+        return dtos;
+    }
+
 }
+
+
+
+
+

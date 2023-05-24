@@ -12,8 +12,8 @@ using WebAPI.Contexts;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230503083602_Register account")]
-    partial class Registeraccount
+    [Migration("20230515144016_UpdateTable")]
+    partial class UpdateTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -223,6 +223,121 @@ namespace WebAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WebAPI.Models.Entities.AddressEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AddressEntities");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.AddressItemEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("AddressItems");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.CreditCardEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CVV")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("CardNo")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NameOnCard")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CreditCardEntities");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileAddressItemEntity", b =>
+                {
+                    b.Property<string>("UserProfileId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AddressItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserProfileId", "AddressItemId");
+
+                    b.HasIndex("AddressItemId");
+
+                    b.ToTable("UserAddressItems");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileCreditCardEntity", b =>
+                {
+                    b.Property<string>("UserProfileId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CreditCardId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserProfileId", "CreditCardId");
+
+                    b.HasIndex("CreditCardId");
+
+                    b.ToTable("UserProfileCreditCards");
+                });
+
             modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
                 {
                     b.Property<string>("UserId")
@@ -295,6 +410,55 @@ namespace WebAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WebAPI.Models.Entities.AddressItemEntity", b =>
+                {
+                    b.HasOne("WebAPI.Models.Entities.AddressEntity", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileAddressItemEntity", b =>
+                {
+                    b.HasOne("WebAPI.Models.Entities.AddressItemEntity", "AddressItem")
+                        .WithMany("UserProfileAddressItems")
+                        .HasForeignKey("AddressItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebAPI.Models.Entities.UserProfileEntity", "UserProfile")
+                        .WithMany("UserProfileAddressItems")
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AddressItem");
+
+                    b.Navigation("UserProfile");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileCreditCardEntity", b =>
+                {
+                    b.HasOne("WebAPI.Models.Entities.CreditCardEntity", "CreditCard")
+                        .WithMany("UserProfileCreditCards")
+                        .HasForeignKey("CreditCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebAPI.Models.Entities.UserProfileEntity", "UserProfile")
+                        .WithMany("UserProfileCreditCards")
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreditCard");
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
@@ -304,6 +468,23 @@ namespace WebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.AddressItemEntity", b =>
+                {
+                    b.Navigation("UserProfileAddressItems");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.CreditCardEntity", b =>
+                {
+                    b.Navigation("UserProfileCreditCards");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Entities.UserProfileEntity", b =>
+                {
+                    b.Navigation("UserProfileAddressItems");
+
+                    b.Navigation("UserProfileCreditCards");
                 });
 #pragma warning restore 612, 618
         }

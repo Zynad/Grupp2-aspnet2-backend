@@ -1,4 +1,5 @@
 ﻿using System.Security.Policy;
+using System.Xml;
 using WebAPI.Models.Entities;
 
 namespace WebAPI.Models.Dtos
@@ -13,8 +14,10 @@ namespace WebAPI.Models.Dtos
 		public string? Category { get; set; }
 		public string? SalesCategory { get; set; }
 		public string Description { get; set; } = null!;
-		public int Rating { get; set; }
+		public double Rating { get; set; }
+		public int ReviewCount { get; set; }
 		public string Brand { get; set; } = null!;
+		public DateTime CreatedDate { get; set; }
 		public double? DiscountMultiplier { get; set; }
 
 
@@ -31,9 +34,10 @@ namespace WebAPI.Models.Dtos
 				SalesCategory = entity.SalesCategory,
 				Description = entity.Description,
 				Rating = entity.Rating,
+				ReviewCount = entity.ReviewCount,
 				Brand = entity.Brand,
 				DiscountMultiplier = entity.DiscountMultiplier,
-
+				CreatedDate = entity.CreatedDate,
 			};
 		}
 	}
