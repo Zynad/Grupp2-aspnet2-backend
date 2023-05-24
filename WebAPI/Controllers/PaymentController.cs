@@ -54,7 +54,7 @@ public class PaymentController : ControllerBase
         {
             var result = await _paymentService.DeleteCreditCardsAsync(id, HttpContext.User.Identity!.Name!);
             if(result)
-                return Ok("Card was successfully removed");
+                return Ok();
         }
         return BadRequest("Something went wrong, try again!");
     }

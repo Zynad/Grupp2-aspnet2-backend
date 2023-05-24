@@ -44,7 +44,7 @@ public class PaymentService
         try
         {
             var user = await _userManager.FindByEmailAsync(userName);
-            var existingCard = await _creditCardRepo.GetAsync(x => x.CardNo == schema.CardNo && x.NameOnCard == schema.NameOnCard && x.CVV == schema.CVV);
+            var existingCard = await _creditCardRepo.GetAsync(x => x.CardNo == schema.CardNo && x.NameOnCard == schema.NameOnCard && x.CVV == schema.CVV && x.Expires.Month == schema.ExpireMonth && x.Expires.Year == schema.ExpireYear);
 
             if(existingCard != null)
             {
