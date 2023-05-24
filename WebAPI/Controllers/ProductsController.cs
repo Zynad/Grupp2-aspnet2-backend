@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Schemas;
@@ -21,92 +22,165 @@ namespace WebAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _productService.GetAllAsync());
+				var result = await _productService.GetAllAsync();
+				if (result != null)
+					return Ok(result);
 			}
-			catch 
-			{
-				return BadRequest("Something went wrong");
-			}
+			
+			return BadRequest("Something went wrong, try again!");
 		}
 
 		[Route("Get")]
 		[HttpGet]
 		public async Task<IActionResult> GetById(Guid id)
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _productService.GetByIdAsync(id));
+				var result = await _productService.GetByIdAsync(id);
+				if (result != null)
+					return Ok(result);
 			}
-			catch 
-			{
-				return BadRequest("Something went wrong");			
-			}
+			
+			return BadRequest("Something went wrong, try again!");
 		}
 
 		[Route("Tag")]
 		[HttpGet]
 		public async Task<IActionResult> GetByTag([FromQuery]List<string> tags)
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _productService.GetByTagAsync(tags));
+				var result = await _productService.GetByTagAsync(tags);
+				if (result != null)
+					return Ok(result);
 			}
-			catch 
+			
+			return BadRequest("Something went wrong, try again!");
+		}
+
+		[Route("Category")]
+		[HttpGet]
+		public async Task<IActionResult> GetByCategory(string category)
+		{
+			if (ModelState.IsValid)
 			{
-				return BadRequest("Something went wrong");
+				var result = await _productService.GetByCategoryAsync(category);
+				if (result != null)
+					return Ok(result);
 			}
+			
+			return BadRequest("Sometihing went wrong, try again!");
 		}
 
 		[Route("SalesCategory")]
 		[HttpGet]
 		public async Task<IActionResult> GetBySalesCategory(string salescategory)
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _productService.GetBySalesCategory(salescategory));
+				var result = await _productService.GetBySalesCategoryAsync(salescategory);
+				if (result != null)
+					return Ok(result);
 			}
-			catch 
+			
+			return BadRequest("Something went wrong, try again!");
+		}
+
+		[Route("Price")]
+		[HttpGet]
+		public async Task<IActionResult> GetByPrice(int minPrice, int maxPrice)
+		{
+			if (ModelState.IsValid)
 			{
-				return BadRequest("Something went wrong");
+				var result = await _productService.GetByPriceAsync(minPrice, maxPrice);
+				if (result != null)
+					return Ok(result);
 			}
+			
+			return BadRequest("Something went wrong, try again!");
 		}
 
 		[Route("Search")]
 		[HttpGet]
 		public async Task<IActionResult> GetByName(string name)
 		{
-			try
+			if (ModelState.IsValid)
 			{
-				return Ok(await _productService.GetByNameAsync(name));
+				var result = await _productService.GetByNameAsync(name);
+				if (result != null)
+					return Ok(result);
 			}
-			catch 
-			{
-				return BadRequest("Something went wrong");
-			}
+			
+			return BadRequest("Something went wrong, try again!");
 		}
 
-		//[Authorize(Roles = "Admin, ProductManager")]
+		[Route("Filter")]
+		[HttpGet]
+		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, string? tags, string? category, string? salesCategory, int? amount)
+		{
+			if (ModelState.IsValid)
+			{
+				var result = await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory, amount);
+				if (result != null)
+					return Ok(result);
+			}
+			
+			return BadRequest("Something went wrong, try again!");
+		}
+		
 		[Route("Add")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> AddProduct(ProductSchema schema)
 		{
-			if (await _productService.CreateAsync(schema))
-				return Created("", null);
-
-			return BadRequest();
+			if (ModelState.IsValid)
+			{
+					var result = await _productService.CreateAsync(schema);
+					if (result)
+						return Created("", null);
+			}
+			
+			return BadRequest("Something went wrong, try again!");
 		}
-
-		//[Authorize(Roles = "Admin, ProductManager")]
+		
 		[Route("Delete")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> DeleteProduct(Guid id)
 		{
-			if (await _productService.DeleteAsync(id))
-				return Ok();
+			if (ModelState.IsValid)
+			{
+				var userName = HttpContext.User.Identity!.Name;
+				if (userName != null)
+				{
+					var result = await _productService.DeleteAsync(id);
+					if (result)
+						return Ok("Product deleted");
+				}
+			}
+			
+			return BadRequest("Something went wrong, try again!");
+		}
 
-			return BadRequest();
+		[Route("Update")]
+		[HttpPut]
+		[Authorize]
+		public async Task<IActionResult> UpdateProduct(ProductSchema schema)
+		{
+			if (ModelState.IsValid)
+			{
+				var userName = HttpContext.User.Identity!.Name;
+				if (userName != null)
+				{
+					var result = await _productService.UpdateAsync(schema);
+					if (result)
+						return Ok("Product updated");
+				}
+			}
+			
+			return BadRequest("Something went wrong, try again!");
 		}
 	}
 }

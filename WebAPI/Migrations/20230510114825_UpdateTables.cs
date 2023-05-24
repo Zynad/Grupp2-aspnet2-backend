@@ -6,11 +6,41 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class Registeraccount : Migration
+    public partial class UpdateTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AddressEntities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StreetName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AddressEntities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AddressItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddressId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AddressItems", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -176,6 +206,37 @@ namespace WebAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserAddressItems",
+                columns: table => new
+                {
+                    UserProfileId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AddressItemId = table.Column<int>(type: "int", nullable: false),
+                    UserProfileAddressItemEntityAddressItemId = table.Column<int>(type: "int", nullable: true),
+                    UserProfileAddressItemEntityUserProfileId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAddressItems", x => new { x.UserProfileId, x.AddressItemId });
+                    table.ForeignKey(
+                        name: "FK_UserAddressItems_AddressItems_AddressItemId",
+                        column: x => x.AddressItemId,
+                        principalTable: "AddressItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAddressItems_UserAddressItems_UserProfileAddressItemEntityUserProfileId_UserProfileAddressItemEntityAddressItemId",
+                        columns: x => new { x.UserProfileAddressItemEntityUserProfileId, x.UserProfileAddressItemEntityAddressItemId },
+                        principalTable: "UserAddressItems",
+                        principalColumns: new[] { "UserProfileId", "AddressItemId" });
+                    table.ForeignKey(
+                        name: "FK_UserAddressItems_UserProfileEntities_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfileEntities",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -214,11 +275,24 @@ namespace WebAPI.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAddressItems_AddressItemId",
+                table: "UserAddressItems",
+                column: "AddressItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAddressItems_UserProfileAddressItemEntityUserProfileId_UserProfileAddressItemEntityAddressItemId",
+                table: "UserAddressItems",
+                columns: new[] { "UserProfileAddressItemEntityUserProfileId", "UserProfileAddressItemEntityAddressItemId" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AddressEntities");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -235,10 +309,16 @@ namespace WebAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "UserProfileEntities");
+                name: "UserAddressItems");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AddressItems");
+
+            migrationBuilder.DropTable(
+                name: "UserProfileEntities");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

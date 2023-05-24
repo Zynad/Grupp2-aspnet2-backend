@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebAPI.Models.Entities
 {
@@ -12,7 +11,7 @@ namespace WebAPI.Models.Entities
 		public string? Category { get; set; }
 		public List<string>? Tags { get; set; }
 
-		public string SalesCategory { get; set; } = "New";
+		public string? SalesCategory { get; set; } = "New";
 		
 		[MaxLength(100)]
 		[Required]
@@ -29,7 +28,12 @@ namespace WebAPI.Models.Entities
 		[Required]
 		public string Description { get; set; } = null!;
 
-		public int Rating { get; set; } = 3;
+		public double Rating { get; set; }
+
+		public int ReviewCount { get; set; }
+
+		[Required]
+		public DateTime CreatedDate { get; set; } = DateTime.Now;
 
 		[Required]
 		public string Brand { get; set; } = null!;

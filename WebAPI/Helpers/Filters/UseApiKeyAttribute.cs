@@ -8,7 +8,7 @@ public class UseApiKeyAttribute : Attribute, IAsyncActionFilter
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var config = context.HttpContext.RequestServices.GetService<IConfiguration>();
-        var apiKey = config!.GetValue<string>("ApiKey");
+        var apiKey = config!["ApiKey"];
 
         if (!context.HttpContext.Request.Query.TryGetValue("key", out var key))
         {
@@ -24,4 +24,3 @@ public class UseApiKeyAttribute : Attribute, IAsyncActionFilter
         await next();
     }
 }
-
