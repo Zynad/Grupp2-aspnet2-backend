@@ -1,7 +1,9 @@
-﻿using System.Security.Policy;
+
+using System.Security.Policy;
 using WebAPI.Models.Entities;
 
 namespace WebAPI.Models.Dtos
+
 {
     public class CouponDTO
     {
@@ -25,5 +27,6 @@ namespace WebAPI.Models.Dtos
                 ExpiryDate = couponEntity.ExpiryDate
             };
         }
+
     }
 }

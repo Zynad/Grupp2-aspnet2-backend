@@ -49,6 +49,7 @@ builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<PaymentService>();
 
+
 #endregion
 
 #region Repositories
@@ -57,6 +58,7 @@ builder.Services.AddScoped<ProductRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<TagRepo>();
 builder.Services.AddScoped<CouponRepo>();
+
 builder.Services.AddScoped<AddressRepo>();
 builder.Services.AddScoped<AddressItemRepo>();
 builder.Services.AddScoped<UserProfileAddressItemRepo>();

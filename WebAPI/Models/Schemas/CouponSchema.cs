@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+
+using System.ComponentModel.DataAnnotations;
 using WebAPI.Models.Entities;
+
 
 namespace WebAPI.Models.Schemas
 {
@@ -24,4 +26,5 @@ namespace WebAPI.Models.Schemas
                 ExpiryDate = schema.ExpiryDate  };
         }
     }
+
 }
