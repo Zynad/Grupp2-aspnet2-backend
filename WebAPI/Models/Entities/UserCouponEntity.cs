@@ -1,9 +1,12 @@
-﻿namespace WebAPI.Models.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebAPI.Models.Entities
 {
     public class UserCouponEntity
     {
-        public string UserId { get; set; }
-
+        [Key]
+        public string UserId { get; set; } = null!;
         public Guid CouponId { get; set; }
+        public string PartitionKey { get; set; } = "UserCoupon";
     }
 }
