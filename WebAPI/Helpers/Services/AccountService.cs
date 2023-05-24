@@ -26,8 +26,9 @@ public class AccountService
     private readonly JwtToken _jwt;
     private readonly MailService _mailService;
     private readonly IConfiguration _configuration;
+    private readonly SmsService _smsService;
 
-    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration)
+    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration, SmsService smsService)
     {
         _jwt = jwt;
         _roleManager = roleManager;
@@ -36,6 +37,7 @@ public class AccountService
         _userProfileRepo = userProfileRepo;
         _mailService = mailService;
         _configuration = configuration;
+        _smsService = smsService;
     }
     #endregion
     public async Task<bool> RegisterAsync(RegisterAccountSchema schema)
@@ -284,8 +286,7 @@ public class AccountService
         if (user != null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var mailLink = $"{_configuration.GetSection("Urls").GetValue<string>("RecoverPasswordUrl" +
-                "")}?email={WebUtility.UrlEncode(user.Email)}&token={WebUtility.UrlEncode(token)}";
+            var mailLink = $"{_configuration.GetSection("Urls").GetValue<string>("RecoverPasswordUrl")}?email={WebUtility.UrlEncode(user.Email)}&token={WebUtility.UrlEncode(token)}";
             var passwordMail = new MailData(new List<string> { user.Email! }, "Reset password", $"Press {mailLink} to reset your password");
             var result = await _mailService.SendAsync(passwordMail, new CancellationToken());
             if (result)
@@ -327,6 +328,62 @@ public class AccountService
             }
         } catch { } return false;
         
+    }
+    public async Task<ConfirmPhoneDTO> ConfirmPhone(string phoneNo,string email)
+    {
+        var dto = new ConfirmPhoneDTO();
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                dto.Message = "Can't find the user in the database";
+                return dto;
+            }
+
+            if (user.PhoneNumber != phoneNo)
+            {
+                dto.Message = "The number you entered don't match the Phone number in our database";
+                return dto;
+            }
+
+            if (!user.PhoneNumberConfirmed)
+            {
+                var Code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNo);
+                
+                var result = await _smsService.SendSmsAsync(phoneNo,$"Your code is : {Code}");
+                if (result)
+                {
+                    dto.Code = Code;
+                    dto.Message = "Success";
+                    return dto;
+                }
+                dto.Message = "Something went wrong with sending the sms, try again later";
+                return dto;
+            }
+
+            dto.Message = "Your number is already confirmed in our database";
+            return dto;
+        }
+        catch { }
+        dto.Message = "Something went wrong";
+        return dto;
+       
+    }
+    public async Task<bool> VerifyPhone(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if(user != null)
+        {
+            user.PhoneNumberConfirmed = true;
+            var result = await _userManager.UpdateAsync(user);
+            if(result.Succeeded)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
 }

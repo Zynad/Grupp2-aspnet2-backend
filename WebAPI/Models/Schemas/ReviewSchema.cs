@@ -1,3 +1,4 @@
+using Microsoft.Build.Framework;
 using WebAPI.Models.Entities;
 
 namespace WebAPI.Models.Schemas;
@@ -5,10 +6,10 @@ namespace WebAPI.Models.Schemas;
 public class ReviewSchema
 {
     public Guid ProductId { get; set; }
-    public string UserName { get; set; } = null!;
 
+    [Required]
     public string Comment { get; set; } = null!;
-    
+    [Required]
     public double Rating { get; set; }
 
     public static implicit operator ReviewEntity(ReviewSchema schema)
@@ -17,7 +18,6 @@ public class ReviewSchema
         {
             Id = Guid.NewGuid(),
             ProductId = schema.ProductId,
-            UserName = schema.UserName,
             Comment = schema.Comment,
             Rating = schema.Rating
         };

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
@@ -5,7 +6,7 @@ using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
-    [UseApiKey]
+	[UseApiKey]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewController : ControllerBase
@@ -21,43 +22,47 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllReviews()
         {
-            try
+            if (ModelState.IsValid)
             {
-                return Ok(await _reviewService.GetAllAsync());
+                var result = await _reviewService.GetAllAsync();
+                if (result != null)
+                    return Ok(result);
             }
-            catch
-            {
-                return BadRequest("Something went wrong");
-            }
+            
+            return BadRequest("Something went wrong, try again!");
         }
 
         [Route("GetByProductId")]
         [HttpGet]
         public async Task<IActionResult> GetByProductId(Guid productId)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return Ok(await _reviewService.GetByProductId(productId));
+                var result = await _reviewService.GetByProductId(productId);
+                if (result != null)
+                    return Ok(result);
             }
-            catch
-            {
-                return BadRequest("Something went wrong");
-            }
+            
+            return BadRequest("Something went wrong, try again!");
         }
 
         [Route("AddReview")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddReview(ReviewSchema schema)
         {
-            if (!ModelState.IsValid) return BadRequest("ModelState not valid");
-            try
+            if (ModelState.IsValid)
             {
-                return Ok(await _reviewService.CreateAsync(schema));
+                var userName = HttpContext.User.Identity!.Name;
+                if (userName != null)
+                {
+                    var result = await _reviewService.CreateAsync(schema, userName);
+                    if (result)
+                        return Created("", null);
+                }
             }
-            catch
-            {
-                return BadRequest("Something went wrong");
-            }
+            
+            return BadRequest("Something went wrong, try again!");
         }
     }
 }

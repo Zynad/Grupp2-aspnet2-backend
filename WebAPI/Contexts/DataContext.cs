@@ -14,5 +14,6 @@ public class DataContext : IdentityDbContext
     DbSet<UserProfileAddressItemEntity> UserAddressItems { get; set; }
     DbSet<AddressEntity> AddressEntities { get; set; }
     DbSet<AddressItemEntity> AddressItems { get; set; }
-
+    DbSet<CreditCardEntity> CreditCardEntities { get; set; }
+    DbSet<UserProfileCreditCardEntity> UserProfileCreditCards { get; set;}
 }
