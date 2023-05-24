@@ -117,14 +117,16 @@ namespace WebAPI.Controllers
 		}
 
 		[Route("Filter")]
-		[HttpGet]
-		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, string? tags, string? category, string? salesCategory, int? amount)
+		[HttpPost]
+		public async Task<IActionResult> GetFiltered(FilterSchema schema)
 		{
 			if (ModelState.IsValid)
 			{
-				var result = await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory, amount);
-				if (result != null)
-					return Ok(result);
+				var result = await _productService.GetFilteredProductsAsync(schema);
+				if (result == null || !result.Any())
+					return NotFound("No results found");
+
+				return Ok(result);
 			}
 			
 			return BadRequest("Something went wrong, try again!");
