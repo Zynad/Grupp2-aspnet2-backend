@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using WebAPI.Controllers;
 using WebAPI.Models.Schemas;
 using WebAPI.Models.Interfaces;
-using Xunit;
 using Microsoft.AspNetCore.Http;
 using FluentAssertions;
 using WebAPI.Models.Entities;
