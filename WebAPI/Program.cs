@@ -16,12 +16,15 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
 #region KeyVault
-bool useKeyVault = Convert.ToBoolean(builder.Configuration["UseKeyVault"]);
-if (useKeyVault)
-{
-    builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
-}
+//bool useKeyVault = Convert.ToBoolean(builder.Configuration["UseKeyVault"]);
+//if (useKeyVault)
+//{
+    //builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
+//}
 #endregion
 
 
@@ -42,11 +45,14 @@ builder.Services.AddScoped<SmsService>();
 builder.Services.AddScoped<JwtToken>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CouponService>();
 builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<UserCouponService>();
+
 #endregion
 
 #region Repositories
@@ -54,12 +60,14 @@ builder.Services.AddScoped<UserProfileRepo>();
 builder.Services.AddScoped<ProductRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<TagRepo>();
+builder.Services.AddScoped<CouponRepo>();
 builder.Services.AddScoped<AddressRepo>();
 builder.Services.AddScoped<AddressItemRepo>();
 builder.Services.AddScoped<UserProfileAddressItemRepo>();
 builder.Services.AddScoped<ReviewRepo>();
 builder.Services.AddScoped<CreditCardRepo>();
 builder.Services.AddScoped<UserProfileCreditCardRepo>();
+builder.Services.AddScoped<UserCouponRepo>();
 #endregion
 
 #region Identity
@@ -131,6 +139,18 @@ builder.Services.AddAuthentication()
 #endregion
 
 var app = builder.Build();
+if (!app.Environment.IsDevelopment())
+{
+    try
+    {
+        builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
+    } 
+    catch { }
+}
+
+
+
+
 app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI();
