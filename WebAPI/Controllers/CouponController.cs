@@ -27,11 +27,11 @@ public class CouponController : ControllerBase
     }
     [Route("GetCoupon")]
     [HttpGet]
-    public async Task<IActionResult> GetCoupon(string voucher)
+    public async Task<IActionResult> GetCoupon(string voucherCode)
     {
         if (ModelState.IsValid)
         {
-            var coupon = await _couponService.GetCouponByCodeAsync(voucher);
+            var coupon = await _couponService.GetCouponByCodeAsync(voucherCode);
 
             if (coupon == null)
             {
@@ -60,11 +60,11 @@ public class CouponController : ControllerBase
     [Authorize]
     [Route("DeleteCoupon/{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCoupon(string code)
+    public async Task<IActionResult> DeleteCoupon(Guid id)
     {
         if (ModelState.IsValid)
         {
-            if (await _couponService.DeleteAsync(code))
+            if (await _couponService.DeleteAsync(id))
                 return Ok();
         }
         return BadRequest();
@@ -77,9 +77,8 @@ public class CouponController : ControllerBase
         if (ModelState.IsValid)
         {
             if (await _couponService.AddAsync(schema))
-                return Ok();
+                return Created("", null);
         }
         return BadRequest();
-    }
-
+    } 
 }

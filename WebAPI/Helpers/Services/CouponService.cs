@@ -30,12 +30,27 @@ public class CouponService
 
         return null!;
     }
-
-    public async Task<bool> DeleteAsync(string voucherCode)
+    public async Task<CouponEntity> GetCouponByIDAsync(Guid id)
     {
         try
         {
-            var coupon = await _couponRepo.GetAsync(x => x.VoucherCode == voucherCode);
+            var result = await _couponRepo.GetAsync(x => x.Id == id);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        catch { }
+
+        return null!;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        
+        try
+        {
+            var coupon = await _couponRepo.GetAsync(x => x.Id == id);
             if (coupon != null)
             {
                 await _couponRepo.DeleteAsync(coupon);
@@ -76,6 +91,7 @@ public class CouponService
         return dtos;
     }
 
+    
 }
 
 

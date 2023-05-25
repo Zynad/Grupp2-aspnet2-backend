@@ -4,9 +4,9 @@ using WebAPI.Models.Entities;
 
 namespace WebAPI.Helpers.Repositories;
 
-public class CouponRepo : CosmosRepo<CouponEntity>
+public class UserCouponRepo : CosmosRepo<UserCouponEntity>
 {
-    public CouponRepo(CosmosContext context) : base(context)
+    public UserCouponRepo(CosmosContext context) : base(context)
     {
     }
 }

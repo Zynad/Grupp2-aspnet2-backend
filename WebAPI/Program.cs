@@ -51,7 +51,7 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<PaymentService>();
-
+builder.Services.AddScoped<UserCouponService>();
 
 #endregion
 
@@ -61,13 +61,13 @@ builder.Services.AddScoped<ProductRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<TagRepo>();
 builder.Services.AddScoped<CouponRepo>();
-
 builder.Services.AddScoped<AddressRepo>();
 builder.Services.AddScoped<AddressItemRepo>();
 builder.Services.AddScoped<UserProfileAddressItemRepo>();
 builder.Services.AddScoped<ReviewRepo>();
 builder.Services.AddScoped<CreditCardRepo>();
 builder.Services.AddScoped<UserProfileCreditCardRepo>();
+builder.Services.AddScoped<UserCouponRepo>();
 #endregion
 
 #region Identity
