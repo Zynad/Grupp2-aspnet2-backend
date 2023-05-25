@@ -17,12 +17,48 @@ namespace WebAPI.Tests.Controllers;
 //Alex testar denna
 public class UserCouponControllerTests
 {
-    private Mock<IUserCouponService> _mockUserCouponService;
-    private UserCouponController _controller;
+    private readonly UserCouponController _controller;
+    private readonly Mock<IUserCouponService> _mockUserCouponService;
 
     public UserCouponControllerTests()
     {
         _mockUserCouponService = new Mock<IUserCouponService>();
         _controller = new UserCouponController(_mockUserCouponService.Object);
     }
+
+    [Fact]
+    public async Task AddUserCoupon_ValidSchema_ReturnsOkResult()
+    {
+        // Arrange
+        var schema = new UserCouponSchema { VoucherCode = "ABC123" };
+        var userName = "testuser";
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                        new Claim(ClaimTypes.Name, userName)
+                    }))
+            }
+        };
+
+        _mockUserCouponService
+            .Setup(service => service.CheckDuplicateUserCouponAsync(schema.VoucherCode, userName))
+            .ReturnsAsync(new UserCouponEntity());
+
+        _mockUserCouponService
+            .Setup(service => service.AddUserCouponAsync(It.IsAny<UserCouponEntity>()))
+            .ReturnsAsync(new UserCouponDTO());
+
+        // Act
+        var result = await _controller.AddUserCoupon(schema);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    // Other test methods...
+
 }
