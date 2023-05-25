@@ -23,8 +23,8 @@ namespace WebAPI.Controllers
 			_orderService = orderService;
 		}
 
-        [Route("AllOrders")]
-        [HttpGet]
+        //[Route("AllOrders")]
+        //[HttpGet]
         //public async Task<IActionResult> GetAllOrders()
         //{
 

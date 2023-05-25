@@ -4,7 +4,7 @@ namespace WebAPI.Models.Schemas
 {
 	public class OrderSchema
 	{
-		public string Address { get; set; } = null!;
+		public int AddressId { get; set; }
 		public List<OrderItemEntity> Items { get; set; } = null!;
 	}
 }
