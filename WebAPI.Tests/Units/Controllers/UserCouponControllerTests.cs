@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Moq;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using WebAPI.Controllers;
-using WebAPI.Models.Schemas;
-using WebAPI.Models.Interfaces;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using FluentAssertions;
-using WebAPI.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using System.Security.Claims;
+using WebAPI.Controllers;
 using WebAPI.Models.Dtos;
+using WebAPI.Models.Entities;
+using WebAPI.Models.Interfaces;
+using WebAPI.Models.Schemas;
 
 namespace WebAPI.Tests.Controllers;
 
