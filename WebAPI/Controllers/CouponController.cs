@@ -60,11 +60,11 @@ public class CouponController : ControllerBase
     [Authorize]
     [Route("DeleteCoupon/{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCoupon(string voucherCode)
+    public async Task<IActionResult> DeleteCoupon(Guid id)
     {
         if (ModelState.IsValid)
         {
-            if (await _couponService.DeleteAsync(voucherCode))
+            if (await _couponService.DeleteAsync(id))
                 return Ok();
         }
         return BadRequest();
@@ -77,7 +77,7 @@ public class CouponController : ControllerBase
         if (ModelState.IsValid)
         {
             if (await _couponService.AddAsync(schema))
-                return Ok();
+                return Created("", null);
         }
         return BadRequest();
     } 

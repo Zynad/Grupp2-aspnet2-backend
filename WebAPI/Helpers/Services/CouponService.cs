@@ -45,11 +45,12 @@ public class CouponService
         return null!;
     }
 
-    public async Task<bool> DeleteAsync(string voucherCode)
+    public async Task<bool> DeleteAsync(Guid id)
     {
+        
         try
         {
-            var coupon = await _couponRepo.GetAsync(x => x.VoucherCode == voucherCode);
+            var coupon = await _couponRepo.GetAsync(x => x.Id == id);
             if (coupon != null)
             {
                 await _couponRepo.DeleteAsync(coupon);
