@@ -201,7 +201,7 @@ namespace WebAPI.Helpers.Services
 			return false;
 		}
 
-		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(string? name, int? minPrice, int? maxPrice, string? tagsString, string? category, string? salesCategory, int? amount)
+		public async Task<IEnumerable<ProductDTO>> GetFilteredProductsAsync(FilterSchema filter)
 		{
 
 			try
@@ -210,9 +210,9 @@ namespace WebAPI.Helpers.Services
 				var dtos = new List<ProductDTO>();
 				var tags = new List<string>();
 
-				if (!string.IsNullOrEmpty(tagsString))
+				if (!string.IsNullOrEmpty(filter.Tags))
 				{
-					tags = tagsString.Split(',').Select(t => t.Trim()).ToList();
+					tags = filter.Tags.Split(',').Select(t => t.Trim()).ToList();
 				}
 
 				foreach (var product in products)
@@ -220,34 +220,34 @@ namespace WebAPI.Helpers.Services
 					dtos.Add(product);
 				}
 
-				if (minPrice != null)
+				if (filter.MinPrice != null)
 				{
-					dtos = dtos.Where(p => p.Price >= minPrice).ToList();
+					dtos = dtos.Where(p => p.Price >= filter.MinPrice).ToList();
 				}
-				if (maxPrice != null)
+				if (filter.MaxPrice != null)
 				{
-					dtos = dtos.Where(p => p.Price <= maxPrice).ToList();
+					dtos = dtos.Where(p => p.Price <= filter.MaxPrice).ToList();
 				}
 				if (tags.Any() && tags.Count > 0)
 				{
 					dtos = dtos.Where(p => tags.All(t => p.Tags != null && p.Tags.Any(pt => string.Equals(pt, t, StringComparison.OrdinalIgnoreCase)))).ToList();
 					// dtos = dtos.Where(p => tags.All(t => p.Tags!.Contains(t))).ToList();
 				}
-				if (!string.IsNullOrEmpty(name))
+				if (!string.IsNullOrEmpty(filter.Name))
 				{
-					dtos = dtos.Where(p => p.Name.ToLower().Contains(name.ToLower())).ToList();
+					dtos = dtos.Where(p => p.Name.ToLower().Contains(filter.Name.ToLower())).ToList();
 				}
-				if (!string.IsNullOrEmpty(category))
+				if (!string.IsNullOrEmpty(filter.Category))
 				{
-					dtos = dtos.Where(p => p.Category == category).ToList();
+					dtos = dtos.Where(p => p.Category == filter.Category).ToList();
 				}
-				if (!string.IsNullOrEmpty(salesCategory))
+				if (!string.IsNullOrEmpty(filter.SalesCategory))
 				{
-					dtos = dtos.Where(p => p.SalesCategory == salesCategory).ToList();
+					dtos = dtos.Where(p => p.SalesCategory == filter.SalesCategory).ToList();
 				}
 
-				if (amount.HasValue)
-					dtos = dtos.Take(amount.Value).ToList();
+				if (filter.Amount.HasValue)
+					dtos = dtos.Take(filter.Amount.Value).ToList();
 									
 				return dtos;
 			}
