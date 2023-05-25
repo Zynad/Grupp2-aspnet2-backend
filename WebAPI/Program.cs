@@ -17,11 +17,11 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 #region KeyVault
-bool useKeyVault = Convert.ToBoolean(builder.Configuration["UseKeyVault"]);
-if (useKeyVault)
-{
+//bool useKeyVault = Convert.ToBoolean(builder.Configuration["UseKeyVault"]);
+//if (useKeyVault)
+//{
     builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
-}
+//}
 #endregion
 
 
