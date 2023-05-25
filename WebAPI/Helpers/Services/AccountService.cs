@@ -13,10 +13,11 @@ using WebAPI.Models.Dtos;
 using WebAPI.Models.Email;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
+using WebAPI.Models.Interfaces;
 
 namespace WebAPI.Helpers.Services;
 
-public class AccountService
+public class AccountService : IAccountService
 {
     #region Properties & Constructors
     private readonly UserProfileRepo _userProfileRepo;
@@ -24,11 +25,11 @@ public class AccountService
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtToken _jwt;
-    private readonly MailService _mailService;
+    private readonly Models.Interfaces.IMailService _mailService;
     private readonly IConfiguration _configuration;
-    private readonly SmsService _smsService;
+    private readonly ISmsService _smsService;
 
-    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration, SmsService smsService)
+    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, Models.Interfaces.IMailService mailService, IConfiguration configuration, ISmsService smsService)
     {
         _jwt = jwt;
         _roleManager = roleManager;
@@ -44,22 +45,22 @@ public class AccountService
     {
         try
         {
-            if(!await _roleManager.Roles.AnyAsync())
+            if (!await _roleManager.Roles.AnyAsync())
             {
                 await _roleManager.CreateAsync(new IdentityRole("admin"));
                 await _roleManager.CreateAsync(new IdentityRole("user"));
             }
-            if(!await _userManager.Users.AnyAsync())
+            if (!await _userManager.Users.AnyAsync())
                 schema.RoleName = "admin";
 
             var identityResult = await _userManager.CreateAsync(schema, schema.Password);
 
-            if(identityResult.Succeeded) 
+            if (identityResult.Succeeded)
             {
                 var identityUser = await _userManager.FindByEmailAsync(schema.Email);
                 var roleResult = await _userManager.AddToRoleAsync(identityUser!, schema.RoleName);
 
-                if(roleResult.Succeeded)
+                if (roleResult.Succeeded)
                 {
                     UserProfileEntity userProfileEntity = schema;
                     userProfileEntity.UserId = identityUser!.Id;
@@ -81,10 +82,10 @@ public class AccountService
     public async Task<string> LogInAsync(LoginAccountSchema schema)
     {
         var identityUser = await _userManager.FindByEmailAsync(schema.Email);
-        if(identityUser != null)
+        if (identityUser != null)
         {
-            var signInResult = await _signInManager.CheckPasswordSignInAsync(identityUser, schema.Password,false);
-            if(signInResult.Succeeded)
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(identityUser, schema.Password, false);
+            if (signInResult.Succeeded)
             {
                 var role = await _userManager.GetRolesAsync(identityUser);
                 var claimsIdentity = new ClaimsIdentity(new Claim[]
@@ -94,14 +95,14 @@ public class AccountService
                     new Claim(ClaimTypes.Role, role[0])
                 });
 
-				await _signInManager.SignInAsync(identityUser, isPersistent: schema.RememberMe);
+                await _signInManager.SignInAsync(identityUser, isPersistent: schema.RememberMe);
 
-				if (schema.RememberMe == false)
+                if (schema.RememberMe == false)
                     return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
 
                 else
                     return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddYears(1));
-			}
+            }
         }
         return string.Empty;
     }
@@ -109,34 +110,34 @@ public class AccountService
     public async Task<string> LogInExternalAsync(ExternalLoginInfo externalUser)
     {
         // Attempt login with external info to connected local account
-		var signInResult = await _signInManager.ExternalLoginSignInAsync(externalUser.LoginProvider, externalUser.ProviderKey, isPersistent: false);
-		if (signInResult.Succeeded)
-		{
-			var user = await _userManager.FindByLoginAsync(externalUser.LoginProvider, externalUser.ProviderKey);
-			var role = await _userManager.GetRolesAsync(user!);
-			var claimsIdentity = new ClaimsIdentity(new Claim[]
-			{
-					new Claim("id", user!.Id.ToString()),
-					new Claim(ClaimTypes.Name, user.Email!),
-					new Claim(ClaimTypes.Role, role[0])
-			});
+        var signInResult = await _signInManager.ExternalLoginSignInAsync(externalUser.LoginProvider, externalUser.ProviderKey, isPersistent: false);
+        if (signInResult.Succeeded)
+        {
+            var user = await _userManager.FindByLoginAsync(externalUser.LoginProvider, externalUser.ProviderKey);
+            var role = await _userManager.GetRolesAsync(user!);
+            var claimsIdentity = new ClaimsIdentity(new Claim[]
+            {
+                    new Claim("id", user!.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Email!),
+                    new Claim(ClaimTypes.Role, role[0])
+            });
 
-			await _signInManager.SignInAsync(user, isPersistent: false);
-				
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
             return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
-		}
+        }
         else
         {
             // No local account connected, create a new account
-			// Extract necessary user information from the external login
-			var email = externalUser.Principal.FindFirstValue(ClaimTypes.Email);
+            // Extract necessary user information from the external login
+            var email = externalUser.Principal.FindFirstValue(ClaimTypes.Email);
 
-			// Create a new local identity
-			var newIdentityUser = new IdentityUser { UserName = email, Email = email };
-			var newIdentityUserResult = await _userManager.CreateAsync(newIdentityUser);
+            // Create a new local identity
+            var newIdentityUser = new IdentityUser { UserName = email, Email = email };
+            var newIdentityUserResult = await _userManager.CreateAsync(newIdentityUser);
 
-			if (newIdentityUserResult.Succeeded)
-			{
+            if (newIdentityUserResult.Succeeded)
+            {
                 // Create new local user entity
                 // Principal.Claims array looks different for Google/Facebook
                 if (externalUser.LoginProvider == "Google")
@@ -145,20 +146,20 @@ public class AccountService
                     {
                         FirstName = externalUser.Principal.Claims.ToArray()[2].Value,
                         LastName = externalUser.Principal.Claims.ToArray()[3].Value,
-					    UserId = newIdentityUser!.Id
-			        };
-					await _userProfileRepo.AddAsync(newUser);
-				}
+                        UserId = newIdentityUser!.Id
+                    };
+                    await _userProfileRepo.AddAsync(newUser);
+                }
                 else if (externalUser.LoginProvider == "Facebook")
                 {
-					UserProfileEntity newUser = new UserProfileEntity
-					{
-						FirstName = externalUser.Principal.Claims.ToArray()[3].Value,
-						LastName = externalUser.Principal.Claims.ToArray()[4].Value,
-						UserId = newIdentityUser!.Id
-					};
-					await _userProfileRepo.AddAsync(newUser);
-				}
+                    UserProfileEntity newUser = new UserProfileEntity
+                    {
+                        FirstName = externalUser.Principal.Claims.ToArray()[3].Value,
+                        LastName = externalUser.Principal.Claims.ToArray()[4].Value,
+                        UserId = newIdentityUser!.Id
+                    };
+                    await _userProfileRepo.AddAsync(newUser);
+                }
                 else
                 {
                     throw new Exception();
@@ -166,37 +167,37 @@ public class AccountService
 
 
 
-				// Add the external login to the new identity
-				var addLoginResult = await _userManager.AddLoginAsync(newIdentityUser, externalUser);
-				var roleResult = await _userManager.AddToRoleAsync(newIdentityUser!, "user");
+                // Add the external login to the new identity
+                var addLoginResult = await _userManager.AddLoginAsync(newIdentityUser, externalUser);
+                var roleResult = await _userManager.AddToRoleAsync(newIdentityUser!, "user");
 
-				if (addLoginResult.Succeeded)
-				{
-					// Sign in the user with the newly created identity
-					await _signInManager.SignInAsync(newIdentityUser, isPersistent: false);
+                if (addLoginResult.Succeeded)
+                {
+                    // Sign in the user with the newly created identity
+                    await _signInManager.SignInAsync(newIdentityUser, isPersistent: false);
 
-					// Generate JWT token for the signed-in user
-					var role = await _userManager.GetRolesAsync(newIdentityUser);
-					var claimsIdentity = new ClaimsIdentity(new Claim[]
-					{
-					    new Claim("id", newIdentityUser.Id.ToString()),
-					    new Claim(ClaimTypes.Name, newIdentityUser.Email!),
-					    new Claim(ClaimTypes.Role, role[0])
-					});
+                    // Generate JWT token for the signed-in user
+                    var role = await _userManager.GetRolesAsync(newIdentityUser);
+                    var claimsIdentity = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim("id", newIdentityUser.Id.ToString()),
+                        new Claim(ClaimTypes.Name, newIdentityUser.Email!),
+                        new Claim(ClaimTypes.Role, role[0])
+                    });
 
-					return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
-				}
-			}
+                    return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
+                }
+            }
 
-			return string.Empty; // Failed to create and sign in
-		}
-	}
+            return string.Empty; // Failed to create and sign in
+        }
+    }
 
     public async Task LogOutAsync()
     {
         await _signInManager.SignOutAsync();
 
-        
+
     }
     public async Task<UserProfileDTO> ReturnProfileAsync(string Id)
     {
@@ -227,20 +228,20 @@ public class AccountService
         return dto;
     }
 
-    public async Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema,string userName)
+    public async Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema, string userName)
     {
         try
         {
             var identityUser = await _userManager.FindByEmailAsync(userName);
             UserProfileEntity userProfile = await _userProfileRepo.GetAsync(x => x.UserId == identityUser!.Id);
-            if (userProfile == null || identityUser == null)        
+            if (userProfile == null || identityUser == null)
                 return null!;
 
             userProfile.FirstName = schema.FirstName;
             userProfile.LastName = schema.LastName;
             identityUser.Email = schema.Email;
             identityUser.UserName = schema.Email;
-            if(schema.PhoneNumber != null)
+            if (schema.PhoneNumber != null)
             {
                 identityUser.PhoneNumber = schema.PhoneNumber;
             }
@@ -249,7 +250,7 @@ public class AccountService
                 userProfile.ImageUrl = schema.ImageUrl;
             }
 
-        
+
             var identityResult = await _userManager.UpdateAsync(identityUser);
             var profileResult = await _userProfileRepo.UpdateAsync(userProfile);
 
@@ -260,7 +261,7 @@ public class AccountService
             }
         }
         catch { }
-        
+
 
         return null!;
     }
@@ -269,7 +270,7 @@ public class AccountService
         try
         {
             var user = await _userManager.FindByEmailAsync(userName);
-            if(user != null)
+            if (user != null)
             {
                 return user.Id;
             }
@@ -294,7 +295,7 @@ public class AccountService
     }
     public async Task<bool> ResetPassword(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);      
+        var user = await _userManager.FindByEmailAsync(email);
         if (user != null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -315,17 +316,17 @@ public class AccountService
             var user = await _userManager.FindByEmailAsync(schema.Email);
             if (user != null)
             {
-                var result = await _userManager.ResetPasswordAsync(user,schema.Token,schema.Password);
-                if(result.Succeeded)
-                {                   
+                var result = await _userManager.ResetPasswordAsync(user, schema.Token, schema.Password);
+                if (result.Succeeded)
+                {
                     return true;
                 }
             }
         }
-        catch { } 
+        catch { }
         return false;
     }
-    public async Task<bool> ChangePassword(ChangePasswordSchema schema,string email)
+    public async Task<bool> ChangePassword(ChangePasswordSchema schema, string email)
     {
         try
         {
@@ -338,10 +339,12 @@ public class AccountService
                     return true;
                 }
             }
-        } catch { } return false;
-        
+        }
+        catch { }
+        return false;
+
     }
-    public async Task<ConfirmPhoneDTO> ConfirmPhone(string phoneNo,string email)
+    public async Task<ConfirmPhoneDTO> ConfirmPhone(string phoneNo, string email)
     {
         var dto = new ConfirmPhoneDTO();
         try
@@ -363,8 +366,8 @@ public class AccountService
             if (!user.PhoneNumberConfirmed)
             {
                 var Code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNo);
-                
-                var result = await _smsService.SendSmsAsync(phoneNo,$"Your code is : {Code}");
+
+                var result = await _smsService.SendSmsAsync(phoneNo, $"Your code is : {Code}");
                 if (result)
                 {
                     dto.Code = Code;
@@ -381,21 +384,21 @@ public class AccountService
         catch { }
         dto.Message = "Something went wrong";
         return dto;
-       
+
     }
     public async Task<bool> VerifyPhone(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if(user != null)
+        if (user != null)
         {
             user.PhoneNumberConfirmed = true;
             var result = await _userManager.UpdateAsync(user);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 return true;
             }
         }
         return false;
     }
-    
+
 }

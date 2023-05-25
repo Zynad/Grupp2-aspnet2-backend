@@ -8,6 +8,7 @@ using Microsoft.Extensions.Azure;
 
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 
@@ -19,9 +20,9 @@ namespace WebAPI.Controllers;
 public class CouponController : ControllerBase
 {
 
-    private readonly CouponService _couponService;
+    private readonly ICouponService _couponService;
 
-    public CouponController(CouponService couponService)
+    public CouponController(ICouponService couponService)
     {
         _couponService = couponService;
     }
