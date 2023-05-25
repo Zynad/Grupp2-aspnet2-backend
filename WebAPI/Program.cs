@@ -16,11 +16,14 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
 #region KeyVault
 //bool useKeyVault = Convert.ToBoolean(builder.Configuration["UseKeyVault"]);
 //if (useKeyVault)
 //{
-    builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
+    //builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
 //}
 #endregion
 
@@ -136,6 +139,18 @@ builder.Services.AddAuthentication()
 #endregion
 
 var app = builder.Build();
+if (!app.Environment.IsDevelopment())
+{
+    try
+    {
+        builder.Configuration.AddAzureKeyVault(new Uri($"{builder.Configuration["VaultUri"]}"), new DefaultAzureCredential());
+    } 
+    catch { }
+}
+
+
+
+
 app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI();
