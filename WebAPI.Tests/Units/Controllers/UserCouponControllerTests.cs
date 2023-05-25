@@ -59,6 +59,4 @@ public class UserCouponControllerTests
         result.Should().BeOfType<OkObjectResult>();
     }
 
-    // Other test methods...
-
 }
