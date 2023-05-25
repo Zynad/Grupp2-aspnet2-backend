@@ -25,11 +25,11 @@ public class AccountService : IAccountService
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtToken _jwt;
-    private readonly MailService _mailService;
+    private readonly Models.Interfaces.IMailService _mailService;
     private readonly IConfiguration _configuration;
     private readonly ISmsService _smsService;
 
-    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, MailService mailService, IConfiguration configuration, ISmsService smsService)
+    public AccountService(JwtToken jwt, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, UserProfileRepo userProfileRepo, Models.Interfaces.IMailService mailService, IConfiguration configuration, ISmsService smsService)
     {
         _jwt = jwt;
         _roleManager = roleManager;
