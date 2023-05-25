@@ -29,12 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Fixtures\" />
     <Folder Include="Integrations\" />
     <Folder Include="Units\Repositories\" />
