@@ -1,8 +1,9 @@
 ﻿using WebAPI.Models.Email;
 
-namespace WebAPI.Models.Interfaces;
-
-public interface IMailService
+namespace WebAPI.Models.Interfaces
 {
-    Task<bool> SendAsync(MailData mailData, CancellationToken ct);
+    public interface IMailService
+    {
+        Task<bool> SendAsync(MailData mailData, CancellationToken ct = default);
+    }
 }

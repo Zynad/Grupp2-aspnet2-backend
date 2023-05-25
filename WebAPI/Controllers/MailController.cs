@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
-using WebAPI.Helpers.Services;
 using WebAPI.Models.Email;
 using WebAPI.Models.Interfaces;
 
@@ -13,10 +12,10 @@ namespace WebAPI.Controllers;
 [ApiController]
 public class MailController : ControllerBase
 {
-    private readonly MailService _mailService;
+    private readonly IMailService _mailService;
     private readonly UserManager<IdentityUser> _userManager;
 
-    public MailController(MailService mailService, UserManager<IdentityUser> userManager)
+    public MailController(IMailService mailService, UserManager<IdentityUser> userManager)
     {
         _mailService = mailService;
         _userManager = userManager;

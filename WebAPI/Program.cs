@@ -9,6 +9,7 @@ using WebAPI.Helpers.Jwt;
 using WebAPI.Helpers.Repositories;
 using WebAPI.Helpers.Services;
 using WebAPI.Models.Email;
+using WebAPI.Models.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,19 +40,19 @@ builder.Services.AddScoped<MailService>();
 #endregion
 
 #region SmsConfig
-builder.Services.AddScoped<SmsService>();
+builder.Services.AddScoped<ISmsService,SmsService>();
 #endregion
 #region Helpers
 builder.Services.AddScoped<JwtToken>();
-builder.Services.AddScoped<AccountService>();
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<CouponService>();
-builder.Services.AddScoped<AddressService>();
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<TagService>();
-builder.Services.AddScoped<ReviewService>();
-builder.Services.AddScoped<PaymentService>();
-builder.Services.AddScoped<UserCouponService>();
+builder.Services.AddScoped<IAccountService,AccountService>();
+builder.Services.AddScoped<IProductService,ProductService>();
+builder.Services.AddScoped<ICouponService,CouponService>();
+builder.Services.AddScoped<IAddressService,AddressService>();
+builder.Services.AddScoped<ICategoryService,CategoryService>();
+builder.Services.AddScoped<ITagService,TagService>();
+builder.Services.AddScoped<IReviewService,ReviewService>();
+builder.Services.AddScoped<IPaymentService,PaymentService>();
+builder.Services.AddScoped<IUserCouponService,UserCouponService>();
 
 #endregion
 

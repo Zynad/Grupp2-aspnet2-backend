@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers;
@@ -13,9 +14,9 @@ namespace WebAPI.Controllers;
 [ApiController]
 public class PaymentController : ControllerBase
 {
-    private readonly PaymentService _paymentService;
+    private readonly IPaymentService _paymentService;
 
-    public PaymentController(PaymentService paymentService)
+    public PaymentController(IPaymentService paymentService)
     {
         _paymentService = paymentService;
     }

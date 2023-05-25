@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
@@ -11,9 +12,9 @@ namespace WebAPI.Controllers
     [ApiController]
     public class UserCouponController : ControllerBase
     {
-        private readonly UserCouponService _userCouponService;
+        private readonly IUserCouponService _userCouponService;
 
-        public UserCouponController(UserCouponService userCouponService)
+        public UserCouponController(IUserCouponService userCouponService)
         {
             _userCouponService = userCouponService;
         }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers;
@@ -12,9 +13,9 @@ namespace WebAPI.Controllers;
 [ApiController]
 public class AddressController : ControllerBase
 {
-    private readonly AddressService _addressService;
+    private readonly IAddressService _addressService;
 
-    public AddressController(AddressService addressService)
+    public AddressController(IAddressService addressService)
     {
         _addressService = addressService;
     }

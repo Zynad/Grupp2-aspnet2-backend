@@ -1,15 +1,16 @@
 ﻿using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
+using WebAPI.Models.Interfaces;
 
 namespace WebAPI.Helpers.Services
 {
-    public class UserCouponService
+    public class UserCouponService : IUserCouponService
     {
         private readonly UserCouponRepo _userCouponRepo;
-        private readonly AccountService _accountService;
-        private readonly CouponService _couponService;
-        public UserCouponService(UserCouponRepo userCouponRepo, AccountService accountService, CouponService couponService)
+        private readonly IAccountService _accountService;
+        private readonly ICouponService _couponService;
+        public UserCouponService(UserCouponRepo userCouponRepo, IAccountService accountService, ICouponService couponService)
         {
             _userCouponRepo = userCouponRepo;
             _accountService = accountService;
@@ -22,24 +23,24 @@ namespace WebAPI.Helpers.Services
             {
                 var userId = await _accountService.GetUserIdAsync(userName);
                 var coupon = await _couponService.GetCouponByCodeAsync(voucherCode);
-                if (userId != null && coupon != null) 
+                if (userId != null && coupon != null)
                 {
                     var userCoupon = new UserCouponEntity { UserId = userId, CouponId = coupon!.Id };
-                    
+
                     var result = await _userCouponRepo.GetAsync(x => x.UserId == userCoupon.UserId && x.CouponId == userCoupon.CouponId);
-                    if (result == null) 
+                    if (result == null)
                     {
                         return userCoupon;
                     }
                 }
             }
             catch { }
-            
+
             return null!;
         }
-        public async Task <UserCouponDTO> AddUserCouponAsync(UserCouponEntity entity)
+        public async Task<UserCouponDTO> AddUserCouponAsync(UserCouponEntity entity)
         {
-            try 
+            try
             {
                 var result = await _userCouponRepo.AddAsync(entity);
                 if (result != null)
@@ -70,7 +71,7 @@ namespace WebAPI.Helpers.Services
                 }
             }
             catch { }
-            
+
             return null!;
         }
         public async Task<IEnumerable<UserCouponDTO>> GetAllUnusedUserCouponsAsync(string userName)

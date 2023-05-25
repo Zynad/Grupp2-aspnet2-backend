@@ -3,11 +3,12 @@ using WebAPI.Helpers.Repositories;
 
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Helpers.Services;
 
-public class CouponService
+public class CouponService : ICouponService
 {
     private readonly CouponRepo _couponRepo;
 
@@ -47,7 +48,7 @@ public class CouponService
 
     public async Task<bool> DeleteAsync(Guid id)
     {
-        
+
         try
         {
             var coupon = await _couponRepo.GetAsync(x => x.Id == id);
@@ -91,7 +92,7 @@ public class CouponService
         return dtos;
     }
 
-    
+
 }
 
 
