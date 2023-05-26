@@ -166,7 +166,7 @@ public class AccountController : ControllerBase
 	);
 
 	[Route("ExternalFacebook")]
-	[HttpGet]
+	[HttpPost]
 	public async Task<IActionResult> ExternalAuthFacebook(ExternalLoginSchema externalUser)
 	{
 		var token = await _accountService.LogInExternalAsync(externalUser);
