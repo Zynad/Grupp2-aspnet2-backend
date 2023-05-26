@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using WebAPI.Helpers.Repositories;
+using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Schemas;
 
@@ -12,30 +15,56 @@ public class OrderService
     //delete/cancel order
 
     private readonly ProductRepo _productRepo;
-    
-    public async Task<bool> CreateOrderAsync(OrderSchema schema)
-    {
-        
-        //var address = 
-        var items = schema.Items;
+    private readonly OrderRepo _orderRepo;
+    private readonly UserManager<IdentityUser> _userManager;
 
+	public OrderService(ProductRepo productRepo, OrderRepo orderRepo, UserManager<IdentityUser> userManager)
+	{
+		_productRepo = productRepo;
+		_orderRepo = orderRepo;
+		_userManager = userManager;
+	}
+
+    public async Task<IEnumerable<OrderDTO>> GetAllOrdersAsync()
+    {
         try
         {
-            var order = new OrderEntity
+            var orders = await _orderRepo.GetAllAsync();
+            var dtos = new List<OrderDTO>();
+
+            foreach (var entity in orders)
+            {
+                dtos.Add(entity);
+            }
+
+            return dtos;
+        }
+        catch { }
+        return null!;
+    }
+
+	public async Task<bool> CreateOrderAsync(OrderSchema schema, string userEmail)
+    {
+		try
+        {
+			var orderItems = schema.Items;
+			var user = await _userManager.FindByEmailAsync(userEmail);
+
+			var order = new OrderEntity
             {
                 OrderDate = DateTime.Now,
                 OrderStatus = "Pending",
                 Items = new List<OrderItemEntity>(),
-                //userId
+                UserId = Guid.Parse(user!.Id)
             };
 
-            foreach (var item in items)
+            foreach (var item in orderItems)
             {
                 OrderItemEntity OrderItem = item;
                 order.Items.Add(OrderItem);
             }
 
-            //create/save etc
+            await _orderRepo.AddAsync(order);
 
             return true;
         }
