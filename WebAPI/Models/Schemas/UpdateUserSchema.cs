@@ -16,28 +16,15 @@ public class UpdateUserSchema
     [MinLength(6)]
     [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
     public string Email { get; set; } = null!;
-    public string? PhoneNumber { get; set; }
     public string? ImageUrl { get; set; }
     public string? Location { get; set; }
     public static implicit operator IdentityUser(UpdateUserSchema schema)
     {
-        if (schema.PhoneNumber == null || schema.PhoneNumber == "")
-        {
             return new IdentityUser
             {
                 UserName = schema.Email,
                 Email = schema.Email,
             };
-        }
-        else
-        {
-            return new IdentityUser
-            {
-                UserName = schema.Email,
-                Email = schema.Email,
-                PhoneNumber = schema.PhoneNumber,
-            };
-        }
     }
 
     public static implicit operator UserProfileEntity(UpdateUserSchema schema)
