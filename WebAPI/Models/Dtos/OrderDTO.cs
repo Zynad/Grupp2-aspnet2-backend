@@ -10,5 +10,17 @@ namespace WebAPI.Models.Dtos
 		public string? Address { get; set; }
 		public List<OrderItemEntity> Items { get; set; } = null!;
 
+		public static implicit operator OrderDTO(OrderEntity entity)
+		{
+			return new OrderDTO
+			{
+				Id = entity.Id,
+				OrderDate = entity.OrderDate,
+				OrderStatus = entity.OrderStatus,
+				Address = entity.Address,
+				Items = entity.Items
+			};
+		}
+
 	}
 }

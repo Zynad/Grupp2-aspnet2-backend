@@ -11,7 +11,7 @@ namespace WebAPI.Helpers.Services;
 
 public class OrderService
 {
-    //Create order
+    //update order/update status
     //delete/cancel order
 
     private readonly ProductRepo _productRepo;
@@ -34,8 +34,37 @@ public class OrderService
 
             foreach (var entity in orders)
             {
-                dtos.Add(entity);
+				dtos.Add(entity);
             }
+
+            return dtos;
+        }
+        catch { }
+        return null!;
+    }
+
+    public async Task<OrderDTO> GetByOrderIdAsync(Guid id)
+    {
+        try
+        {
+            var order = await _orderRepo.GetAsync(x => x.Id == id);
+            OrderDTO dto = order;
+
+            return dto;
+        }
+        catch { }
+        return null!;
+    }
+
+    public async Task<IEnumerable<OrderDTO>> GetByUserIdAsync(Guid userId)
+    {
+        try
+        {
+            var orders = await _orderRepo.GetListAsync(x => x.UserId == userId);
+            var dtos = new List<OrderDTO>();
+
+            foreach (var entity in orders)
+                dtos.Add(entity);
 
             return dtos;
         }

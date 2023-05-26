@@ -38,6 +38,35 @@ namespace WebAPI.Controllers
             return BadRequest("Something went wrong, try again!");
         }
 
+        [Route("GetByOrderId")]
+        [HttpGet]
+        public async Task<IActionResult> GetByOrderId(Guid Id)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _orderService.GetByOrderIdAsync(Id);
+                if (result != null)
+                    return Ok(result);
+            }
+
+            return BadRequest("Something went wrong, try again!");
+        }
+
+        [Route("GetByUserId")]
+        [HttpGet]
+        public async Task<IActionResult> GetByUserId(Guid Id)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _orderService.GetByUserIdAsync(Id);
+                if(result != null) 
+                    return Ok(result);
+            }
+
+            return BadRequest("Something went wrong, try again!");
+        }
+
+
         [Route("CreateOrder")]
         [HttpPost]
         public async Task<IActionResult> CreateOrder(OrderSchema schema)
