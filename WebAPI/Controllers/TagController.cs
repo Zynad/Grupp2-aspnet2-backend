@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
@@ -11,9 +12,9 @@ namespace WebAPI.Controllers
 	[ApiController]
 	public class TagController : ControllerBase
 	{
-		private readonly TagService _tagService;
+		private readonly ITagService _tagService;
 
-		public TagController(TagService tagService)
+		public TagController(ITagService tagService)
 		{
 			_tagService = tagService;
 		}

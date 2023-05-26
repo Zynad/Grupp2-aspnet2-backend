@@ -12,6 +12,7 @@ using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Microsoft.IdentityModel.Tokens;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 
@@ -22,9 +23,9 @@ namespace WebAPI.Controllers;
 [ApiController]
 public class AccountController : ControllerBase
 {
-    private readonly AccountService _accountService;
+    private readonly IAccountService _accountService;
 
-    public AccountController(AccountService accountService)
+    public AccountController(IAccountService accountService)
     {
         _accountService = accountService;
     }

@@ -2,11 +2,12 @@
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Helpers.Services;
 
-public class AddressService
+public class AddressService : IAddressService
 {
     private readonly AddressRepo _addressRepo;
     private readonly UserProfileAddressItemRepo _userProfileAddressItemRepo;
@@ -29,7 +30,7 @@ public class AddressService
         {
             var user = await _userManager.FindByEmailAsync(userName);
 
-            if(user != null)
+            if (user != null)
             {
                 var userProfileAddressItemsList = await _userProfileAddressItemRepo.GetListAsync(x => x.UserProfileId == user.Id);
                 List<AddressItemDTO> addressItems = new List<AddressItemDTO>();
@@ -53,13 +54,13 @@ public class AddressService
         {
             var user = await _userManager.FindByEmailAsync(userName);
 
-            if(user != null)
+            if (user != null)
             {
                 var userProfile = await _userProfileRepo.GetAsync(x => x.UserId == user.Id);
 
                 var userAddressItemList = await _userProfileAddressItemRepo.GetListAsync(x => x.UserProfileId == user.Id);
                 List<AddressItemEntity> addresses = new List<AddressItemEntity>();
-                foreach(var item in userAddressItemList)
+                foreach (var item in userAddressItemList)
                 {
                     addresses.Add(await _addressItemRepo.GetAsync(x => x.Id == item.AddressItemId));
                 }
@@ -79,7 +80,7 @@ public class AddressService
                 else
                 {
                     var address = await _addressRepo.AddAsync(schema);
-                    var addressItem = await _addressItemRepo.AddAsync(new AddressItemEntity { Title = schema.Title,  AddressId = address.Id, Address = address });
+                    var addressItem = await _addressItemRepo.AddAsync(new AddressItemEntity { Title = schema.Title, AddressId = address.Id, Address = address });
                     await _userProfileAddressItemRepo.AddAsync(new UserProfileAddressItemEntity { AddressItemId = addressItem.Id, AddressItem = addressItem, UserProfileId = user.Id, UserProfile = userProfile });
                 }
                 return true;
@@ -100,7 +101,7 @@ public class AddressService
                 addressItem.Title = schema.Title;
 
                 var existingAddress = await _addressRepo.GetAsync(x => x.StreetName.ToLower() == schema.StreetName.ToLower() && x.PostalCode.ToLower() == schema.PostalCode.ToLower() && x.City.ToLower() == schema.City.ToLower() && x.Country.ToLower() == schema.Country.ToLower());
-                
+
                 if (existingAddress != null)
                 {
                     addressItem.AddressId = existingAddress!.Id;
@@ -113,10 +114,10 @@ public class AddressService
                     addressItem.Address = newAddress;
                 }
 
-               return await _addressItemRepo.UpdateAsync(addressItem);                
+                return await _addressItemRepo.UpdateAsync(addressItem);
             }
         }
-        catch {  }
+        catch { }
 
         return null!;
     }
@@ -129,7 +130,7 @@ public class AddressService
             if (address == null)
                 return false;
 
-            await _addressItemRepo.DeleteAsync(address); 
+            await _addressItemRepo.DeleteAsync(address);
             return true;
         }
         catch { }

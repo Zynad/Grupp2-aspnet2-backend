@@ -23,8 +23,13 @@ namespace WebAPI.Contexts
 			modelBuilder.Entity<TagEntity>()
 				.ToContainer("Tags")
 				.HasPartitionKey(x => x.PartitionKey);
-
-			modelBuilder.Entity<ReviewEntity>()
+            modelBuilder.Entity<CouponEntity>()
+                .ToContainer("Coupons")
+                .HasPartitionKey(x => x.PartitionKey);
+            modelBuilder.Entity<UserCouponEntity>()
+                .ToContainer("UserCoupons")
+                .HasPartitionKey(x => x.PartitionKey);
+            modelBuilder.Entity<ReviewEntity>()
 				.ToContainer("Reviews")
 				.HasPartitionKey(x => x.PartitionKey);
 
