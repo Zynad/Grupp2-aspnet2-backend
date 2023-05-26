@@ -118,9 +118,11 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthentication()
     .AddFacebook(x =>
     {
-        x.ClientId = builder.Configuration["FacebookClientId"]!;
-        x.ClientSecret = builder.Configuration["FacebookClientSecret"]!;
-    })
+        // x.ClientId = builder.Configuration["FacebookClientId"]!;
+        // x.ClientSecret = builder.Configuration["FacebookClientSecret"]!;
+        x.ClientId = "612830237572988";
+        x.ClientSecret = "339cd0d3cefcc13eb8297a588f6dd160";
+	})
     .AddGoogle(x =>
     {
         x.ClientId = builder.Configuration["GoogleClientId"]!;
