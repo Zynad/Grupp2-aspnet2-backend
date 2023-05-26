@@ -114,7 +114,7 @@ builder.Services.AddAuthentication(x =>
 #endregion
 
 #region External Auth
-/*
+
 builder.Services.AddAuthentication()
     .AddFacebook(x =>
     {
@@ -125,11 +125,10 @@ builder.Services.AddAuthentication()
 	})
     .AddGoogle(x =>
     {
-        x.ClientId = builder.Configuration["GoogleClientId"]!;
-        x.ClientSecret = builder.Configuration["GoogleClientSecret"]!;
+        x.ClientId = "82668405264-49fojsqlflql9sntdk7kd2osd3vp2ecu.apps.googleusercontent.com";
+        x.ClientSecret = "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";
     });
 
-*/
 #endregion
 
 var app = builder.Build();
