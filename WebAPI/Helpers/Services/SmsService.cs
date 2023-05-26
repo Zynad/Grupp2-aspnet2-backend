@@ -1,11 +1,12 @@
 ﻿using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Sms;
 
 namespace WebAPI.Helpers.Services;
 
-public class SmsService
+public class SmsService : ISmsService
 {
     private readonly IConfiguration _configuration;
 
@@ -14,7 +15,7 @@ public class SmsService
         _configuration = configuration;
     }
 
-    public async Task<bool> SendSmsAsync(string phoneNo,string smsBody)
+    public async Task<bool> SendSmsAsync(string phoneNo, string smsBody)
     {
         try
         {
@@ -28,7 +29,7 @@ public class SmsService
             messageOptions.Body = smsBody;
 
             var message = await MessageResource.CreateAsync(messageOptions);
-            if(message != null) 
+            if (message != null)
             {
                 return true;
             }

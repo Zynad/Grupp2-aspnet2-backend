@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
@@ -10,9 +12,9 @@ namespace WebAPI.Controllers
 	[ApiController]
 	public class ProductsController : ControllerBase
 	{
-		private readonly ProductService _productService;
+		private readonly IProductService _productService;
 
-		public ProductsController(ProductService productService)
+		public ProductsController(IProductService productService)
 		{
 			_productService = productService;
 		}
@@ -116,14 +118,16 @@ namespace WebAPI.Controllers
 		}
 
 		[Route("Filter")]
-		[HttpGet]
-		public async Task<IActionResult> GetFiltered(string? name, int? minPrice, int? maxPrice, string? tags, string? category, string? salesCategory, int? amount)
+		[HttpPost]
+		public async Task<IActionResult> GetFiltered(FilterSchema schema)
 		{
 			if (ModelState.IsValid)
 			{
-				var result = await _productService.GetFilteredProductsAsync(name, minPrice, maxPrice, tags, category, salesCategory, amount);
-				if (result != null)
-					return Ok(result);
+				var result = await _productService.GetFilteredProductsAsync(schema);
+				if (result == null || !result.Any())
+					return NotFound("No results found");
+
+				return Ok(result);
 			}
 			
 			return BadRequest("Something went wrong, try again!");
@@ -131,6 +135,7 @@ namespace WebAPI.Controllers
 		
 		[Route("Add")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> AddProduct(ProductSchema schema)
 		{
 			if (ModelState.IsValid)
@@ -145,6 +150,7 @@ namespace WebAPI.Controllers
 		
 		[Route("Delete")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> DeleteProduct(Guid id)
 		{
 			if (ModelState.IsValid)
@@ -163,6 +169,7 @@ namespace WebAPI.Controllers
 
 		[Route("Update")]
 		[HttpPut]
+		[Authorize]
 		public async Task<IActionResult> UpdateProduct(ProductSchema schema)
 		{
 			if (ModelState.IsValid)

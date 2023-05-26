@@ -8,7 +8,7 @@ public class ReviewDTO
     
     public Guid ProductId { get; set; }
 
-    public string UserName { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     public string Comment { get; set; } = null!;
     
@@ -20,7 +20,7 @@ public class ReviewDTO
         {
             Id = entity.Id,
             ProductId = entity.ProductId,
-            UserName = entity.UserName,
+            Name = entity.Name,
             Comment = entity.Comment,
             Rating = entity.Rating
         };

@@ -6,8 +6,7 @@ namespace WebAPI.Models.Schemas;
 public class ReviewSchema
 {
     public Guid ProductId { get; set; }
-    [Required]
-    public string UserName { get; set; } = null!;
+
     [Required]
     public string Comment { get; set; } = null!;
     [Required]
@@ -19,7 +18,6 @@ public class ReviewSchema
         {
             Id = Guid.NewGuid(),
             ProductId = schema.ProductId,
-            UserName = schema.UserName,
             Comment = schema.Comment,
             Rating = schema.Rating
         };

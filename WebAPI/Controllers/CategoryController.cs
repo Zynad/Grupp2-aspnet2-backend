@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
@@ -10,9 +12,9 @@ namespace WebAPI.Controllers
 	[ApiController]
 	public class CategoryController : ControllerBase
 	{
-		private readonly CategoryService _categoryService;
+		private readonly ICategoryService _categoryService;
 
-		public CategoryController(CategoryService categoryService)
+		public CategoryController(ICategoryService categoryService)
 		{
 			_categoryService = categoryService;
 		}
@@ -47,6 +49,7 @@ namespace WebAPI.Controllers
 		
 		[Route("AddCategory")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> AddCategory(CategorySchema schema)
 		{
 			if (ModelState.IsValid)
@@ -65,6 +68,7 @@ namespace WebAPI.Controllers
 		
 		[Route("DeleteCategory")]
 		[HttpPost]
+		[Authorize]
 		public async Task<IActionResult> DeleteCategory(Guid id)
 		{
 			if (ModelState.IsValid)

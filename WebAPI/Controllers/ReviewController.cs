@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
@@ -10,9 +12,9 @@ namespace WebAPI.Controllers
     [ApiController]
     public class ReviewController : ControllerBase
     {
-        private readonly ReviewService _reviewService;
+        private readonly IReviewService _reviewService;
         
-        public ReviewController(ReviewService reviewService)
+        public ReviewController(IReviewService reviewService)
         {
             _reviewService = reviewService;
         }
@@ -47,6 +49,7 @@ namespace WebAPI.Controllers
 
         [Route("AddReview")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddReview(ReviewSchema schema)
         {
             if (ModelState.IsValid)
@@ -54,7 +57,7 @@ namespace WebAPI.Controllers
                 var userName = HttpContext.User.Identity!.Name;
                 if (userName != null)
                 {
-                    var result = await _reviewService.CreateAsync(schema);
+                    var result = await _reviewService.CreateAsync(schema, userName);
                     if (result)
                         return Created("", null);
                 }
