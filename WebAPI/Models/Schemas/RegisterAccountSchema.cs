@@ -20,6 +20,7 @@ public class RegisterAccountSchema
     [MinLength(8)]
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$")]
     public string Password { get; set; } = null!;
+    [RegularExpression(@"^\+\d{1,3}\d{9}$", ErrorMessage = "Not a valid phonenumber")]
     public string? PhoneNumber { get; set; }
     public string RoleName { get; set; } = "user";
 
