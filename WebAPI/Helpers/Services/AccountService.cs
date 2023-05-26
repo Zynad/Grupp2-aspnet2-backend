@@ -241,10 +241,6 @@ public class AccountService : IAccountService
             userProfile.LastName = schema.LastName;
             identityUser.Email = schema.Email;
             identityUser.UserName = schema.Email;
-            if (schema.PhoneNumber != null)
-            {
-                identityUser.PhoneNumber = schema.PhoneNumber;
-            }
             if (schema.ImageUrl != null)
             {
                 userProfile.ImageUrl = schema.ImageUrl;
@@ -343,6 +339,22 @@ public class AccountService : IAccountService
         catch { }
         return false;
 
+    }
+    public async Task<bool> AddPhoneNumberToUser(string phoneNumber, string email)
+    {
+        try 
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user != null)
+            {
+                user.PhoneNumber = phoneNumber;
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return true;
+            }
+        }
+        catch { }
+        return false;
     }
     public async Task<ConfirmPhoneDTO> ConfirmPhone(string phoneNo, string email)
     {
