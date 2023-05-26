@@ -146,80 +146,94 @@ public class AccountController : ControllerBase
     }
 
 
-		#endregion
+	#endregion
 
 
-		#region External Login
+	#region External Login
 
-		[Route("Facebook")]
-		[HttpGet]
-		public async Task Facebook() => await HttpContext.ChallengeAsync(
-			FacebookDefaults.AuthenticationScheme,
-			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthFacebook") }
-		);
+	[Route("Facebook")]
+	[HttpGet]
+	public async Task Facebook() => await HttpContext.ChallengeAsync(
+		FacebookDefaults.AuthenticationScheme,
+		new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthFacebook") }
+	);
 
-		[Route("Google")]
-		[HttpGet]
-		public async Task Google() => await HttpContext.ChallengeAsync(
-			GoogleDefaults.AuthenticationScheme,
-			new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthGoogle") }
-		);
+	[Route("Google")]
+	[HttpGet]
+	public async Task Google() => await HttpContext.ChallengeAsync(
+		GoogleDefaults.AuthenticationScheme,
+		new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthGoogle") }
+	);
 
-		[Route("ExternalFacebook")]
-		[HttpGet]
-		public async Task<IActionResult> ExternalAuthFacebook()
+	[Route("ExternalFacebook")]
+	[HttpGet]
+	public async Task<IActionResult> ExternalAuthFacebook(ExternalLoginSchema externalUser)
+	{
+		var token = await _accountService.LogInExternalAsync(externalUser);
+
+		if (!string.IsNullOrEmpty(token))
 		{
-            var result = await HttpContext.AuthenticateAsync(FacebookDefaults.AuthenticationScheme);
-
-			if (result.Succeeded)
-			{
-                ExternalLoginInfo externalUser = new ExternalLoginInfo
-                    (
-                        result.Principal,
-                        result.Principal.Identity!.AuthenticationType!,
-                        result.Principal.Claims.First().ToString(),
-                        result.Principal.Identity.AuthenticationType!
-                    );
-
-				var token = await _accountService.LogInExternalAsync(externalUser);
-
-				if (!string.IsNullOrEmpty(token))
-				{
-					return Ok(token);
-				}
-			}
-
-			return BadRequest("Failiure to authenticate.");
+			return Ok(token);
 		}
 
-		[Route("ExternalGoogle")]
-		[HttpGet]
-		public async Task<IActionResult> ExternalAuthGoogle()
+		return BadRequest("Failiure to authenticate.");
+	}
+    /*
+	[Route("ExternalFacebookCopy")]
+	[HttpGet]
+	public async Task<IActionResult> ExternalAuthFacebookCopy()
+	{
+        var result = await HttpContext.AuthenticateAsync(FacebookDefaults.AuthenticationScheme);
+
+		if (result.Succeeded)
 		{
-			var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            ExternalLoginInfo externalUser = new ExternalLoginInfo
+                (
+                    result.Principal,
+                    result.Principal.Identity!.AuthenticationType!,
+                    result.Principal.Claims.First().ToString(),
+                    result.Principal.Identity.AuthenticationType!
+                );
 
-			if (result.Succeeded)
+			var token = await _accountService.LogInExternalAsync(externalUser);
+
+			if (!string.IsNullOrEmpty(token))
 			{
-				ExternalLoginInfo externalUser = new ExternalLoginInfo
-                    (
-					    result.Principal,
-					    result.Principal.Identity!.AuthenticationType!,
-					    result.Principal.Claims.First().ToString(),
-					    result.Principal.Identity.AuthenticationType!
-                    );
-
-				var token = await _accountService.LogInExternalAsync(externalUser);
-
-				if (!string.IsNullOrEmpty(token))
-				{
-					return Ok(token);
-				}
+				return Ok(token);
 			}
-
-			return BadRequest("Failiure to authenticate.");
 		}
 
-		#endregion
+		return BadRequest("Failiure to authenticate.");
+	}
+        
+	[Route("ExternalGoogle")]
+	[HttpGet]
+	public async Task<IActionResult> ExternalAuthGoogle()
+	{
+		var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+		if (result.Succeeded)
+		{
+			ExternalLoginInfo externalUser = new ExternalLoginInfo
+                (
+					result.Principal,
+					result.Principal.Identity!.AuthenticationType!,
+					result.Principal.Claims.First().ToString(),
+					result.Principal.Identity.AuthenticationType!
+                );
+
+			var token = await _accountService.LogInExternalAsync(externalUser);
+
+			if (!string.IsNullOrEmpty(token))
+			{
+				return Ok(token);
+			}
+		}
+
+		return BadRequest("Failiure to authenticate.");
+	}
+    */
+	#endregion
 
     [Route("ConfirmPhone")]
     [HttpPost]

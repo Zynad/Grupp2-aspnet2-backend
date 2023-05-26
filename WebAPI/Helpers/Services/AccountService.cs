@@ -106,7 +106,73 @@ public class AccountService
         return string.Empty;
     }
 
-    public async Task<string> LogInExternalAsync(ExternalLoginInfo externalUser)
+	public async Task<string> LogInExternalAsync(ExternalLoginSchema externalUser)
+	{
+		// Attempt login with external info to connected local account
+		var signInResult = await _signInManager.ExternalLoginSignInAsync(externalUser.LoginProvider, externalUser.ProviderKey, isPersistent: false);
+		if (signInResult.Succeeded)
+		{
+			var user = await _userManager.FindByLoginAsync(externalUser.LoginProvider, externalUser.ProviderKey);
+			var role = await _userManager.GetRolesAsync(user!);
+			var claimsIdentity = new ClaimsIdentity(new Claim[]
+			{
+					new Claim("id", user!.Id.ToString()),
+					new Claim(ClaimTypes.Name, user.Email!),
+					new Claim(ClaimTypes.Role, role[0])
+			});
+
+			await _signInManager.SignInAsync(user, isPersistent: false);
+
+			return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
+		}
+		else
+		{
+			// No local account connected, create a new account
+			// Extract necessary user information from the external login
+			var email = externalUser.Email;
+
+			// Create a new local identity
+			var newIdentityUser = new IdentityUser { UserName = email, Email = email };
+			var newIdentityUserResult = await _userManager.CreateAsync(newIdentityUser);
+
+			if (newIdentityUserResult.Succeeded)
+			{
+				UserProfileEntity newUser = new UserProfileEntity
+				{
+					FirstName = externalUser.FirstName,
+					LastName = externalUser.LastName,
+					UserId = newIdentityUser!.Id
+				};
+				await _userProfileRepo.AddAsync(newUser);
+
+
+				// Add the external login to the new identity
+				var addLoginResult = await _userManager.AddLoginAsync(newIdentityUser, externalUser);
+				var roleResult = await _userManager.AddToRoleAsync(newIdentityUser!, "user");
+
+				if (addLoginResult.Succeeded)
+				{
+					// Sign in the user with the newly created identity
+					await _signInManager.SignInAsync(newIdentityUser, isPersistent: false);
+
+					// Generate JWT token for the signed-in user
+					var role = await _userManager.GetRolesAsync(newIdentityUser);
+					var claimsIdentity = new ClaimsIdentity(new Claim[]
+					{
+						new Claim("id", newIdentityUser.Id.ToString()),
+						new Claim(ClaimTypes.Name, newIdentityUser.Email!),
+						new Claim(ClaimTypes.Role, role[0])
+					});
+
+					return _jwt.GenerateToken(claimsIdentity, DateTime.Now.AddHours(1));
+				}
+			}
+
+			return string.Empty; // Failed to create and sign in
+		}
+	}
+
+	public async Task<string> LogInExternalAsyncCopy(ExternalLoginInfo externalUser)
     {
         // Attempt login with external info to connected local account
 		var signInResult = await _signInManager.ExternalLoginSignInAsync(externalUser.LoginProvider, externalUser.ProviderKey, isPersistent: false);
