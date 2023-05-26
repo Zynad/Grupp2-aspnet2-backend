@@ -27,7 +27,7 @@ public class UserCouponControllerTests
     }
 
     [Fact]
-    public async Task AddUserCoupon_ValidSchema_ReturnsOkResult()
+    public async Task AddUserCoupons_ShouldAddUserCoupon_ReturnOkWithObject()
     {
         // Arrange
         var schema = new UserCouponSchema { VoucherCode = "ABC123" };
@@ -56,6 +56,7 @@ public class UserCouponControllerTests
         var result = await _controller.AddUserCoupon(schema);
 
         // Assert
+        Assert.NotNull(result);
         result.Should().BeOfType<OkObjectResult>();
     }
 
