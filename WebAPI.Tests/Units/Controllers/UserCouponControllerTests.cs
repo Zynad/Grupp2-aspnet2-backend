@@ -45,11 +45,11 @@ public class UserCouponControllerTests
         };
 
         _mockUserCouponService
-            .Setup(service => service.CheckDuplicateUserCouponAsync(schema.VoucherCode, userName))
+            .Setup(x => x.CheckDuplicateUserCouponAsync(schema.VoucherCode, userName))
             .ReturnsAsync(new UserCouponEntity());
 
         _mockUserCouponService
-            .Setup(service => service.AddUserCouponAsync(It.IsAny<UserCouponEntity>()))
+            .Setup(x => x.AddUserCouponAsync(It.IsAny<UserCouponEntity>()))
             .ReturnsAsync(new UserCouponDTO());
 
         // Act
@@ -59,5 +59,34 @@ public class UserCouponControllerTests
         Assert.NotNull(result);
         result.Should().BeOfType<OkObjectResult>();
     }
+    [Fact]
+    public async Task AddUserCoupons_ShouldInsertAlreadyAddedUserCoupon_ReturnOkWithConflict()
+    {
+        // Arrange
+        var schema = new UserCouponSchema { VoucherCode = "ABC123" };
+        var userName = "testuser";
 
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                        new Claim(ClaimTypes.Name, userName)
+                    }))
+            }
+        };
+
+        _mockUserCouponService
+            .Setup(x => x.CheckDuplicateUserCouponAsync(schema.VoucherCode, userName))
+            .ReturnsAsync((UserCouponEntity)null!);
+
+        //Act 
+        var result = await _controller.AddUserCoupon(schema);
+
+        //assert
+        Assert.NotNull(result);
+        result.Should().BeOfType<ConflictResult>();
+
+    }
 }
