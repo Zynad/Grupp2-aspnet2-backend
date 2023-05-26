@@ -150,7 +150,7 @@ public class AccountController : ControllerBase
 
 
 	#region External Login
-
+    /*
 	[Route("Facebook")]
 	[HttpGet]
 	public async Task Facebook() => await HttpContext.ChallengeAsync(
@@ -164,7 +164,7 @@ public class AccountController : ControllerBase
 		GoogleDefaults.AuthenticationScheme,
 		new AuthenticationProperties { RedirectUri = Url.Action("ExternalAuthGoogle") }
 	);
-
+    */
 	[Route("ExternalFacebook")]
 	[HttpPost]
 	public async Task<IActionResult> ExternalAuthFacebook(ExternalLoginSchema externalUser)

@@ -114,7 +114,7 @@ builder.Services.AddAuthentication(x =>
 #endregion
 
 #region External Auth
-
+/*
 builder.Services.AddAuthentication()
     .AddFacebook(x =>
     {
@@ -129,7 +129,7 @@ builder.Services.AddAuthentication()
         x.ClientSecret = builder.Configuration["GoogleClientSecret"]!;
     });
 
-
+*/
 #endregion
 
 var app = builder.Build();
