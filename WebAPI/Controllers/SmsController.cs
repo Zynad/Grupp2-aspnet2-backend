@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Sms;
 
 namespace WebAPI.Controllers;
@@ -12,9 +13,9 @@ namespace WebAPI.Controllers;
 [ApiController]
 public class SmsController : ControllerBase
 {
-    private readonly SmsService _service;
+    private readonly ISmsService _service;
 
-    public SmsController(SmsService service)
+    public SmsController(ISmsService service)
     {
         _service = service;
     }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
@@ -11,9 +12,9 @@ namespace WebAPI.Controllers
     [ApiController]
     public class ReviewController : ControllerBase
     {
-        private readonly ReviewService _reviewService;
+        private readonly IReviewService _reviewService;
         
-        public ReviewController(ReviewService reviewService)
+        public ReviewController(IReviewService reviewService)
         {
             _reviewService = reviewService;
         }

@@ -2,11 +2,12 @@
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Helpers.Services;
 
-public class PaymentService
+public class PaymentService : IPaymentService
 {
     private readonly CreditCardRepo _creditCardRepo;
     private readonly UserProfileCreditCardRepo _userProfileCreditCardRepo;
@@ -46,7 +47,7 @@ public class PaymentService
             var user = await _userManager.FindByEmailAsync(userName);
             var existingCard = await _creditCardRepo.GetAsync(x => x.CardNo == schema.CardNo && x.NameOnCard == schema.NameOnCard && x.CVV == schema.CVV && x.Expires.Month == schema.ExpireMonth && x.Expires.Year == schema.ExpireYear);
 
-            if(existingCard != null)
+            if (existingCard != null)
             {
                 var result = await _userProfileCreditCardRepo.AddAsync(new UserProfileCreditCardEntity { CreditCardId = existingCard.Id, CreditCard = existingCard, UserProfileId = user!.Id });
                 if (result != null)
@@ -55,7 +56,7 @@ public class PaymentService
             else
             {
                 CreditCardEntity entity = schema;
-                var newCard = await _creditCardRepo.AddAsync(entity);                
+                var newCard = await _creditCardRepo.AddAsync(entity);
                 if (newCard != null)
                 {
                     await _userProfileCreditCardRepo.AddAsync(new UserProfileCreditCardEntity { CreditCardId = newCard.Id, CreditCard = newCard, UserProfileId = user!.Id });
