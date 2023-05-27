@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
 using WebAPI.Helpers.Services;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
@@ -15,10 +16,10 @@ namespace WebAPI.Controllers
     [UseApiKey]
     public class OrderController : ControllerBase
     {
-        private readonly OrderService _orderService;
-        private readonly ProductService _productService;
+        private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
 
-		public OrderController(ProductService productService, OrderService orderService)
+		public OrderController(IProductService productService, IOrderService orderService)
 		{
 			_productService = productService;
 			_orderService = orderService;
