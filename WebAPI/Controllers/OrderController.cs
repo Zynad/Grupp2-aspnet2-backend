@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers.Filters;
-using WebAPI.Helpers.Services;
 using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
 
         [Route("GetByOrderId")]
         [HttpGet]
-        public async Task<IActionResult> GetByOrderId(Guid Id)
+        public async Task<IActionResult> GetByOrderId(Guid orderId)
         {
             if (ModelState.IsValid)
             {
@@ -70,7 +70,8 @@ namespace WebAPI.Controllers
 
         [Route("CreateOrder")]
         [HttpPost]
-        public async Task<IActionResult> CreateOrder(OrderSchema schema)
+		[Authorize]
+		public async Task<IActionResult> CreateOrder(OrderSchema schema)
         {
             if(ModelState.IsValid)
             {
@@ -81,6 +82,44 @@ namespace WebAPI.Controllers
                     if (result)
                         return Ok("Order created");
 				}
+            }
+
+            return BadRequest("Something went wrong, try again!");
+        }
+
+        [Route("CancelOrder")]
+        [HttpPost]
+		[Authorize]
+		public async Task<IActionResult> CancelOrder(Guid orderId)
+        {
+            if (ModelState.IsValid)
+            {
+                var userEmail = HttpContext.User.Identity!.Name;
+                if(userEmail != null)
+                {
+                    var result = await _orderService.CancelOrder(orderId);
+                    if (result)
+                        return Ok("Order cancelled");
+                }
+            }
+
+            return BadRequest("Something went wrong, try again!");
+        }
+
+        [Route("DeleteOrder")]
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteOrder(Guid orderId)
+        {
+            if (ModelState.IsValid)
+            {
+                var userEmail = HttpContext.User.Identity!.Name;
+                if(userEmail != null)
+                {
+                    var result = await _orderService.DeleteOrder(orderId);
+                    if (result)
+                        return Ok("Order deleted");
+                }
             }
 
             return BadRequest("Something went wrong, try again!");
