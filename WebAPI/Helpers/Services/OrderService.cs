@@ -2,25 +2,22 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
 using Org.BouncyCastle.Asn1.IsisMtt.X509;
+using Twilio.TwiML.Voice;
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Entities;
+using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Helpers.Services;
 
 public class OrderService : IOrderService
 {
-	//update order/update status
-	//delete/cancel order
-
-	private readonly ProductRepo _productRepo;
 	private readonly OrderRepo _orderRepo;
 	private readonly UserManager<IdentityUser> _userManager;
 
-	public OrderService(ProductRepo productRepo, OrderRepo orderRepo, UserManager<IdentityUser> userManager)
+	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager)
 	{
-		_productRepo = productRepo;
 		_orderRepo = orderRepo;
 		_userManager = userManager;
 	}
@@ -43,11 +40,11 @@ public class OrderService : IOrderService
 		return null!;
 	}
 
-	public async Task<OrderDTO> GetByOrderIdAsync(Guid id)
+	public async Task<OrderDTO> GetByOrderIdAsync(Guid orderId)
 	{
 		try
 		{
-			var order = await _orderRepo.GetAsync(x => x.Id == id);
+			var order = await _orderRepo.GetAsync(x => x.Id == orderId);
 			OrderDTO dto = order;
 
 			return dto;
@@ -61,15 +58,53 @@ public class OrderService : IOrderService
 		try
 		{
 			var orders = await _orderRepo.GetListAsync(x => x.UserId == userId);
+			var currentDate = DateTime.Now;
 			var dtos = new List<OrderDTO>();
 
-			foreach (var entity in orders)
-				dtos.Add(entity);
+			foreach (var item in orders)
+			{
+				var status = item.OrderStatus;
+				var orderDate = item.OrderDate;
+
+				TimeSpan diff = currentDate - orderDate;
+				var daysDiff = diff.Days;
+
+				if (status != "Cancelled" && status != "Delivered")
+				{
+					if (daysDiff > 1 && daysDiff < 3)
+					{
+						item.OrderStatus = "Shipped";
+					}
+					else if (daysDiff >= 3)
+					{
+						item.OrderStatus = "Delivered";
+					}
+
+					await _orderRepo.UpdateAsync(item);
+				}
+
+				dtos.Add(item);
+			}
 
 			return dtos;
 		}
 		catch { }
 		return null!;
+	}
+
+	public async Task<bool> CancelOrder(Guid orderId)
+	{
+		try
+		{
+			var order = await _orderRepo.GetAsync(x => x.Id == orderId);
+			order.OrderStatus = "Cancelled";
+
+			await _orderRepo.UpdateAsync(order);
+
+			return true;
+		}
+		catch { }
+		return false;
 	}
 
 	public async Task<bool> CreateOrderAsync(OrderSchema schema, string userEmail)
@@ -101,4 +136,16 @@ public class OrderService : IOrderService
 		return false;
 	}
 
+	public async Task<bool> DeleteOrder(Guid orderId)
+	{
+		try
+		{
+			var entity = await _orderRepo.GetAsync(x => x.Id == orderId);
+			await _orderRepo.DeleteAsync(entity);
+
+			return true;
+		}
+		catch { }
+		return false;
+	}
 }
