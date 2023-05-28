@@ -34,6 +34,9 @@ namespace WebAPI.Controllers
                 var result = await _orderService.GetAllOrdersAsync();
                 if(result != null)
                     return Ok(result);
+
+                if (result == null)
+                    return NotFound("No orders found");
             }
 
             return BadRequest("Something went wrong, try again!");
