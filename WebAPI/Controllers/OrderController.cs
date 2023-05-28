@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _orderService.GetByOrderIdAsync(Id);
+                var result = await _orderService.GetByOrderIdAsync(orderId);
                 if (result != null)
                     return Ok(result);
             }
