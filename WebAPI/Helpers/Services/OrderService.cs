@@ -13,16 +13,11 @@ namespace WebAPI.Helpers.Services;
 
 public class OrderService : IOrderService
 {
-	//update order/update status
-	//delete/cancel order
-
-	private readonly ProductRepo _productRepo;
 	private readonly OrderRepo _orderRepo;
 	private readonly UserManager<IdentityUser> _userManager;
 
-	public OrderService(ProductRepo productRepo, OrderRepo orderRepo, UserManager<IdentityUser> userManager)
+	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager)
 	{
-		_productRepo = productRepo;
 		_orderRepo = orderRepo;
 		_userManager = userManager;
 	}
