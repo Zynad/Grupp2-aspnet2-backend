@@ -28,6 +28,8 @@ namespace WebAPI.Controllers
                 var result = await _reviewService.GetAllAsync();
                 if (result != null)
                     return Ok(result);
+				else
+					return NotFound("No reviews found");
             }
             
             return BadRequest("Something went wrong, try again!");
@@ -42,7 +44,9 @@ namespace WebAPI.Controllers
                 var result = await _reviewService.GetByProductId(productId);
                 if (result != null)
                     return Ok(result);
-            }
+				else
+					return NotFound("No reviews found");
+			}
             
             return BadRequest("Something went wrong, try again!");
         }

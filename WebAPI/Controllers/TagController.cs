@@ -28,6 +28,8 @@ namespace WebAPI.Controllers
 				var result = await _tagService.GetAllAsync();
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No tags found");
 			}
 
 			return BadRequest("Something went wrong, try again!");
@@ -42,6 +44,8 @@ namespace WebAPI.Controllers
 				var result = await _tagService.GetByIdAsync(id);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No tag found");
 			}
 
 			return BadRequest("Something went wrong, try again!");
@@ -64,6 +68,7 @@ namespace WebAPI.Controllers
 						return Created("", null);
 				}
 			}
+
 			return BadRequest("Something went wrong, try again!");
 		}
 		

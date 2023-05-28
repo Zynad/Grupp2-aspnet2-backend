@@ -51,7 +51,10 @@ namespace WebAPI.Controllers
                 var result = await _orderService.GetByOrderIdAsync(orderId);
                 if (result != null)
                     return Ok(result);
-            }
+
+				if (result == null)
+					return NotFound("No order found");
+			}
 
             return BadRequest("Something went wrong, try again!");
         }
@@ -65,7 +68,10 @@ namespace WebAPI.Controllers
                 var result = await _orderService.GetByUserIdAsync(Id);
                 if(result != null) 
                     return Ok(result);
-            }
+
+				if (result == null)
+					return NotFound("No orders found");
+			}
 
             return BadRequest("Something went wrong, try again!");
         }

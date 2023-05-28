@@ -28,6 +28,8 @@ namespace WebAPI.Controllers
 				var result = await _productService.GetAllAsync();
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No products found");
 			}
 			
 			return BadRequest("Something went wrong, try again!");
@@ -42,6 +44,8 @@ namespace WebAPI.Controllers
 				var result = await _productService.GetByIdAsync(id);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No product found");
 			}
 			
 			return BadRequest("Something went wrong, try again!");
@@ -56,6 +60,8 @@ namespace WebAPI.Controllers
 				var result = await _productService.GetByTagAsync(tags);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No products found");
 			}
 			
 			return BadRequest("Something went wrong, try again!");
@@ -70,6 +76,8 @@ namespace WebAPI.Controllers
 				var result = await _productService.GetByCategoryAsync(category);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No products found");
 			}
 			
 			return BadRequest("Sometihing went wrong, try again!");
@@ -84,6 +92,8 @@ namespace WebAPI.Controllers
 				var result = await _productService.GetBySalesCategoryAsync(salescategory);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No products found");
 			}
 			
 			return BadRequest("Something went wrong, try again!");
@@ -98,6 +108,8 @@ namespace WebAPI.Controllers
 				var result = await _productService.GetByPriceAsync(minPrice, maxPrice);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No products found");
 			}
 			
 			return BadRequest("Something went wrong, try again!");
@@ -112,6 +124,8 @@ namespace WebAPI.Controllers
 				var result = await _productService.GetByNameAsync(name);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No products found");
 			}
 			
 			return BadRequest("Something went wrong, try again!");
