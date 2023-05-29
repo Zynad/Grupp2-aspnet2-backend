@@ -5,6 +5,7 @@ using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Twilio.TwiML.Voice;
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
+using WebAPI.Models.Email;
 using WebAPI.Models.Entities;
 using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
@@ -15,11 +16,13 @@ public class OrderService : IOrderService
 {
 	private readonly OrderRepo _orderRepo;
 	private readonly UserManager<IdentityUser> _userManager;
+	private readonly IMailService _mailService;
 
-	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager)
+	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager, IMailService mailService)
 	{
 		_orderRepo = orderRepo;
 		_userManager = userManager;
+		_mailService = mailService;
 	}
 
 	public async Task<IEnumerable<OrderDTO>> GetAllOrdersAsync()
@@ -124,12 +127,15 @@ public class OrderService : IOrderService
 
 			foreach (var item in orderItems)
 			{
-				OrderItemEntity OrderItem = item;
-				order.Items.Add(OrderItem);
+				OrderItemEntity orderItem = item;
+				order.Items.Add(orderItem);
 			}
 
 			await _orderRepo.AddAsync(order);
-
+			
+			var email = new MailData(new List<string> { userEmail }, "Order confirmation", $"Your order with Id: {order.Id} has been recieved! We will ship your items to you shortly.");
+			var result = await _mailService.SendAsync(email, new CancellationToken());
+			
 			return true;
 		}
 		catch { }
