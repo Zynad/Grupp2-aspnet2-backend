@@ -71,6 +71,29 @@ namespace WebAPI.Helpers.Services
             catch { }
             return false;
         }
+
+        public async Task<bool> CheckOrCreateAsync(List<string> tags)
+        {
+            try 
+            {
+                foreach (var tag in tags)
+                {
+                    var result = await _tagRepo.GetAsync(x => x.Name == tag);
+                    if (result == null)
+                    {
+                        var tagEntity = new TagEntity
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = tag
+                        };
+                        await _tagRepo.AddAsync(tagEntity);
+                    }
+                }
+                return true;
+            }
+            catch { }
+            return false;
+        }
     }
 }
 

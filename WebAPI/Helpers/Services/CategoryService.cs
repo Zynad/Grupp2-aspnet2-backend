@@ -71,5 +71,23 @@ namespace WebAPI.Helpers.Services
             catch { }
             return false;
         }
+        public async Task<bool> CheckOrCreateAsync(string category)
+        {
+            try
+            {
+                var result = await _categoryRepo.GetAsync(x => x.Name == category);
+                if (result == null)
+                {
+                    var entity = new CategoryEntity()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = category,
+                    };
+                }
+                return true;
+            }
+            catch { }
+            return false;
+        }
     }
 }

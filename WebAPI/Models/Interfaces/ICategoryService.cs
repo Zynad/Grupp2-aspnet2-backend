@@ -9,5 +9,6 @@ namespace WebAPI.Models.Interfaces
         Task<bool> DeleteAsync(Guid id);
         Task<IEnumerable<CategoryDTO>> GetAllAsync();
         Task<CategoryDTO> GetByIdAsync(Guid id);
+        Task<bool> CheckOrCreateAsync(string category);
     }
 }
