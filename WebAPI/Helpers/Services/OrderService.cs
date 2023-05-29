@@ -17,12 +17,14 @@ public class OrderService : IOrderService
 	private readonly OrderRepo _orderRepo;
 	private readonly UserManager<IdentityUser> _userManager;
 	private readonly IMailService _mailService;
+	private readonly AddressRepo _addressRepo;
 
-	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager, IMailService mailService)
+	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager, IMailService mailService, AddressRepo addressRepo)
 	{
 		_orderRepo = orderRepo;
 		_userManager = userManager;
 		_mailService = mailService;
+		_addressRepo = addressRepo;
 	}
 
 	public async Task<IEnumerable<OrderDTO>> GetAllOrdersAsync()
@@ -116,13 +118,15 @@ public class OrderService : IOrderService
 		{
 			var orderItems = schema.Items;
 			var user = await _userManager.FindByEmailAsync(userEmail);
+			var address = await _addressRepo.GetAsync(x => x.Id == schema.AddressId);
 
 			var order = new OrderEntity
 			{
 				OrderDate = DateTime.Now,
 				OrderStatus = "Pending",
 				Items = new List<OrderItemEntity>(),
-				UserId = Guid.Parse(user!.Id)
+				UserId = Guid.Parse(user!.Id),
+				Address = address
 			};
 
 			foreach (var item in orderItems)
