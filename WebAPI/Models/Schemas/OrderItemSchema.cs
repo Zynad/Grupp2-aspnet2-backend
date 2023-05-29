@@ -33,9 +33,9 @@ namespace WebAPI.Models.Schemas
 			};
 		}
 
-		public static implicit operator OrderItemEntity(OrderItemSchema schema)
-		{
-			return schema.ToEntityAsync().GetAwaiter().GetResult();
-		}
+		//public static implicit operator OrderItemEntity(OrderItemSchema schema)
+		//{
+		//	return schema.ToEntityAsync().GetAwaiter().GetResult();
+		//}
 	}
 }

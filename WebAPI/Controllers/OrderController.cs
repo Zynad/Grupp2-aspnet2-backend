@@ -113,7 +113,7 @@ namespace WebAPI.Controllers
         }
 
         [Route("DeleteOrder")]
-        [HttpPost]
+        [HttpDelete]
         [Authorize]
         public async Task<IActionResult> DeleteOrder(Guid orderId)
         {

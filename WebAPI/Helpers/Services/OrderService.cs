@@ -131,15 +131,15 @@ public class OrderService : IOrderService
 
 			foreach (var item in orderItems)
 			{
-				OrderItemEntity orderItem = item;
+				var orderItem = await item.ToEntityAsync();
 				order.Items.Add(orderItem);
 			}
 
 			await _orderRepo.AddAsync(order);
-			
+
 			var email = new MailData(new List<string> { userEmail }, "Order confirmation", $"Your order with Id: {order.Id} has been recieved! We will ship your items to you shortly.");
 			var result = await _mailService.SendAsync(email, new CancellationToken());
-			
+
 			return true;
 		}
 		catch { }
