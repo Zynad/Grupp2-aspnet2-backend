@@ -1,12 +1,12 @@
-using Moq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using WebAPI.Controllers;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Interfaces;
 using WebAPI.Tests.Fixtures;
 
-namespace WebAPI.Tests.Controllers
+namespace WebAPI.Tests.Units.Controllers
 {
 	//Tobbe testar denna
 	public class ProductsControllerTest
