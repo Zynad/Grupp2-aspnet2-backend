@@ -1,37 +1,38 @@
 ﻿using WebAPI.Helpers.Services;
 using WebAPI.Models.Entities;
+using WebAPI.Models.Interfaces;
 
 namespace WebAPI.Models.Schemas
 {
 	public class OrderItemSchema
 	{
-		private readonly ProductService _productService;
+		//private readonly IProductService _productService;
 
 		public Guid ProductId { get; set; }
 		public string Color { get; set; } = null!;
 		public string Size { get; set; } = null!;
 		public int Quantity { get; set; }
 
-		public OrderItemSchema(ProductService productService)
-		{
-			_productService = productService;
-		}
+		//public OrderItemSchema(IProductService productService)
+		//{
+		//	_productService = productService;
+		//}
 
-		public async Task<OrderItemEntity> ToEntityAsync()
-		{
-			var product = await _productService.GetByIdAsync(ProductId);
+		//public async Task<OrderItemEntity> ToEntityAsync()
+		//{
+		//	var product = await _productService.GetByIdAsync(ProductId);
 
-			return new OrderItemEntity
-			{
-				ProductId = ProductId,
-				ProductName = product.Name,
-				UnitPrice = product.Price,
-				ImageUrl = product.ImageUrl,
-				Color = Color,
-				Size = Size,
-				Quantity = Quantity,
-			};
-		}
+		//	return new OrderItemEntity
+		//	{
+		//		ProductId = ProductId,
+		//		ProductName = product.Name,
+		//		UnitPrice = product.Price,
+		//		ImageUrl = product.ImageUrl,
+		//		Color = Color,
+		//		Size = Size,
+		//		Quantity = Quantity,
+		//	};
+		//}
 
 		//public static implicit operator OrderItemEntity(OrderItemSchema schema)
 		//{

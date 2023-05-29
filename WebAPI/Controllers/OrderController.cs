@@ -79,7 +79,7 @@ namespace WebAPI.Controllers
 
         [Route("CreateOrder")]
         [HttpPost]
-		[Authorize]
+		//[Authorize]
 		public async Task<IActionResult> CreateOrder(OrderSchema schema)
         {
             if(ModelState.IsValid)

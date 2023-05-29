@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
+using Microsoft.CodeAnalysis;
 using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Twilio.TwiML.Voice;
 using WebAPI.Helpers.Repositories;
@@ -18,13 +19,15 @@ public class OrderService : IOrderService
 	private readonly UserManager<IdentityUser> _userManager;
 	private readonly IMailService _mailService;
 	private readonly AddressRepo _addressRepo;
+	private readonly IProductService _productService;
 
-	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager, IMailService mailService, AddressRepo addressRepo)
+	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager, IMailService mailService, AddressRepo addressRepo, IProductService productService)
 	{
 		_orderRepo = orderRepo;
 		_userManager = userManager;
 		_mailService = mailService;
 		_addressRepo = addressRepo;
+		_productService = productService;
 	}
 
 	public async Task<IEnumerable<OrderDTO>> GetAllOrdersAsync()
@@ -131,7 +134,18 @@ public class OrderService : IOrderService
 
 			foreach (var item in orderItems)
 			{
-				var orderItem = await item.ToEntityAsync();
+				var product = await _productService.GetByIdAsync(item.ProductId);
+
+				var orderItem = new OrderItemEntity
+				{
+					ProductId = item.ProductId,
+					ProductName = product.Name,
+					UnitPrice = product.Price,
+					ImageUrl = product.ImageUrl,
+					Color = item.Color,
+					Size = item.Size,
+					Quantity = item.Quantity,
+				};
 				order.Items.Add(orderItem);
 			}
 
