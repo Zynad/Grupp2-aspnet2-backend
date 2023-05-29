@@ -85,12 +85,9 @@ namespace WebAPI.Controllers
             if(ModelState.IsValid)
             {
                 var userEmail = HttpContext.User.Identity!.Name;
-                if(userEmail != null)
-                {
-					var result = await _orderService.CreateOrderAsync(schema, userEmail);
-                    if (result)
-                        return Ok("Order created");
-				}
+				var result = await _orderService.CreateOrderAsync(schema, userEmail!);
+                if (result)
+                    return Created("", null);
             }
 
             return BadRequest("Something went wrong, try again!");
