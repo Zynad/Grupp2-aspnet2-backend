@@ -17,7 +17,6 @@ public class UpdateUserSchema
     [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
     public string Email { get; set; } = null!;
     public string? ImageUrl { get; set; }
-    public string? Location { get; set; }
     public static implicit operator IdentityUser(UpdateUserSchema schema)
     {
             return new IdentityUser
