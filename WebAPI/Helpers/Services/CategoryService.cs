@@ -83,6 +83,7 @@ namespace WebAPI.Helpers.Services
                         Id = Guid.NewGuid(),
                         Name = category,
                     };
+                    await _categoryRepo.AddAsync(entity);
                 }
                 return true;
             }
