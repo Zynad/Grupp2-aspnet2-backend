@@ -148,8 +148,8 @@ namespace WebAPI.Controllers
 			return BadRequest("Something went wrong, try again!");
 		}
 		
-		[Route("Delete")]
-		[HttpPost]
+		[Route("Delete/{id}")]
+		[HttpDelete]
 		[Authorize]
 		public async Task<IActionResult> DeleteProduct(Guid id)
 		{

@@ -13,11 +13,15 @@ namespace WebAPI.Helpers.Services
     {
         private readonly ProductRepo _productRepo;
         private readonly ReviewRepo _reviewRepo;
+        private readonly ITagService _tagService;
+        private readonly ICategoryService _categoryService;
 
-        public ProductService(ProductRepo productRepo, ReviewRepo reviewRepo)
+        public ProductService(ProductRepo productRepo, ReviewRepo reviewRepo, ITagService tagService, ICategoryService categoryService)
         {
             _productRepo = productRepo;
             _reviewRepo = reviewRepo;
+            _tagService = tagService;
+            _categoryService = categoryService;
         }
 
         public async Task<IEnumerable<ProductDTO>> GetAllAsync()
@@ -140,10 +144,18 @@ namespace WebAPI.Helpers.Services
         {
             try
             {
-                ProductEntity entity = schema;
-                await _productRepo.AddAsync(entity);
+                var tagList = await _tagService.CheckOrCreateAsync(schema.Tags!);
+                if (tagList)
+                {
+                    var categoryResult = await _categoryService.CheckOrCreateAsync(schema.Category!);
+                    if (categoryResult)
+                    {
+                        ProductEntity entity = schema;
+                        await _productRepo.AddAsync(entity);
 
-                return true;
+                        return true;
+                    }
+                } 
             }
             catch { }
             return false;

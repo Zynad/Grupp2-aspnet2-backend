@@ -145,6 +145,31 @@ public class AccountController : ControllerBase
         }
         return BadRequest("");
     }
+    [Route("DeleteById/{id}")]
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> DeleteAccountById(string id)
+    {
+        var result = await _accountService.DeleteUser(id);
+        if (result)
+        {
+            return Ok();
+        }
+        return BadRequest();
+    }
+    [Route("RemoveAccount")]
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> RemoveAccount()
+    {
+        var userName = HttpContext.User.Identity!.Name;
+        var result = await _accountService.DeleteProfile(userName!);
+        if (result)
+        {
+            return Ok();
+        }
+        return Problem();
+    }
 
 
 		#endregion
@@ -230,12 +255,16 @@ public class AccountController : ControllerBase
         if (ModelState.IsValid)
         {
             var userName = HttpContext.User.Identity!.Name;
-            var dto = await _accountService.ConfirmPhone(schema.Phone,userName!);
-            if(dto.Code != null)
+            var addPhone = await _accountService.AddPhoneNumberToUser(schema.Phone, userName!);
+            if (addPhone)
             {
-                return Ok(dto.Code);
-            }
-            return BadRequest(dto.Message);
+                var dto = await _accountService.ConfirmPhone(schema.Phone, userName!);
+                if (dto.Code != null)
+                {
+                    return Ok(dto.Code);
+                }
+            }           
+            return Conflict();
         }
         return BadRequest("You need to enter a phone number");
     }

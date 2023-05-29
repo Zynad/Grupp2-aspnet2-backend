@@ -241,10 +241,6 @@ public class AccountService : IAccountService
             userProfile.LastName = schema.LastName;
             identityUser.Email = schema.Email;
             identityUser.UserName = schema.Email;
-            if (schema.PhoneNumber != null)
-            {
-                identityUser.PhoneNumber = schema.PhoneNumber;
-            }
             if (schema.ImageUrl != null)
             {
                 userProfile.ImageUrl = schema.ImageUrl;
@@ -277,6 +273,40 @@ public class AccountService : IAccountService
         }
         catch { }
         return null!;
+    }
+    public async Task<bool> DeleteProfile(string userName)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(userName);
+            if (user != null)
+            {
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        }
+        catch { }
+        return false;
+    }
+    public async Task<bool> DeleteUser(string id)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        }
+        catch { }
+        return false;
     }
     public async Task<UserProfileDTO> GetProfile(string userName)
     {
@@ -343,6 +373,22 @@ public class AccountService : IAccountService
         catch { }
         return false;
 
+    }
+    public async Task<bool> AddPhoneNumberToUser(string phoneNumber, string email)
+    {
+        try 
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user != null)
+            {
+                user.PhoneNumber = phoneNumber;
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return true;
+            }
+        }
+        catch { }
+        return false;
     }
     public async Task<ConfirmPhoneDTO> ConfirmPhone(string phoneNo, string email)
     {

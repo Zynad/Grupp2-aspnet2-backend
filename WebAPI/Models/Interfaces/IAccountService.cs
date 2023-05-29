@@ -19,5 +19,8 @@ namespace WebAPI.Models.Interfaces
         Task<UserProfileDTO> ReturnProfileAsync(string Id);
         Task<UserProfileDTO> UpdateProfileAsync(UpdateUserSchema schema, string userName);
         Task<bool> VerifyPhone(string email);
+        Task<bool> AddPhoneNumberToUser(string phoneNumber, string email);
+        Task<bool> DeleteProfile(string userName);
+        Task<bool> DeleteUser(string id);
     }
 }

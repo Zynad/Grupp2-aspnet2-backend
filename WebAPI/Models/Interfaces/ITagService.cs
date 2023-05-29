@@ -9,5 +9,6 @@ namespace WebAPI.Models.Interfaces
         Task<bool> DeleteAsync(Guid id);
         Task<IEnumerable<TagDTO>> GetAllAsync();
         Task<TagDTO> GetByIdAsync(Guid id);
+        Task<bool> CheckOrCreateAsync(List<string> tags);
     }
 }
