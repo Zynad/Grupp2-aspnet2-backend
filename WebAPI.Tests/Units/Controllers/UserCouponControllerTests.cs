@@ -9,7 +9,7 @@ using WebAPI.Models.Entities;
 using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
-namespace WebAPI.Tests.Controllers;
+namespace WebAPI.Tests.Units.Controllers;
 
 //Alex testar denna
 public class UserCouponControllerTests
