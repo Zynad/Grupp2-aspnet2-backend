@@ -62,6 +62,10 @@ public class ReviewService : IReviewService
             {
                 ReviewEntity entity = schema;
                 entity.Name = $"{userProfile.FirstName} {userProfile.LastName}";
+                if(userProfile.ImageUrl != null) 
+                {
+                    entity.ImageUrl = userProfile.ImageUrl;
+                }
                 await _reviewRepo.AddAsync(entity);
                 await _productService.UpdateRatingAsync(entity.ProductId);
 

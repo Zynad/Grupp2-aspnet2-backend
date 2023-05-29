@@ -13,6 +13,8 @@ public class ReviewDTO
     public string Comment { get; set; } = null!;
     
     public double Rating { get; set; }
+    public string? ImageUrl { get; set; }
+    public DateTime CreatedDate { get; set; }
 
     public static implicit operator ReviewDTO(ReviewEntity entity)
     {
@@ -22,7 +24,9 @@ public class ReviewDTO
             ProductId = entity.ProductId,
             Name = entity.Name,
             Comment = entity.Comment,
-            Rating = entity.Rating
+            Rating = entity.Rating,
+            CreatedDate = entity.CreatedDate,
+            ImageUrl = entity.ImageUrl,
         };
     }
 }
