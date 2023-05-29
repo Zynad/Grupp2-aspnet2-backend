@@ -73,7 +73,7 @@ namespace WebAPI.Tests.Controllers
 		{
 			// Arrange
 			var id = ProductFixture.DTOs[0].Id;
-			_mockProductService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync((ProductDTO)null);
+			_mockProductService.Setup(x => x.GetByIdAsync(id))!.ReturnsAsync((ProductDTO)null!);
 
 			// Act
 			var result = await _controller.GetById(id);
