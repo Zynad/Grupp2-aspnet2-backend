@@ -5,6 +5,6 @@ namespace WebAPI.Models.Schemas
 	public class OrderSchema
 	{
 		public int AddressId { get; set; }
-		public List<OrderItemEntity> Items { get; set; } = null!;
+		public List<OrderItemSchema> Items { get; set; } = null!;
 	}
 }
