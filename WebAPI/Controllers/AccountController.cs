@@ -145,6 +145,31 @@ public class AccountController : ControllerBase
         }
         return BadRequest("");
     }
+    [Route("DeleteById/{id}")]
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> DeleteAccountById(string id)
+    {
+        var result = await _accountService.DeleteUser(id);
+        if (result)
+        {
+            return Ok();
+        }
+        return BadRequest();
+    }
+    [Route("RemoveAccount")]
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> RemoveAccount()
+    {
+        var userName = HttpContext.User.Identity!.Name;
+        var result = await _accountService.DeleteProfile(userName!);
+        if (result)
+        {
+            return Ok();
+        }
+        return Problem();
+    }
 
 
 		#endregion

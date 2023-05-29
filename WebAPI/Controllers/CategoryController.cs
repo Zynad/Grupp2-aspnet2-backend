@@ -62,8 +62,8 @@ namespace WebAPI.Controllers
 			return BadRequest("Something went wrong, try again!");
 		}
 		
-		[Route("DeleteCategory")]
-		[HttpPost]
+		[Route("DeleteCategory/{id}")]
+		[HttpDelete]
 		[Authorize]
 		public async Task<IActionResult> DeleteCategory(Guid id)
 		{

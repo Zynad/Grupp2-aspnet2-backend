@@ -61,8 +61,8 @@ namespace WebAPI.Controllers
 			return BadRequest("Something went wrong, try again!");
 		}
 		
-		[Route("DeleteTag")]
-		[HttpPost]
+		[Route("DeleteTag/{id}")]
+		[HttpDelete]
 		[Authorize]
 		public async Task<IActionResult> DeleteTag(Guid id)
 		{

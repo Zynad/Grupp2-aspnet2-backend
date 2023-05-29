@@ -274,6 +274,40 @@ public class AccountService : IAccountService
         catch { }
         return null!;
     }
+    public async Task<bool> DeleteProfile(string userName)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(userName);
+            if (user != null)
+            {
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        }
+        catch { }
+        return false;
+    }
+    public async Task<bool> DeleteUser(string id)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+        }
+        catch { }
+        return false;
+    }
     public async Task<UserProfileDTO> GetProfile(string userName)
     {
         try
