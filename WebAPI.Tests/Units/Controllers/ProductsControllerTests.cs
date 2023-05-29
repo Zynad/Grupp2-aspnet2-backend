@@ -6,15 +6,15 @@ using WebAPI.Models.Dtos;
 using WebAPI.Models.Interfaces;
 using WebAPI.Tests.Fixtures;
 
-namespace WebAPI.Tests.Units.Controllers
+namespace WebAPI.Tests.Controllers
 {
 	//Tobbe testar denna
-	public class ProductControllerTest
+	public class ProductsControllerTest
 	{
 		private readonly ProductsController _controller;
 		private readonly Mock<IProductService> _mockProductService;
 
-		public ProductControllerTest()
+		public ProductsControllerTest()
 		{
 			_mockProductService = new Mock<IProductService>();
 			_controller = new ProductsController(_mockProductService.Object);
