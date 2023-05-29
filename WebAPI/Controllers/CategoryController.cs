@@ -54,13 +54,9 @@ namespace WebAPI.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var category = await _categoryService.CreateAsync(schema);
-				if (category)
-				{
 					var result = await _categoryService.CreateAsync(schema);
 					if (result)
 						return Created("", null);
-				}
 			}
 
 			return BadRequest("Something went wrong, try again!");

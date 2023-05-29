@@ -54,15 +54,9 @@ namespace WebAPI.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-
-				var tag = await _tagService.CreateAsync(schema);
-
-				if (tag)
-				{
 					var result = await _tagService.CreateAsync(schema);
 					if (result)
 						return Created("", null);
-				}
 			}
 			return BadRequest("Something went wrong, try again!");
 		}
