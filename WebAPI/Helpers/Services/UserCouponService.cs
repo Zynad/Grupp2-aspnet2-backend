@@ -25,11 +25,10 @@ namespace WebAPI.Helpers.Services
                 var coupon = await _couponService.GetCouponByCodeAsync(voucherCode);
                 if (userId != null && coupon != null)
                 {
-                    var userCoupon = new UserCouponEntity { UserId = userId, CouponId = coupon!.Id };
-
-                    var result = await _userCouponRepo.GetAsync(x => x.UserId == userCoupon.UserId && x.CouponId == userCoupon.CouponId);
+                    var result = await _userCouponRepo.GetAsync(x => x.UserId == userId && x.CouponId == coupon.Id);
                     if (result == null)
                     {
+                        var userCoupon = new UserCouponEntity { UserId = userId, CouponId = coupon!.Id };
                         return userCoupon;
                     }
                 }
