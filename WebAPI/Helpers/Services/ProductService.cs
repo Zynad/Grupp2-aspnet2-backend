@@ -103,10 +103,15 @@ namespace WebAPI.Helpers.Services
 
         public async Task<ProductDTO> GetByIdAsync(Guid id)
         {
-            var product = await _productRepo.GetAsync(x => x.Id == id);
-            ProductDTO dto = product;
+            try
+            {
+				var product = await _productRepo.GetAsync(x => x.Id == id);
+				ProductDTO dto = product;
 
-            return dto;
+				return dto;
+			}
+            catch { }
+            return null!;
         }
 
         public async Task<IEnumerable<ProductDTO>> GetByPriceAsync(int minPrice, int maxPrice)

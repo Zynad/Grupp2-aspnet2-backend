@@ -28,6 +28,8 @@ namespace WebAPI.Controllers
 				var result = await _categoryService.GetAllAsync();
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No categories found");
 			}
 
 			return BadRequest("Something went wrong, try again");
@@ -42,6 +44,8 @@ namespace WebAPI.Controllers
 				var result = await _categoryService.GetByIdAsync(id);
 				if (result != null)
 					return Ok(result);
+				else
+					return NotFound("No category found");
 			}
 
 			return BadRequest("Something went wrong, try again!");
