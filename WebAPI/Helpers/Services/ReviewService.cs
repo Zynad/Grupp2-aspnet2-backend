@@ -33,6 +33,7 @@ public class ReviewService : IReviewService
             {
                 var user = await _userProfileRepo.GetAsync(x => x.UserId == entity.UserId);
                 entity.ImageUrl = user.ImageUrl;
+                await _reviewRepo.UpdateAsync(entity);
                 dtos.Add(entity);
             }
 
@@ -52,6 +53,7 @@ public class ReviewService : IReviewService
             {
                 var user = await _userProfileRepo.GetAsync(x => x.UserId == entity.UserId);
                 entity.ImageUrl = user.ImageUrl;
+                await _reviewRepo.UpdateAsync(entity);
                 dtos.Add(entity);
             }
 
