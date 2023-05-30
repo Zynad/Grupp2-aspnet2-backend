@@ -20,14 +20,16 @@ public class OrderService : IOrderService
 	private readonly IMailService _mailService;
 	private readonly AddressRepo _addressRepo;
 	private readonly IProductService _productService;
+	private readonly ProductRepo _productRepo;
 
-	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager, IMailService mailService, AddressRepo addressRepo, IProductService productService)
+	public OrderService(OrderRepo orderRepo, UserManager<IdentityUser> userManager, IMailService mailService, AddressRepo addressRepo, IProductService productService, ProductRepo productRepo)
 	{
 		_orderRepo = orderRepo;
 		_userManager = userManager;
 		_mailService = mailService;
 		_addressRepo = addressRepo;
 		_productService = productService;
+		_productRepo = productRepo;
 	}
 
 	public async Task<IEnumerable<OrderDTO>> GetAllOrdersAsync()
@@ -79,14 +81,12 @@ public class OrderService : IOrderService
 
 				if (status != "Cancelled" && status != "Delivered")
 				{
-					if (daysDiff > 1 && daysDiff < 3)
+					item.OrderStatus = daysDiff switch
 					{
-						item.OrderStatus = "Shipped";
-					}
-					else if (daysDiff >= 3)
-					{
-						item.OrderStatus = "Delivered";
-					}
+						> 1 and < 3 => "Shipped",
+						>= 3 => "Delivered",
+						_ => item.OrderStatus
+					};
 
 					await _orderRepo.UpdateAsync(item);
 				}
@@ -134,7 +134,7 @@ public class OrderService : IOrderService
 
 			foreach (var item in orderItems)
 			{
-				var product = await _productService.GetByIdAsync(item.ProductId);
+				var product = await _productRepo.GetAsync(x => x.Id == item.ProductId);
 
 				var orderItem = new OrderItemEntity
 				{
