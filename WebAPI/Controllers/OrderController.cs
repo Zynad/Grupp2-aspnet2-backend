@@ -85,7 +85,7 @@ namespace WebAPI.Controllers
             if(ModelState.IsValid)
             {
                 var userEmail = HttpContext.User.Identity!.Name;
-				var result = await _orderService.CreateOrderAsync(schema, "ctvwestman@gmail.com");
+				var result = await _orderService.CreateOrderAsync(schema, userEmail!);
                 if (result)
                     return Created("", null);
             }

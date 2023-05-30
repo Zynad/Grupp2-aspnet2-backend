@@ -9,5 +9,5 @@ public class OrderEntity
     public AddressEntity Address { get; set; } = null!;
     public List<OrderItemEntity> Items { get; set; } = null!;
 
-    public string PartitionKey = "Order";
+    public string PartitionKey { get; set; } = "Orders";
 }
