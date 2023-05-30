@@ -36,11 +36,30 @@ public class OrderService : IOrderService
 	{
 		try
 		{
+			var currentDate = DateTime.Now;
 			var orders = await _orderRepo.GetAllAsync();
 			var dtos = new List<OrderDTO>();
 
 			foreach (var entity in orders)
 			{
+				var status = entity.OrderStatus;
+				var orderDate = entity.OrderDate;
+
+				TimeSpan diff = currentDate - orderDate;
+				var daysDiff = diff.Days;
+				
+				if (status != "Cancelled" && status != "Delivered")
+				{
+					entity.OrderStatus = daysDiff switch
+					{
+						> 1 and < 3 => "Shipped",
+						>= 3 => "Delivered",
+						_ => entity.OrderStatus
+					};
+
+					await _orderRepo.UpdateAsync(entity);
+				}
+				
 				dtos.Add(entity);
 			}
 
@@ -54,7 +73,27 @@ public class OrderService : IOrderService
 	{
 		try
 		{
+			var currentDate = DateTime.Now;
 			var order = await _orderRepo.GetAsync(x => x.Id == orderId);
+			
+			var status = order.OrderStatus;
+			var orderDate = order.OrderDate;
+
+			TimeSpan diff = currentDate - orderDate;
+			var daysDiff = diff.Days;
+
+			if (status != "Cancelled" && status != "Delivered")
+			{
+				order.OrderStatus = daysDiff switch
+				{
+					> 1 and < 3 => "Shipped",
+					>= 3 => "Delivered",
+					_ => order.OrderStatus
+				};
+
+				await _orderRepo.UpdateAsync(order);
+			}
+			
 			OrderDTO dto = order;
 
 			return dto;
