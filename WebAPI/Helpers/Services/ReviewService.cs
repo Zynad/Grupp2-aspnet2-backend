@@ -31,6 +31,8 @@ public class ReviewService : IReviewService
 
             foreach (var entity in products)
             {
+                var user = await _userProfileRepo.GetAsync(x => x.UserId == entity.UserId);
+                entity.ImageUrl = user.ImageUrl;
                 dtos.Add(entity);
             }
 
@@ -45,8 +47,15 @@ public class ReviewService : IReviewService
         try
         {
             var reviews = await _reviewRepo.GetListAsync(p => p.ProductId == productId);
+            var dtos = new List<ReviewDTO>();
+            foreach (var entity in reviews)
+            {
+                var user = await _userProfileRepo.GetAsync(x => x.UserId == entity.UserId);
+                entity.ImageUrl = user.ImageUrl;
+                dtos.Add(entity);
+            }
 
-            return reviews.Select(p => (ReviewDTO)p);
+            return dtos;
         }
         catch { }
         return null!;
@@ -61,11 +70,8 @@ public class ReviewService : IReviewService
             if (userProfile != null)
             {
                 ReviewEntity entity = schema;
+                entity.UserId = user!.Id;
                 entity.Name = $"{userProfile.FirstName} {userProfile.LastName}";
-                if(userProfile.ImageUrl != null) 
-                {
-                    entity.ImageUrl = userProfile.ImageUrl;
-                }
                 await _reviewRepo.AddAsync(entity);
                 await _productService.UpdateRatingAsync(entity.ProductId);
 

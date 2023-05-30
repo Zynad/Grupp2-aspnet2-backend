@@ -25,8 +25,7 @@ public class ReviewDTO
             Name = entity.Name,
             Comment = entity.Comment,
             Rating = entity.Rating,
-            CreatedDate = entity.CreatedDate,
-            ImageUrl = entity.ImageUrl,
+            CreatedDate = entity.CreatedDate
         };
     }
 }

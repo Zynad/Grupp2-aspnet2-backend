@@ -9,6 +9,7 @@ public class ReviewEntity
     public Guid Id { get; set; } = Guid.NewGuid();
     
     public Guid ProductId { get; set; }
+    public string UserId { get; set; } = null!;
     
     [Required]
     public string Name { get; set; } = null!;
@@ -18,6 +19,7 @@ public class ReviewEntity
 
     [Required]
     public double Rating { get; set; }
+    
     public string? ImageUrl { get; set; }
     public DateTime CreatedDate { get; set; }
 
