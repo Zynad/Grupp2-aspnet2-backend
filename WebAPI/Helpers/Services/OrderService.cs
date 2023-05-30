@@ -100,11 +100,11 @@ public class OrderService : IOrderService
 		return null!;
 	}
 
-	public async Task<bool> CancelOrder(Guid orderId)
+	public async Task<bool> CancelOrder(OrderCancelSchema schema)
 	{
 		try
 		{
-			var order = await _orderRepo.GetAsync(x => x.Id == orderId);
+			var order = await _orderRepo.GetAsync(x => x.Id == schema.OrderId);
 			order.OrderStatus = "Cancelled";
 
 			await _orderRepo.UpdateAsync(order);

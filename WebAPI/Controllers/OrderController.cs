@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
             return BadRequest("Something went wrong, try again!");
         }
 
-        [Route("GetByOrderId")]
+        [Route("GetByOrderId/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetByOrderId(Guid orderId)
         {
@@ -59,7 +59,7 @@ namespace WebAPI.Controllers
             return BadRequest("Something went wrong, try again!");
         }
 
-        [Route("GetByUserId")]
+        [Route("GetByUserId/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetByUserId(Guid Id)
         {
@@ -96,14 +96,14 @@ namespace WebAPI.Controllers
         [Route("CancelOrder")]
         [HttpPost]
 		[Authorize]
-		public async Task<IActionResult> CancelOrder(Guid orderId)
+		public async Task<IActionResult> CancelOrder(OrderCancelSchema schema)
         {
             if (ModelState.IsValid)
             {
                 var userEmail = HttpContext.User.Identity!.Name;
                 if(userEmail != null)
                 {
-                    var result = await _orderService.CancelOrder(orderId);
+                    var result = await _orderService.CancelOrder(schema);
                     if (result)
                         return Ok("Order cancelled");
                 }
@@ -112,7 +112,7 @@ namespace WebAPI.Controllers
             return BadRequest("Something went wrong, try again!");
         }
 
-        [Route("DeleteOrder")]
+        [Route("DeleteOrder/{id}")]
         [HttpDelete]
         [Authorize]
         public async Task<IActionResult> DeleteOrder(Guid orderId)
