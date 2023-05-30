@@ -79,13 +79,13 @@ namespace WebAPI.Controllers
 
         [Route("CreateOrder")]
         [HttpPost]
-		//[Authorize]
+		[Authorize]
 		public async Task<IActionResult> CreateOrder(OrderSchema schema)
         {
             if(ModelState.IsValid)
             {
                 var userEmail = HttpContext.User.Identity!.Name;
-				var result = await _orderService.CreateOrderAsync(schema, userEmail!);
+				var result = await _orderService.CreateOrderAsync(schema, "ctvwestman@gmail.com");
                 if (result)
                     return Created("", null);
             }
