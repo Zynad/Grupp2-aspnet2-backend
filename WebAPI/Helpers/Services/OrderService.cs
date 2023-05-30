@@ -151,8 +151,8 @@ public class OrderService : IOrderService
 
 			await _orderRepo.AddAsync(order);
 
-			//var email = new MailData(new List<string> { userEmail }, "Order confirmation", $"Your order with Id: {order.Id} has been recieved! We will ship your items to you shortly.");
-			//var result = await _mailService.SendAsync(email, new CancellationToken());
+			var email = new MailData(new List<string> { userEmail }, "Order confirmation", $"Your order with Id: {order.Id} has been recieved! We will ship your items to you shortly.");
+			var result = await _mailService.SendAsync(email, new CancellationToken());
 
 			return true;
 		}
