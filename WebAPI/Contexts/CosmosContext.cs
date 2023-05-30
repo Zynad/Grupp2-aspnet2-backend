@@ -32,6 +32,10 @@ namespace WebAPI.Contexts
             modelBuilder.Entity<ReviewEntity>()
 				.ToContainer("Reviews")
 				.HasPartitionKey(x => x.PartitionKey);
+
+			modelBuilder.Entity<OrderEntity>()
+				.ToContainer("Orders")
+				.HasPartitionKey(x => x.PartitionKey);
 		}
 	}
 }
