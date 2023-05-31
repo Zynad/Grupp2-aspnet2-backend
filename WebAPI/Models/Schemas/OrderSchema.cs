@@ -6,5 +6,6 @@ namespace WebAPI.Models.Schemas
 	{
 		public int AddressId { get; set; }
 		public List<OrderItemSchema> Items { get; set; } = null!;
+		public decimal Price { get; set; }
 	}
 }
