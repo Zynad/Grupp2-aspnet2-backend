@@ -198,39 +198,44 @@ public class OrderService : IOrderService
 			var user = await _userManager.FindByEmailAsync(userEmail);
 			var address = await _addressRepo.GetAsync(x => x.Id == schema.AddressId);
 
-			var order = new OrderEntity
+			if(address != null)
 			{
-				OrderDate = DateTime.Now,
-				OrderStatus = "Pending",
-				Items = new List<OrderItemEntity>(),
-				UserId = Guid.Parse(user!.Id),
-				Address = address,
-				Price = schema.Price
-			};
+                var order = new OrderEntity
+                {
+                    OrderDate = DateTime.Now,
+                    OrderStatus = "Pending",
+                    Items = new List<OrderItemEntity>(),
+                    UserId = Guid.Parse(user!.Id),
+                    Address = address,
+                    Price = schema.Price
+                };
 
-			foreach (var item in orderItems)
-			{
-				var product = await _productRepo.GetAsync(x => x.Id == item.ProductId);
+                foreach (var item in orderItems)
+                {
+                    var product = await _productRepo.GetAsync(x => x.Id == item.ProductId);
 
-				var orderItem = new OrderItemEntity
-				{
-					ProductId = item.ProductId,
-					ProductName = product.Name,
-					UnitPrice = product.Price,
-					ImageUrl = product.ImageUrl,
-					Color = item.Color,
-					Size = item.Size,
-					Quantity = item.Quantity,
-				};
-				order.Items.Add(orderItem);
-			}
+                    var orderItem = new OrderItemEntity
+                    {
+                        ProductId = item.ProductId,
+                        ProductName = product.Name,
+                        UnitPrice = product.Price,
+                        ImageUrl = product.ImageUrl,
+                        Color = item.Color,
+                        Size = item.Size,
+                        Quantity = item.Quantity,
+                    };
+                    order.Items.Add(orderItem);
+                }
 
-			await _orderRepo.AddAsync(order);
+                await _orderRepo.AddAsync(order);
 
-			var email = new MailData(new List<string> { userEmail }, "Order confirmation", $"Your order with Id: {order.Id} has been recieved! We will ship your items to you shortly.");
-			var result = await _mailService.SendAsync(email, new CancellationToken());
+                var email = new MailData(new List<string> { userEmail }, "Order confirmation", $"Your order with Id: {order.Id} has been recieved! We will ship your items to you shortly.");
+                var result = await _mailService.SendAsync(email, new CancellationToken());
 
-			return true;
+                return true;
+            }
+
+			
 		}
 		catch { }
 		return false;
