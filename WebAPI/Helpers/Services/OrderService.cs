@@ -103,7 +103,7 @@ public class OrderService : IOrderService
 		try
 		{
 			var user = await _userManager.FindByEmailAsync(userEmail);
-			var userId = Guid.Parse(user.Id);
+			var userId = Guid.Parse(user!.Id);
 
 			var orders = await _orderRepo.GetListAsync(x => x.UserId == userId);
 			var currentDate = DateTime.Now;
