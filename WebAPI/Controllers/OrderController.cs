@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using WebAPI.Helpers.Filters;
 using WebAPI.Models.Interfaces;
 using WebAPI.Models.Schemas;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
     [ApiController]
     [UseApiKey]
     public class OrderController : ControllerBase
@@ -59,15 +55,20 @@ namespace WebAPI.Controllers
             return BadRequest("Something went wrong, try again!");
         }
 
-        [Route("GetByUserId/{id}")]
+        [Route("GetBySignedIn")]
         [HttpGet]
-        public async Task<IActionResult> GetByUserId(Guid Id)
+        public async Task<IActionResult> GetBySignedInUser()
         {
             if (ModelState.IsValid)
             {
-                var result = await _orderService.GetByUserIdAsync(Id);
-                if(result != null) 
-                    return Ok(result);
+                var userEmail = HttpContext.User.Identity!.Name;
+                if (userEmail.IsNullOrEmpty())
+                    return BadRequest("You must be signed in to use this method");
+
+				var result = await _orderService.GetBySignedInUser(userEmail!);
+				if (result != null)
+					return Ok(result);
+				
 
 				if (result == null)
 					return NotFound("No orders found");
@@ -76,8 +77,25 @@ namespace WebAPI.Controllers
             return BadRequest("Something went wrong, try again!");
         }
 
+		[Route("GetByUserId/{id}")]
+		[HttpGet]
+		public async Task<IActionResult> GetByUserId(Guid Id)
+		{
+			if (ModelState.IsValid)
+			{
+				var result = await _orderService.GetByUserIdAsync(Id);
+				if (result != null)
+					return Ok(result);
 
-        [Route("CreateOrder")]
+				if (result == null)
+					return NotFound("No orders found");
+			}
+
+			return BadRequest("Something went wrong, try again!");
+		}
+
+
+		[Route("CreateOrder")]
         [HttpPost]
 		[Authorize]
 		public async Task<IActionResult> CreateOrder(OrderSchema schema)

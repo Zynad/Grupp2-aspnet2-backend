@@ -1,9 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow.Schemas;
-using Microsoft.CodeAnalysis;
-using Org.BouncyCastle.Asn1.IsisMtt.X509;
-using Twilio.TwiML.Voice;
 using WebAPI.Helpers.Repositories;
 using WebAPI.Models.Dtos;
 using WebAPI.Models.Email;
@@ -97,6 +93,46 @@ public class OrderService : IOrderService
 			OrderDTO dto = order;
 
 			return dto;
+		}
+		catch { }
+		return null!;
+	}
+
+	public async Task<IEnumerable<OrderDTO>> GetBySignedInUser(string userEmail)
+	{
+		try
+		{
+			var user = await _userManager.FindByEmailAsync(userEmail);
+			var userId = Guid.Parse(user.Id);
+
+			var orders = await _orderRepo.GetListAsync(x => x.UserId == userId);
+			var currentDate = DateTime.Now;
+			var dtos = new List<OrderDTO>();
+
+			foreach (var item in orders)
+			{
+				var status = item.OrderStatus;
+				var orderDate = item.OrderDate;
+
+				TimeSpan diff = currentDate - orderDate;
+				var daysDiff = diff.Days;
+
+				if (status != "Cancelled" && status != "Delivered")
+				{
+					item.OrderStatus = daysDiff switch
+					{
+						> 1 and < 3 => "Shipped",
+						>= 3 => "Delivered",
+						_ => item.OrderStatus
+					};
+
+					await _orderRepo.UpdateAsync(item);
+				}
+
+				dtos.Add(item);
+			}
+
+			return dtos;
 		}
 		catch { }
 		return null!;
