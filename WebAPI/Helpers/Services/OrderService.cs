@@ -204,7 +204,8 @@ public class OrderService : IOrderService
 				OrderStatus = "Pending",
 				Items = new List<OrderItemEntity>(),
 				UserId = Guid.Parse(user!.Id),
-				Address = address
+				Address = address,
+				Price = schema.Price
 			};
 
 			foreach (var item in orderItems)
